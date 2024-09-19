@@ -39,7 +39,7 @@ ax.set_ylabel('x2')
 ax.set_zlabel('f(x1, x2)')
 
 # Afficher le graphique
-plt.show()
+plt.show() 
 
 
 
