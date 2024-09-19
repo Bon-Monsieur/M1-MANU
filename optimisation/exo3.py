@@ -87,26 +87,30 @@ solution, history = gradient_descent(starting_point, y, learning_rate, num_itera
 print("Solution finale:", solution)
 
 
+# %%
+# Utiliser les différences finies pour calculer le gradient 
 
-
-
-#%%
-# n = 100
-
-n = 100
-x0 = np.array([1]*n)
-y = np.array([i for i in range(1,n+1)])
+import numpy as np
 
 # Fonctionnelle f(x) = <x, y> * exp(-||x||^2)
 def cost_function(x, y):
     return np.dot(x, y) * np.exp(-np.linalg.norm(x)**2)
 
-# Gradient de la fonctionnelle
-def gradient(x, y):
-    # Calcul du gradient de f(x)
-    term1 = y * np.exp(-np.linalg.norm(x)**2)
-    term2 = -2 * x * np.dot(x, y) * np.exp(-np.linalg.norm(x)**2)
-    return term1 + term2
+# Gradient de la fonctionnelle utilisant les différences finies
+def finite_difference_gradient(x, y, h=1e-5):
+    n = len(x)
+    grad = np.zeros(n)  # Initialiser le gradient à un vecteur nul
+    fx = cost_function(x, y)  # Calculer la valeur actuelle de f(x)
+    
+    for i in range(n):
+        # Créer un vecteur perturbé x + h * e_i
+        x_step = np.copy(x)
+        x_step[i] += h
+        
+        # Calculer la différence finie pour la dérivée partielle
+        grad[i] = (cost_function(x_step, y) - fx) / h
+    
+    return grad
 
 # Méthode de descente de gradient
 def gradient_descent(starting_point, y, learning_rate=0.1, num_iterations=1000):
@@ -114,28 +118,89 @@ def gradient_descent(starting_point, y, learning_rate=0.1, num_iterations=1000):
     history = [x]  # Stocker les positions pour observer l'évolution
 
     for i in range(num_iterations):
-        grad = gradient(x, y)  # Calculer le gradient au point courant
-        print(grad[0],grad[-1])
+        grad = finite_difference_gradient(x, y)  # Calculer le gradient via différences finies
         x = x - learning_rate * grad  # Mise à jour de x en fonction du gradient
-        history.append(x)  # Ajouter le nouveau point à l'historique
-
-        # Afficher les informations sur l'avancement
-        #print(f"Iteration {i+1}: cost = {cost_function(x, y)}")
+        history.append(np.copy(x))  # Ajouter le nouveau point à l'historique
 
     return x, history
 
 # Exemple d'utilisation
-# Dimension du vecteur
-starting_point = x0  # Point de départ aléatoire  # Vecteur y fixé (dimension n = 100)
+n = 2  # Dimension du vecteur
+x0 = np.array([1]*n)  # Point de départ
+y = np.array([i for i in range(1, n+1)])  # Vecteur y fixé
+
 learning_rate = 0.01  # Taux d'apprentissage
-num_iterations = 500  # Nombre d'itérations
+num_iterations = 5000  # Nombre d'itérations
 
 # Lancer la descente de gradient
-solution, history = gradient_descent(starting_point, y, learning_rate, num_iterations)
+solution, history = gradient_descent(x0, y, learning_rate, num_iterations)
+
+print("Solution finale:", solution)
 
 
-#print("Solution finale:", solution)
-#print(gradient(x0,y))
 
+
+
+# %%
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Fonctionnelle f(x) = <x, y> * exp(-||x||^2)
+def cost_function(x, y):
+    return np.dot(x, y) * np.exp(-np.linalg.norm(x)**2)
+
+# Gradient de la fonctionnelle (gradient explicite)
+def gradient(x, y):
+    term1 = y * np.exp(-np.linalg.norm(x)**2)
+    term2 = -2 * x * np.dot(x, y) * np.exp(-np.linalg.norm(x)**2)
+    return term1 + term2
+
+# Gradient approximé avec les différences finies
+def finite_difference_gradient(x, y, h=1e-5):
+    n = len(x)
+    grad_approx = np.zeros(n)
+    fx = cost_function(x, y)
+    
+    for i in range(n):
+        x_step = np.copy(x)
+        x_step[i] += h
+        grad_approx[i] = (cost_function(x_step, y) - fx) / h
+    
+    return grad_approx
+
+# Fonction pour calculer la différence entre les deux gradients
+def gradient_difference_norm(x, y, h_values):
+    grad_exact = gradient(x, y)
+    differences = []
+    
+    for h in h_values:
+        grad_approx = finite_difference_gradient(x, y, h)
+        diff = np.linalg.norm(grad_exact - grad_approx)
+        differences.append(diff)
+    
+    return differences
+
+# Exemple d'utilisation
+n = 2  # Dimension du vecteur
+x0 = np.array([1]*n)  # Point de départ
+y = np.array([i for i in range(1, n+1)])  # Vecteur y fixé
+
+# Valeurs de h à tester, plus concentrées
+h_values = np.logspace(-5, -1, 50)  # h de 10^-5 à 10^-1
+
+# Calculer la différence entre le gradient exact et l'approximation
+differences = gradient_difference_norm(x0, y, h_values)
+
+# Tracer le graphe
+plt.figure(figsize=(8, 6))
+plt.plot(h_values, differences, marker='o', linestyle='-', color='b', label='Différence entre gradients')
+plt.xscale('log')  # Échelle logarithmique pour h
+plt.yscale('log')  # Échelle logarithmique pour les différences
+plt.xlabel('h')
+plt.ylabel('Norme de la différence entre gradients')
+plt.title('Différence entre le gradient exact et le gradient approximé par différences finies')
+plt.grid(True)
+plt.legend(loc='upper left')
+plt.show()
 
 # %%
