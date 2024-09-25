@@ -9,14 +9,14 @@ import matplotlib.pyplot as plt
 def func(x):
     # Example: simple quadratic form f(x) = 1/2 * x^T A x
     # A = np.eye(ndim)  # Identity matrix for simplicity
-    # y = np.array([(abs(ndim//2-i)) for i in range(ndim)])
-    y = [1, 2,1,1,1,1,1,1,1,1]
+    y = np.array([(abs(ndim//2-i)) for i in range(ndim)])
+    #y = [1, 2,1,1,1,1,1,1,1,1]
     return np.dot(x, y) * np.exp(-np.linalg.norm(x) ** 2)
 
 
 def funcp(x):
-    # y = [1, 2]
-    y = [1, 2,1,1,1,1,1,1,1,1]
+    y = [1, 2]
+    #y = [1, 2,1,1,1,1,1,1,1,1]
     return np.exp(-np.linalg.norm(x) ** 2) * (y - 2 * np.dot(x, y) * x)
 
 
@@ -64,7 +64,7 @@ def finite_difference_backward(f, x, eps):
 ndim = 2  # Number of dimensions
 rho = 0.01  # Initial step size (learning rate)
 tol = 1e-6  # Tolerance for stopping criterion
-max_iter = 1000  # Maximum number of iterations
+max_iter = 5000  # Maximum number of iterations
 
 # Store convergence histories
 hist_func = []  # Stores function values
@@ -74,10 +74,10 @@ x_history = []  # Store x values
 # Define admissible space (no bounds for now)
 
 # Initialization
-x = np.array([-0.6, -0.6]) + np.random.randn(ndim)  # Random starting point
+x = np.array([1]*ndim)
 print(x)
-f = func(x)  # Initial function value
-grad = funcp(x)  # Initial gradient
+f = func_axb(x)  # Initial function value
+grad = funcp_axb(x)  # Initial gradient
 iter_count = 0
 
 hist_func.append(f)
@@ -168,5 +168,53 @@ plt.ylabel("Norm of Difference")
 plt.legend()
 plt.title("Finite Difference Approximations vs True Gradient")
 plt.show()
+
+
+
+# %%
+
+ndim = 2
+
+def hilbert_matrix(n):
+    """Renvoie une matrice de Hilbert de taille n x n."""
+    H = np.zeros((n, n))  # Créer une matrice n x n remplie de zéros
+    for i in range(n):
+        for j in range(n):
+            H[i, j] = 1 / (i + j + 1)  # Les indices commencent à 0, donc ajouter 1
+    return H
+
+def func_axb(x):
+    A = hilbert_matrix(ndim)
+    xcible = np.ones(ndim)
+    b = A.dot(xcible)
+    J = 0.5*(A.dot(x)).dot(x)-b.dot(x)
+    return J
+
+def funcp_axb(x):
+    A = hilbert_matrix(ndim)
+    xcible = np.ones(ndim)
+    b = A.dot(xcible)
+    fp = A.dot(x)-b
+    print(fp)
+    return fp
+
+
+def descente(grad, x_init, gamma, maxiter, epsilon): #Methode de descente du tp note
+    x = x_init
+    results = [x]
+    for i in range(1, maxiter + 1):
+        g = grad(x)
+        if np.linalg.norm(g) <= epsilon:
+            break
+        else:
+            x = x-gamma*g
+            results.append(x)
+    return results
+
+q1 = descente(grad=funcp_axb,x_init=(1,2),gamma=0.01,maxiter=5000,epsilon=1e-9)
+print("Liste des itérés: ",q1)
+print("Dernier des itérés: ",q1[-1])    
+
+
 
 # %%
