@@ -173,7 +173,7 @@ plt.show()
 
 # %%
 
-ndim = 2
+ndim = 20
 
 def hilbert_matrix(n):
     """Renvoie une matrice de Hilbert de taille n x n."""
@@ -211,10 +211,13 @@ def descente(grad, x_init, gamma, maxiter, epsilon): #Methode de descente du tp 
             results.append(x)
     return results
 
-q1 = descente(grad=funcp_axb,x_init=(1,2),gamma=0.01,maxiter=5000,epsilon=1e-9)
+q1 = descente(grad=funcp_axb,x_init=[3]*ndim,gamma=0.1,maxiter=100,epsilon=1e-10)
 print("Liste des itérés: ",q1)
 print("Dernier des itérés: ",q1[-1])    
 
+plt.plot(q1[-1])
+plt.plot([1]*ndim)
+plt.show()
 
 
 # %%
