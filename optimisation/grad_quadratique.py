@@ -2,8 +2,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-
 # %%
+# Définition de la forme quadratique demandée et son gradient
 
 ndim = 20
 
@@ -27,27 +27,73 @@ def funcp_axb(x):
     xcible = np.ones(ndim)
     b = A.dot(xcible)
     fp = A.dot(x)-b
-    print(fp)
+    #print(fp)
     return fp
 
+#%%
 
-def descente(grad, x_init, gamma, maxiter, epsilon): #Methode de descente du tp note
+# Méthode de descente à pas fixe
+def descente(grad, x_init, gamma, maxiter, epsilon): 
     x = x_init
     results = [x]
-    for i in range(1, maxiter + 1):
+    A = hilbert_matrix(ndim)
+    iter = 1
+
+    
+    while(iter<maxiter and np.linalg.norm(grad(x)) >= epsilon):
         g = grad(x)
-        if np.linalg.norm(g) <= epsilon:
-            break
-        else:
-            x = x-gamma*g
-            results.append(x)
-    return results
+        x = x-gamma*g
+        results.append(x)
+        iter +=1
+    return results,iter
 
-q1 = descente(grad=funcp_axb,x_init=[3]*ndim,gamma=0.1,maxiter=100,epsilon=1e-10)
-print("Liste des itérés: ",q1)
-print("Dernier des itérés: ",q1[-1])    
 
-plt.plot(q1[-1])
+q1 = descente(grad=funcp_axb,x_init=[3]*ndim,gamma=0.1,maxiter=10000,epsilon=1e-3)
+print("Dernier des itérés: ",q1[0][-1])    
+print("Nb itérations: ",q1[1])
+
+# Afficher les coordonnées du dernier itérés et l'objectif
+plt.plot(q1[0][-1],'o-')
 plt.plot([1]*ndim)
 plt.show()
+
+
+# %%
+# Méthode du gradient à pas optimal pour une forme quadratique
+
+
+def descente_opti(grad, x_init, maxiter,epsilon): 
+    x = x_init
+    results = [x]
+    A = hilbert_matrix(ndim)
+    iter = 1
+
+    hist_grad = []
+
+    while(iter<maxiter and np.linalg.norm(grad(x)) >= epsilon):
+        g = grad(x)
+        hist_grad.append(g)       # Stocker la valeur du gradient 
+        gamma = np.dot(g,g)/np.dot(A.dot(g),g) # Calcul du pas optimal 
+        x = x-gamma*g
+        results.append(x)
+        iter +=1
+    return results, iter, hist_grad
+
+q2 = descente_opti(grad=funcp_axb,x_init=[3]*ndim,maxiter=10000,epsilon=1e-3)
+print("Dernier des itérés: ",q2[0][-1]) 
+print("nombre d'itération :",q2[1])
+
+# Afficher les coordonnées du dernier itérés et l'objectif
+plt.plot(q2[0][-1],'o-')
+plt.plot([1]*ndim)
+plt.show()
+
+
+liste_dot_grad = [np.dot(q2[2][i],q2[2][i+1]) for i in range(len(q2[2])-1)] # <grad(x_k),grad(x_k+1)>
+
+# Afficher en échelle logarithmique 
+#la valeur des produits scalaires des gradients qui tend vers 0
+plt.plot(np.log10(np.abs(l1))) 
+plt.show()
+
 # %%
