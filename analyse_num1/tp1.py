@@ -28,24 +28,27 @@ def D3_u(x,h):
 # 1)
 
 h = [1e-1, 5e-2, 1e-2, 5e-3, 1e-3]  # tableau des h
-order = [1,1,2,3] # tableaud des ordres des méthodes 
+order = [1,1,2,3] # tableau des ordres des méthodes 
 
-# Donne les valeurs de tau pour chaque
+# Listes des valeurs de tau pour chaque méthode pour tous les h
 T_Dp = [np.abs(Dp_u(a,t)-up_a) for t in h] 
 T_Dm = [np.abs(Dm_u(a,t)-up_a) for t in h]
 T_D0 = [np.abs(D0_u(a,t)-up_a) for t in h]
 T_D3 = [np.abs(D3_u(a,t)-up_a) for t in h]
-
-C_Dp = [(Dp_u(a,t)-up_a)/t**order[0] for t in h]
-C_Dm = [(Dm_u(a,t)-up_a)/t**order[1] for t in h]
-C_D0 = [(D0_u(a,t)-up_a)/t**order[2] for t in h]
-C_D3 = [(D3_u(a,t)-up_a)/t**order[3] for t in h]
 
 print(T_Dp)
 print(T_Dm)
 print(T_D0)
 print(T_D3)
 print()
+
+# Listes des différentes constantes (C1,C2,C3,C4)
+# (ça sert à rien)
+C_Dp = [(Dp_u(a,t)-up_a)/t**order[0] for t in h]
+C_Dm = [(Dm_u(a,t)-up_a)/t**order[1] for t in h]
+C_D0 = [(D0_u(a,t)-up_a)/t**order[2] for t in h]
+C_D3 = [(D3_u(a,t)-up_a)/t**order[3] for t in h]
+
 #print(C_Dp)
 #print(C_Dm)
 #print(C_D0)
@@ -55,7 +58,7 @@ print()
 #%%
 # 2)
 
-# Affiche tau en fonction de h
+# Affiche tau en fonction de h pour les 4 méthodes
 plt.plot(h,T_Dp,marker='.',label=r'$D_+u$')
 plt.plot(h,T_Dm,marker='.',label=r'$D_-u$')
 plt.plot(h,T_D0,marker='.',label=r'$D_0u$')
@@ -63,30 +66,31 @@ plt.plot(h,T_D3,marker='.',label=r'$D_3u$')
 plt.legend()
 plt.show()
 
-# Toutes les méthodes convergent, mais la première 
-# est moins précise au début
+# Toutes les méthodes convergent, mais la première est moins précise au début
 
 # %%
 # 3) 
 
-# Affiche en échelle logarithmique tau en fonction de h pour chaques méthodes
-plt.loglog(h,T_Dp,label='T_Dp')
-plt.loglog(h,T_Dm,label='T_Dm')
-plt.loglog(h,T_D0,label='T_D0')
-plt.loglog(h,T_D3,label='T_D3')
+# Affiche en échelle logarithmique tau en fonction de h pour chaque méthode
+plt.loglog(h,T_Dp,label='Tau_Dp')
+plt.loglog(h,T_Dm,label='Tau_Dm')
+plt.loglog(h,T_D0,label='Tau_D0')
+plt.loglog(h,T_D3,label='Tau_D3')
 
-# Affiche sur le même schéma les valeurs de h, h² et h^3
+# Affiche sur le schéma précédent les valeurs de h, h² et h^3
 plt.loglog(h,h,label=r'$h$')
 plt.loglog(h,[i**2 for i in h],label=r'$h^2$')
 plt.loglog(h,[i**3 for i in h],label=r'$h^3$')
 plt.legend()
 plt.show()
 
+# L’erreur se comporte linéairement, avec une pente égale à p, l’ordre de précision de la méthode.
+
 
 # %%
 # 4)
 
-# Affiche les valeurs de p pour chaques méthodes
+# Affiche les valeurs de p pour chaque méthode
 # On remarque bien que plus h est petit, plus la précision est bonne
 p_Dp = [np.log(T_Dp[i]/T_Dp[i+1])/np.log(h[i]/h[i+1]) for i in range(len(h)-1)]
 p_Dm = [np.log(T_Dm[i]/T_Dm[i+1])/np.log(h[i]/h[i+1]) for i in range(len(h)-1)]
