@@ -15,14 +15,14 @@ def hilbert_matrix(n):
             H[i, j] = 1 / (i + j + 1)  # Les indices commencent à 0, donc ajouter 1
     return H
 
-def func_axb(x):
+def func_axb(x): # Renvoie une forme quadratique
     A = hilbert_matrix(ndim)
     xcible = np.ones(ndim)
     b = A.dot(xcible)
     J = 0.5*(A.dot(x)).dot(x)-b.dot(x)
-    return J
+    return J 
 
-def funcp_axb(x):
+def funcp_axb(x):   # Renvoie le gradient de la forme quadratique donnée
     A = hilbert_matrix(ndim)
     xcible = np.ones(ndim)
     b = A.dot(xcible)
@@ -32,14 +32,12 @@ def funcp_axb(x):
 
 #%%
 
-# Méthode de descente à pas fixe
+# Méthode de descente à pas fixe avec un while 
 def descente(grad, x_init, gamma, maxiter, epsilon): 
     x = x_init
     results = [x]
-    A = hilbert_matrix(ndim)
     iter = 1
 
-    
     while(iter<maxiter and np.linalg.norm(grad(x)) >= epsilon):
         g = grad(x)
         x = x-gamma*g
@@ -64,11 +62,12 @@ plt.show()
 
 def descente_opti(grad, x_init, maxiter,epsilon): 
     x = x_init
-    results = [x]
     A = hilbert_matrix(ndim)
-    iter = 1
 
+    results = [x]
     hist_grad = []
+    
+    iter = 1
 
     while(iter<maxiter and np.linalg.norm(grad(x)) >= epsilon):
         g = grad(x)
@@ -85,6 +84,7 @@ print("nombre d'itération :",q2[1])
 
 # Afficher les coordonnées du dernier itérés et l'objectif
 plt.plot(q2[0][-1],'o-')
+# Afficher l'objectif
 plt.plot([1]*ndim)
 plt.show()
 
@@ -92,8 +92,8 @@ plt.show()
 liste_dot_grad = [np.dot(q2[2][i],q2[2][i+1]) for i in range(len(q2[2])-1)] # <grad(x_k),grad(x_k+1)>
 
 # Afficher en échelle logarithmique 
-#la valeur des produits scalaires des gradients qui tend vers 0
-plt.plot(np.log10(np.abs(l1))) 
+# la valeur des produits scalaires des gradients qui tend vers 0
+plt.plot(np.log10(np.abs(liste_dot_grad))) 
 plt.show()
 
 # %%
