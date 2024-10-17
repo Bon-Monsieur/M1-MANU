@@ -58,16 +58,17 @@ C = CoefDF(k=4,xbar=1,pt=pt)
 print(C)
 # La méthode est précise d'ordre 1 ? 
 
-h = [1e-1, 5e-2, 1e-2, 5e-3, 1e-3]
+h = [5e-1, 10e-2, 5e-2, 10e-3, 5e-3]
 
 def u(x):
     return np.sin(x)
 
 def formule(h,xbar):
-    l= [C[i]*np.sin(pt[i]) for i in range(len(pt))]
+    pt = np.array([xbar-2*h,xbar-h,xbar,xbar+h,xbar+2*h])
+    l= [C[i]*np.sin(pt[i])/h**4 for i in range(len(pt))]
     return sum(l)
 
-tau = [np.abs(formule(xbar,t)-np.sin(1)) for t in h] 
+tau = [np.abs(formule(h,xbar)-np.sin(1)) for h in h] 
 plt.loglog(h,tau,label='Tau')
 plt.legend()
 plt.show()
