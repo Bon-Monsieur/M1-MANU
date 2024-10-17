@@ -1,5 +1,8 @@
 #%%
 
+#  L = J + <lambda,E>
+# Grad(L) = 0 <=> Grad(J) + lambda*Grad(E) = 0
+
 import numpy as np
 from scipy.optimize import fsolve, root 
 
