@@ -38,31 +38,51 @@ def finite_difference_gradient(f, x, h=1e-5):
 
 
 # Descente de gradient avec grad_Jt
-def descente(grad, x_init, gamma, maxiter, epsilon): 
+def descente(fun, x_init, gamma, maxiter, epsilon): 
     x = x_init
     results = [x]
     iter = 1
 
-    while(iter<maxiter and np.linalg.norm(grad(Jt,x)) >= epsilon):
-        g = grad(Jt,x)
+    while(iter<maxiter and np.linalg.norm(finite_difference_gradient(fun,x)) >= epsilon):
+        g = finite_difference_gradient(fun,x)
         x = x-gamma*g
         results.append(x)
         iter +=1
-    return results,iter
+    return results
+
+def Penalisation(func, x, h, rho, max_iter):
+    return descente(func, x, h, rho, max_iter)
 
 
 ndim = 3 
 Alphas = np.linspace(0, 30, num=100)
 
-q1 = descente(grad=finite_difference_gradient,x_init=[3]*ndim,gamma=0.01,maxiter=10000,epsilon=1e-6)
-print("Dernier des itérés: ",q1[0][-1])    
-print("Nb itérations: ",q1[1])
+n = 3
+x0 = np.ones(n)
+rho = 1e-3
+max_iter = 1000
 
-Jalpha = [J(x_alpha) for x_alpha in q1[0]]
-Ealphha = [h1(x_alpha) for x_alpha in q1[0]]
+X_alphas = np.array([Penalisation(tildJ_alpha([alpha]), x0, 1e-1, rho, max_iter) for alpha in Alphas])
 
-plt.plot(Jalpha,Ealphha)
 
+
+E_alphas = [h1(x) for x in X_alphas]
+J_alphas = [J(x) for x in X_alphas]
+# plt.plot(E_alphas, J_alphas, 'o')
+plt.plot(Alphas, J_alphas, 'o',)
+# plt.scatter(E_alphas[0], J_alphas[0], color='red')
+plt.scatter(Alphas[0], J_alphas[0], color='red', s=30 )
+# plt.xlabel("E alpha")
+plt.xlabel("Alpha")
+plt.ylabel("J alpha")
+plt.tight_layout()
+plt.legend()
+# plt.figure()
+plt.plot(Alphas, [np.linalg.norm(x-np.array([-1,1,-1])) for x in X_alphas], 'o',label="dist to opt")
+plt.xlabel("alpha")
+plt.ylabel("dist to J theoretical min")
+plt.tight_layout()
+plt.legend()
 
 
 
