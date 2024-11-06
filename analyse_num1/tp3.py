@@ -13,7 +13,7 @@ h = (b-a)/nint
 x = np.arange(a,b+h,h)
 
 #print(x)
-#print(len(x))
+print(len(x))
 
 def poisson1D(x,f):
     
@@ -26,7 +26,7 @@ def poisson1D(x,f):
     A[0,2] = -1/2
     
     A = A*(1/h**2)
-    #print(A)
+    #print(A.shape)
     
     F = [0]
     for i in range(1,len(x)-1):
@@ -42,15 +42,30 @@ def poisson1D(x,f):
     print(Uh)
     return Uh
 
-
+# Solution approchée
 Uh = poisson1D(x,np.exp)
 
+#Solution analytique
+v = np.linspace(a,b,100)
+
+def f(x):
+    return np.exp(x)-np.exp(b) + (alpha-np.exp(a))*(x-b) + beta
+
+fv = [f(x) for x in v]
 
 # Création du graphique
 plt.plot(x, Uh, marker='.') 
 plt.title("Solution numérique avec 21 points")
+plt.plot(v, fv, marker='.') 
 
 # Affichage
 plt.show()
+
+
+# Calcul de l'erreur
+Uex = np.array([f(x) for x in x])
+E = Uh - Uex
+print(E)
+
 
 # %%
