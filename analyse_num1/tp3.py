@@ -1,22 +1,26 @@
 #%%
 import numpy as np
 import matplotlib.pyplot as plt 
-# %%
 
-a = 0
-b = 3
-alpha = -5
-beta = 3 
-nint = 20
 
-h = (b-a)/nint
-x = np.arange(a,b+h,h)
+def exact(x):
+    return np.exp(x)-np.exp(b) + (alpha-np.exp(a))*(x-b) + beta
 
 #print(x)
-print(len(x))
+#print(len(x))
 
-def poisson1D(x,f):
+def poisson1D(nint,f,opt_plot):
+
+    a = 0
+    b = 3
+    alpha = -5
+    beta = 3 
     
+    h = (b-a)/nint
+    x = np.arange(a,b+h,h)
+    
+    
+    # Creation de la matrice A
     A = -2*np.identity(len(x)-1)
     b = [1]*(len(x)-2)
     np.fill_diagonal(A[1:],b)
@@ -28,44 +32,58 @@ def poisson1D(x,f):
     A = A*(1/h**2)
     #print(A.shape)
     
+    # Creation du vecteur F
     F = [0]
     for i in range(1,len(x)-1):
         F.append(f(x[i]))
     #print(len(F))
     
+    # Creation du vecteur Bc
     Bc = np.zeros(len(x)-1)
     Bc[0] = alpha/h
     Bc[-1] = -beta/h**2
 
+    # Calcul de la solution 
     Uh = np.linalg.inv(A).dot(F+Bc)
     Uh = np.append(Uh,beta)
-    print(Uh)
-    return Uh
+    #print(Uh)
+
+    # Calcul de l'erreur
+    Uex = np.array([exact(x) for x in x])
+    
+    E = Uh - Uex
+    err = max(np.abs(E))
+
+    if opt_plot == 1 :
+
+        # Création du graphique
+        plt.plot(x, Uh, marker='.') 
+        plt.title("Solution numérique avec "+str(nint+1)+" points")
+        plt.show()
+
+    
+
+    return Uh,err
+
+
+
 
 # Solution approchée
-Uh = poisson1D(x,np.exp)
+#Uh, err = poisson1D(nint=10,f=np.exp,opt_plot=0)
+#print("erreur:",err)
 
-#Solution analytique
-v = np.linspace(a,b,100)
-
-def f(x):
-    return np.exp(x)-np.exp(b) + (alpha-np.exp(a))*(x-b) + beta
-
-fv = [f(x) for x in v]
-
-# Création du graphique
-plt.plot(x, Uh, marker='.') 
-plt.title("Solution numérique avec 21 points")
-plt.plot(v, fv, marker='.') 
-
-# Affichage
-plt.show()
+# Tracer le graphique en log-log
+hvec = [10,20,40,80]
+err_vec = []
+for nint in hvec:
+    err_vec.append(poisson1D(nint=nint,f=np.exp,opt_plot=0)[1])
 
 
-# Calcul de l'erreur
-Uex = np.array([f(x) for x in x])
-E = Uh - Uex
-print(E)
+print(len(err_vec))
+print(len(hvec))
+plt.loglog(hvec,err_vec)
 
 
-# %%
+
+
+    # %%
