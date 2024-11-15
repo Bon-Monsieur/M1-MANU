@@ -5,7 +5,7 @@ import threading
 import time as pytime
 
 def plot_progression_with_controls(Uh_history, X, Y, plot_type='3d'):
-    fig = plt.figure(figsize=(16, 8))
+    fig = plt.figure(figsize=(8, 4))
     vmax = np.max(Uh_history[0][1])
     zlim = vmax  # Set z-axis limit to a fixed maximum value
     
