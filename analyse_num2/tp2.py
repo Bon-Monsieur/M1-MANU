@@ -5,7 +5,7 @@ from matplotlib.widgets import Button
 import threading
 import time as pytime
 from plot_solution import plot_progression_with_controls
-'''
+
 def schema_chaleur2D_explicite(u0, mesh_dimensions, T, D=2.2e-5, CFL=1, every=1):
     m, p = mesh_dimensions
     if p < 1 or m < 1:
@@ -44,7 +44,7 @@ def schema_chaleur2D_explicite(u0, mesh_dimensions, T, D=2.2e-5, CFL=1, every=1)
             Uh_history.append((t, Uh.copy()))
 
     return Uh, Uh_history
-'''
+
 
 
 def u0(x, y):
@@ -52,11 +52,11 @@ def u0(x, y):
     return np.where((0.4 <= x) & (x <= 0.6) & (0.4 <= y) & (y <= 0.6), 2.0, 0.0)
 
 
-'''
+
 # Run the simulation
-T = 300
+T = 100
 D = 2.2e-5  # Thermal diffusivity of air in m^2/s
-mesh_dimensions = (40, 40)
+mesh_dimensions = (50, 50)
 CFL = 0.45
 final_temperature_distribution, Uh_history = schema_chaleur2D_explicite(
     u0, mesh_dimensions, T=T, D=D, CFL=CFL, every=1
@@ -70,11 +70,11 @@ X, Y = np.meshgrid(x, y)
 
 # Plot the progression of temperature distributions with interactive controls
 #plot_progression_with_controls(Uh_history, X, Y, plot_type='3d')
-'''
+
 
 
 # %%
-
+'''
 def define_discretisation_matrix(lambda_x,lambda_y,m,p):
 
     n_blocks = p    # Nombre de blocs principaux sur la diagonale
@@ -166,3 +166,4 @@ X, Y = np.meshgrid(x, y)
 plot_progression_with_controls(Uh_history, X, Y, plot_type='3d')
 
 # %%
+'''
