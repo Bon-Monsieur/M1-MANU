@@ -11,15 +11,26 @@ Text = 5.0
 Trad = 40.0
 
 # La fonction phi demandée, qui calcule la chaleur à rajouter si on se trouve dans le radiateur
-def phi(x,y,val):
-    if (0.1<=x<=0.2) and (0.4<=y<=0.6):
-        return (Trad - val)**3
-    else:
-        return 0
+def phi(Uh, X, Y):
+    # Masques pour les conditions spatiales
+    mask = (0 <= X) & (X <= 0.1) & (0.4 <= Y) & (Y <= 0.6)
+    # Appliquer la condition de phi
+    result = np.zeros_like(Uh)
+    result[mask] = (Trad - Uh[mask])**3
+    return result
+
+
+def fenetre(Uh, X, Y):
+    # Masques pour les conditions spatiales
+    mask = (X == 0) & (0.4 <= Y) & (Y <= 0.6)
+    # Modifier les valeurs dans Uh uniquement là où le masque est vrai
+    Uh[mask] = 5
+    return Uh
 
 
 
-def schema_chaleur2D_explicite(u0, mesh_dimensions, T, D=1, CFL=0.4,Nt_print_max=10):
+
+def schema_chaleur2D_explicite(mesh_dimensions, T, D=1, CFL=0.4,Nt_print_max=10):
     m, p = mesh_dimensions
     if p < 1 or m < 1:
         print("Incorrect mesh dimensions")
@@ -39,14 +50,12 @@ def schema_chaleur2D_explicite(u0, mesh_dimensions, T, D=1, CFL=0.4,Nt_print_max
     y = np.linspace(0, 1.0, p)
     Ny = len(y)
     X, Y = np.meshgrid(x, y, indexing="ij")
-    Uh = np.zeros((m,p))
 
+    # Initialisation au temps t=0 avec u(x,t) = x0(x) de manière vectorisée
+    Uh = np.full((m, p), 20.0)  # Initialiser tout à 20°C
+    mask_fenetre = (X == 0) & (0.4 <= Y) & (Y <= 0.6)  # Détecter la fenêtre
+    Uh[mask_fenetre] = 5  # Appliquer la condition de la fenêtre
 
-    # Initialisation au temps t=0 avec u(x,t) = x0(x)
-    for i in range(Nx):
-        for j in range(Ny):
-            Uh[i,j] = u0(x[i],y[j])
-    #print(Uh)
 
     t = 0
     it = 0
@@ -63,13 +72,14 @@ def schema_chaleur2D_explicite(u0, mesh_dimensions, T, D=1, CFL=0.4,Nt_print_max
             lx = D * dt / dx**2
             ly = D * dt / dy**2
         t += dt
-        for i in range(1, m-1):
-            for j in range(1, p-1):
-                Uh[i, j] = (1 - 2 * (lx + ly)) * uold[i, j] + \
-                           lx * (uold[i + 1, j] + uold[i - 1, j]) + \
-                           ly * (uold[i, j + 1] + uold[i, j - 1]) + \
-                           dt * phi(x[i],y[j],uold[i,j])
-        uold[:]=Uh[:]
+        Uh[1:-1, 1:-1] = (
+            Uh[1:-1, 1:-1]
+            + lx * (Uh[2:, 1:-1] + Uh[:-2, 1:-1] - 2 * Uh[1:-1, 1:-1])
+            + ly * (Uh[1:-1, 2:] + Uh[1:-1, :-2] - 2 * Uh[1:-1, 1:-1])
+            + dt * phi(Uh[1:-1, 1:-1], X[1:-1, 1:-1], Y[1:-1, 1:-1])
+            )
+
+        #uold[:]=Uh[:]
         
         # Apply boundary conditions without corners
         Uh[0, 1:-1] = Uh[1, 1:-1] 
@@ -84,10 +94,7 @@ def schema_chaleur2D_explicite(u0, mesh_dimensions, T, D=1, CFL=0.4,Nt_print_max
         Uh[-1,-1] = (Uh[-1,-2]+Uh[-2,-1])/2
 
         # Remettre la fenetre dans Uh
-        for i in range(Nx):
-            for j in range(Ny):
-                Uh[i,j] = fenetre(x[i],y[j],Uh[i,j])
-
+        Uh = fenetre(Uh,X,Y)
     
         # Store Nt_print_max iterations
         if it % ((T//dt)//Nt_print_max) == 0:
@@ -99,26 +106,14 @@ def schema_chaleur2D_explicite(u0, mesh_dimensions, T, D=1, CFL=0.4,Nt_print_max
     return Uh, Uh_history
 
 
-# La température vaut 20 degrés partout sauf aux coordonnées de la fenêtre
-def u0(x, y):
-    if ((x==0) and (0.4 <= y) and (y <= 0.6)):
-        return 5
-    else:
-        return 20
-
-def fenetre(x,y,val):
-    if ((x==0) and (0.4 <= y) and (y <= 0.6)):
-        return 5
-    else:
-        return val
 
 # Run the simulation
-T = 1
+T = 3
 D = 1  # Thermal diffusivity of air in m^2/s
-mesh_dimensions = (40,40)
+mesh_dimensions = (50,50)
 CFL = 0.45
 final_temperature_distribution, Uh_history = schema_chaleur2D_explicite(
-    u0, mesh_dimensions, T=T, D=D, CFL=CFL, Nt_print_max=20
+    mesh_dimensions, T=T, D=D, CFL=CFL, Nt_print_max=20
 )
 
 # Generate the grid for plotting

@@ -6,7 +6,6 @@ import time as pytime
 
 def plot_progression_with_controls(Uh_history, X, Y, plot_type='3d'):
     fig = plt.figure(figsize=(8, 4))
-    #vmax = np.max(Uh_history[0][1])
     vmax = 40
     zlim = vmax  # Set z-axis limit to a fixed maximum value
     
@@ -20,7 +19,18 @@ def plot_progression_with_controls(Uh_history, X, Y, plot_type='3d'):
     # Set initial plot
     current_index = 0  # Integer to track the current iteration
     playing = [False]  # Mutable flag to control play/stop
+
+    # Function to calculate statistics
+    def calculate_stats(Uh):
+        mean = np.mean(Uh)
+        min_val = np.min(Uh)
+        max_val = np.max(Uh)
+        std_dev = np.std(Uh)
+        return mean, min_val, max_val, std_dev
+
+    # Initialize plot and stats
     time, Uh = Uh_history[current_index]
+    mean, min_val, max_val, std_dev = calculate_stats(Uh)
     if plot_type == '3d':
         surf = ax.plot_surface(X, Y, Uh, cmap='hot', vmin=0, vmax=vmax)
         ax.set_zlim(0, zlim)
@@ -36,8 +46,16 @@ def plot_progression_with_controls(Uh_history, X, Y, plot_type='3d'):
         ax.set_ylabel('Y (m)')
         ax.set_title(f'2D Temperature Distribution at t = {time:.2f} s')
 
+    # Display statistics
+    stats_text = fig.text(
+        0.1, 0.95,
+        f'Mean: {mean:.2f}, Min: {min_val:.2f}, Max: {max_val:.2f}, Std Dev: {std_dev:.2f}',
+        color='blue', fontsize=10
+    )
+
     # Function to update the plot
     def update_plot():
+        nonlocal stats_text
         time, Uh = Uh_history[current_index]
         ax.clear()  # Clear the previous plot
         if plot_type == '3d':
@@ -54,6 +72,12 @@ def plot_progression_with_controls(Uh_history, X, Y, plot_type='3d'):
             ax.set_xlabel('X (m)')
             ax.set_ylabel('Y (m)')
             ax.set_title(f'2D Temperature Distribution at t = {time:.2f} s')
+        
+        # Update statistics
+        mean, min_val, max_val, std_dev = calculate_stats(Uh)
+        stats_text.set_text(
+            f'Mean: {mean:.2f}, Min: {min_val:.2f}, Max: {max_val:.2f}, Std Dev: {std_dev:.2f}'
+        )
         plt.draw()
 
     # Button to go to the next iteration
