@@ -30,7 +30,7 @@ def fenetre(Uh, X, Y):
 
 
 
-def schema_chaleur2D_explicite(mesh_dimensions, T, D=1, CFL=0.4,Nt_print_max=10):
+def schema_chaleur2D_explicite(mesh_dimensions, T, D=1, CFL=0.45,Nt_print_max=10):
     m, p = mesh_dimensions
     if p < 1 or m < 1:
         print("Incorrect mesh dimensions")
@@ -79,26 +79,41 @@ def schema_chaleur2D_explicite(mesh_dimensions, T, D=1, CFL=0.4,Nt_print_max=10)
             + dt * phi(Uh[1:-1, 1:-1], X[1:-1, 1:-1], Y[1:-1, 1:-1])
             )
 
-        #uold[:]=Uh[:]
-        
-        # Apply boundary conditions without corners
+        '''
+        # Apply boundary conditions without corners (order = 1) 
         Uh[0, 1:-1] = Uh[1, 1:-1] 
         Uh[-1, 1:-1] = Uh[-2, 1:-1]
         Uh[1:-1,0] = Uh[1:-1,1]
         Uh[1:-1,-1] = Uh[1:-1,-2]
-
-        # Calculer les coins
+        '''
+        # Apply boundary conditions without corners (order = 2)
+        Uh[0, 1:-1] = 4/3*Uh[1, 1:-1] -1/3*Uh[2,1:-1]
+        Uh[-1, 1:-1] = 4/3*Uh[-2, 1:-1] -1/3*Uh[-3,1:-1]
+        Uh[1:-1,0] = 4/3*Uh[1:-1,1] - 1/3*Uh[1:-1,2]
+        Uh[1:-1,-1] = 4/3*Uh[1:-1,-2] - 1/3*Uh[1:-1,-3]
+        
+        '''
+        # Calculer les coins (order = 1)
         Uh[0,0] = (Uh[0,1]+Uh[1,0])/2
         Uh[-1,0] = (Uh[-1,1]+Uh[-2,0])/2
         Uh[0,-1] = (Uh[0,-2]+Uh[1,-1])/2
         Uh[-1,-1] = (Uh[-1,-2]+Uh[-2,-1])/2
+        
+        '''
+        # Calculer les coins (order = 2)
+        Uh[0,0] = (4/3*Uh[0,1]-1/3*Uh[0,2] + 4/3*Uh[1,0] - 1/3*Uh[2,0])/2
+        Uh[-1,0] = (4/3*Uh[-2,0]-1/3*Uh[-3,0] + 4/3*Uh[-1,1] - 1/3*Uh[-1,2])/2
+        Uh[0,-1] = (4/3*Uh[0,-2]-1/3*Uh[0,-3] + 4/3*Uh[1,-1] - 1/3*Uh[2,-1])/2
+        Uh[-1,-1] = (4/3*Uh[-2,-1]-1/3*Uh[-3,-1] + 4/3*Uh[-1,-2] - 1/3*Uh[-1,-3])/2
+        
+
 
         # Remettre la fenetre dans Uh
         Uh = fenetre(Uh,X,Y)
     
         # Store Nt_print_max iterations
-        if it % ((T//dt)//Nt_print_max) == 0:
-            Uh_history.append((t, Uh.copy()))
+        #if it % ((T//dt)//Nt_print_max) == 0:
+            #Uh_history.append((t, Uh.copy()))
         
         #print(len(Uh_history))
     Uh_history.append((t, Uh.copy())) #Save la solution au temps final T

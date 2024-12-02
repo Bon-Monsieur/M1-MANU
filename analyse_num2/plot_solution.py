@@ -36,21 +36,21 @@ def plot_progression_with_controls(Uh_history, X, Y, plot_type='3d'):
         ax.set_zlim(0, zlim)
         ax.set_xlabel('X (m)')
         ax.set_ylabel('Y (m)')
-        ax.set_zlabel('Temperature')
-        ax.set_title(f'3D Temperature Distribution at t = {time:.2f} s')
+        ax.set_zlabel('Température')
+        ax.set_title(f'Distribution 3D de la température à t = {time:.2f} s')
         cbar = fig.colorbar(surf, ax=ax, shrink=0.5, aspect=5)
     elif plot_type == 'height':
         cp = ax.contourf(X, Y, Uh, levels=50, cmap='hot', vmin=0, vmax=vmax)
         cbar = fig.colorbar(cp, ax=ax)
         ax.set_xlabel('X (m)')
         ax.set_ylabel('Y (m)')
-        ax.set_title(f'2D Temperature Distribution at t = {time:.2f} s')
+        ax.set_title(f'Distribution 2D de la température à t = {time:.2f} s')
 
-    # Display statistics
+    # Display statistics in French
     stats_text = fig.text(
-        0.1, 0.95,
-        f'Mean: {mean:.2f}, Min: {min_val:.2f}, Max: {max_val:.2f}, Std Dev: {std_dev:.2f}',
-        color='blue', fontsize=10
+        0.05, 0.85,
+        f'Moyenne : {mean:.2f}°C\nMin : {min_val:.2f}°C\nMax : {max_val:.2f}°C\nÉcart-type : {std_dev:.2f}°C',
+        color='blue', fontsize=10, verticalalignment='top', horizontalalignment='left'
     )
 
     # Function to update the plot
@@ -63,20 +63,20 @@ def plot_progression_with_controls(Uh_history, X, Y, plot_type='3d'):
             ax.set_zlim(0, zlim)  # Keep z-axis limit fixed
             ax.set_xlabel('X (m)')
             ax.set_ylabel('Y (m)')
-            ax.set_zlabel('Temperature')
-            ax.set_title(f'3D Temperature Distribution at t = {time:.2f} s')
+            ax.set_zlabel('Température')
+            ax.set_title(f'Distribution 3D de la température à t = {time:.2f} s')
             cbar.update_normal(surf)
         elif plot_type == 'height':
             cp = ax.contourf(X, Y, Uh, levels=50, cmap='hot', vmin=0, vmax=vmax)
             cbar.update_normal(cp)
             ax.set_xlabel('X (m)')
             ax.set_ylabel('Y (m)')
-            ax.set_title(f'2D Temperature Distribution at t = {time:.2f} s')
+            ax.set_title(f'Distribution 2D de la température à t = {time:.2f} s')
         
         # Update statistics
         mean, min_val, max_val, std_dev = calculate_stats(Uh)
         stats_text.set_text(
-            f'Mean: {mean:.2f}, Min: {min_val:.2f}, Max: {max_val:.2f}, Std Dev: {std_dev:.2f}'
+            f'Moyenne : {mean:.2f}°C\nMin : {min_val:.2f}°C\nMax : {max_val:.2f}°C\nÉcart-type : {std_dev:.2f}°C'
         )
         plt.draw()
 
