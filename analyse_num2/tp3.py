@@ -13,7 +13,7 @@ Trad = 40.0
 # La fonction phi demandée, qui calcule la chaleur à rajouter si on se trouve dans le radiateur
 def phi(Uh, X, Y):
     # Masques pour les conditions spatiales
-    mask = (0 <= X) & (X <= 0.1) & (0.4 <= Y) & (Y <= 0.6)
+    mask = (0.45 <= X) & (X <= 0.55) & (0.4 <= Y) & (Y <= 0.6)
     # Appliquer la condition de phi
     result = np.zeros_like(Uh)
     result[mask] = (Trad - Uh[mask])**3
