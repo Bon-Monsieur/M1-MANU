@@ -46,9 +46,7 @@ def schema_chaleur2D_explicite(mesh_dimensions, T, D=1, CFL=0.45,Nt_print_max=10
     
     # Discrétisation de l'espace (création du mesh)
     x = np.linspace(0, 1.0, m)
-    Nx = len(x)
     y = np.linspace(0, 1.0, p)
-    Ny = len(y)
     X, Y = np.meshgrid(x, y, indexing="ij")
 
     # Initialisation au temps t=0 avec u(x,t) = x0(x) de manière vectorisée
@@ -60,18 +58,24 @@ def schema_chaleur2D_explicite(mesh_dimensions, T, D=1, CFL=0.45,Nt_print_max=10
     t = 0
     it = 0
 
+    # Variable d'affichage des solutions 
     dt_print = T/(Nt_print_max-1)
 
+    # Historique des solutions 
     Uh_history = [(t, Uh.copy())]
     uold=Uh
 
     while t < T:
         it += 1
+
+        # Dernière itération
         if T - t < dt:
             dt = T - t
             lx = D * dt / dx**2
             ly = D * dt / dy**2
+
         t += dt
+
         Uh[1:-1, 1:-1] = (
             Uh[1:-1, 1:-1]
             + lx * (Uh[2:, 1:-1] + Uh[:-2, 1:-1] - 2 * Uh[1:-1, 1:-1])
@@ -79,27 +83,14 @@ def schema_chaleur2D_explicite(mesh_dimensions, T, D=1, CFL=0.45,Nt_print_max=10
             + dt * phi(Uh[1:-1, 1:-1], X[1:-1, 1:-1], Y[1:-1, 1:-1])
             )
 
-        '''
-        # Apply boundary conditions without corners (order = 1) 
-        Uh[0, 1:-1] = Uh[1, 1:-1] 
-        Uh[-1, 1:-1] = Uh[-2, 1:-1]
-        Uh[1:-1,0] = Uh[1:-1,1]
-        Uh[1:-1,-1] = Uh[1:-1,-2]
-        '''
+        
         # Apply boundary conditions without corners (order = 2)
         Uh[0, 1:-1] = 4/3*Uh[1, 1:-1] -1/3*Uh[2,1:-1]
         Uh[-1, 1:-1] = 4/3*Uh[-2, 1:-1] -1/3*Uh[-3,1:-1]
         Uh[1:-1,0] = 4/3*Uh[1:-1,1] - 1/3*Uh[1:-1,2]
         Uh[1:-1,-1] = 4/3*Uh[1:-1,-2] - 1/3*Uh[1:-1,-3]
         
-        '''
-        # Calculer les coins (order = 1)
-        Uh[0,0] = (Uh[0,1]+Uh[1,0])/2
-        Uh[-1,0] = (Uh[-1,1]+Uh[-2,0])/2
-        Uh[0,-1] = (Uh[0,-2]+Uh[1,-1])/2
-        Uh[-1,-1] = (Uh[-1,-2]+Uh[-2,-1])/2
         
-        '''
         # Calculer les coins (order = 2)
         Uh[0,0] = (4/3*Uh[0,1]-1/3*Uh[0,2] + 4/3*Uh[1,0] - 1/3*Uh[2,0])/2
         Uh[-1,0] = (4/3*Uh[-2,0]-1/3*Uh[-3,0] + 4/3*Uh[-1,1] - 1/3*Uh[-1,2])/2
@@ -107,17 +98,16 @@ def schema_chaleur2D_explicite(mesh_dimensions, T, D=1, CFL=0.45,Nt_print_max=10
         Uh[-1,-1] = (4/3*Uh[-2,-1]-1/3*Uh[-3,-1] + 4/3*Uh[-1,-2] - 1/3*Uh[-1,-3])/2
         
 
-
         # Remettre la fenetre dans Uh
         Uh = fenetre(Uh,X,Y)
     
         # Store Nt_print_max iterations
-        #if it % ((T//dt)//Nt_print_max) == 0:
-            #Uh_history.append((t, Uh.copy()))
+        if it % ((T//dt)//Nt_print_max) == 0:
+            Uh_history.append((t, Uh.copy()))
         
-        #print(len(Uh_history))
-    Uh_history.append((t, Uh.copy())) #Save la solution au temps final T
-    # End while 
+    #Save la solution au temps final T
+    Uh_history.append((t, Uh.copy())) 
+    
     return Uh, Uh_history
 
 
