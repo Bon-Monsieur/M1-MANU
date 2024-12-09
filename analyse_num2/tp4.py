@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 
 
-def schema_VF(nb_maille,u0,a,b,f,fp,schema,cfl=0.5,T=1,periodique=0):
+def schema_VF(nb_maille,u0,a,b,f,fp,schema,cfl=0.5,T=1,periodique=0,convexe=1):
 
     m = nb_maille
     x = np.linspace(a,b,m+1)
@@ -38,8 +38,10 @@ def schema_VF(nb_maille,u0,a,b,f,fp,schema,cfl=0.5,T=1,periodique=0):
         it += 1
         
         # Calcul du nouveau pas de temps
-        Cn = max([np.abs(fp(ui)) for ui in Uh])
-        #Cn = 2.34
+        if convexe == 1:
+            Cn = max([np.abs(fp(ui)) for ui in Uh])
+        if convexe != 1:
+            Cn = 2.34
         dt =  cfl * dx/Cn
         
         # Derniere iteration
@@ -132,31 +134,31 @@ def fncp(u):
 
 
 # Newton
-def Newton(x0,x,t, tol=1e-3, max_iter=100):
+def Newton(x0,x,t, tol=1e-3, max_iter=1000):
     
     tab = [x0] # Stocke les xk 
 
     # Fonction dont il faut trouver le 0
     def g(X):
-        return  2*np.pi*np.cos(2*np.pi*X)*t + X - x
+        return  np.sin(2*np.pi*X)*t + X - x
 
     def gp(X):
-        return -4*np.pi**2*np.sin(2*np.pi*X)*t + 1 
+        return 2*np.cos(2*np.pi*X)*t + 1 
 
     xk = x0
     for i in range(max_iter):
+        print(xk)
         gx = g(xk)
         gpx = gp(xk)
         #print(gp(x))
         if np.abs(g(tab[i-1]) - g(tab[i])) < tol and i>1:  # Critère de convergence
-            
             return xk
         
         if gpx == 0:  # Vérifie si la dérivée est nulle
             raise ValueError("La dérivée s'annule, la méthode de Newton ne peut pas continuer.")
         
         xk = xk - gx / gpx  # Mise à jour de x selon la méthode de Newton
-        tab.append(xk.copy())
+        tab.append(xk)
     raise ValueError("La méthode de Newton n'a pas convergé après le nombre maximal d'itérations.")
 
 
@@ -166,48 +168,65 @@ def Newton(x0,x,t, tol=1e-3, max_iter=100):
 # Variables 
 a = 0
 b = 1
-nb_maille = 100
-T = 1/2/np.pi *0.9
-period = 1 # 1 if u0 periodique else 0
+nb_maille = 10
+T = 1 / (2 * np.pi) * 0.9
+period = 1  # 1 si u0 périodique sinon 0
 u0 = u0_td
 
-# Def du maillage
-x = np.linspace(a, b, nb_maille+1)
-dx = (b-a)/nb_maille
-x_milieu = np.linspace(a+dx/2,b-dx/2,nb_maille)
+# Définir le maillage
+x = np.linspace(a, b, nb_maille + 1)
+dx = (b - a) / nb_maille
+x_milieu = np.linspace(a + dx / 2, b - dx / 2, nb_maille)
 
+# Calculer les solutions avec différentes méthodes
+Uh_LFg = schema_VF(nb_maille, u0, a, b, f, fp, "LFg", T=T, periodique=period)
+Uh_LFl = schema_VF(nb_maille, u0, a, b, f, fp, "LFl", T=T, periodique=period)
+Uh_MR = schema_VF(nb_maille, u0, a, b, f, fp, "MR", T=T, periodique=period)
 
-Uh_LFg = schema_VF(nb_maille, u0, a, b, f, fp, "LFg", T=T,periodique=period)
-Uh_LFl = schema_VF(nb_maille, u0, a, b, f, fp, "LFl", T=T,periodique=period)
-Uh_MR = schema_VF(nb_maille, u0, a, b, f, fp, "MR", T=T,periodique=period)
-
+# Tracer les résultats
 plt.plot(x_milieu, Uh_LFg, label='LFg')
 plt.plot(x_milieu, Uh_LFl, label='LFl')
 plt.plot(x_milieu, Uh_MR, label='MR')
 
-plt.plot(x_milieu, [u0_td(xi) for xi in x_milieu], label='initiale',linestyle='--')
+# Ajouter un titre avec T formaté en LaTeX
+plt.title(rf"$T = {T:.2f}, \, \text{{Nb mailles}} = {nb_maille}$")
+
+
+# Solutions initiales 
+#plt.plot(x_milieu, [u0_td(xi) for xi in x_milieu], label='initiale',linestyle='--')
 #plt.plot(x_milieu, [u0_cours(xi) for xi in x_milieu], label='initiale', linestyle=':')
 
-X = [Newton(0.8,xi,T) for xi in x_milieu]
-print(X)
-print(x_milieu)
-plt.plot(x_milieu, [u0_td(xi) for xi in X], label='exacte')
-#plt.plot(x_milieu, [solution_exacte_cours(xi,T) for xi in x_milieu], label='Solution exacte', linestyle='--')
+# Solutions exactes
+#X = [Newton(0.9,xi,T) for xi in x_milieu]
+#plt.plot(x_milieu, [u0_td(xi) for xi in X], label='exacte')
+#plt.plot(x_milieu, [solution_exacte_cours(xi,T) for xi in x_milieu], label='exacte', linestyle='--')
+
+
+# Solution exacte t = 4*tc
+fichier = 'burgers_t=4tc.dat'
+data = np.loadtxt(fichier)
+
+# Tracer les points
+# Extraire les colonnes
+x = data[:, 0]  # Colonne de gauche (abscisses)
+y = data[:, 1]  # Colonne de droite (ordonnées)
+plt.plot(x, y, '--',label=r'exacte $t=4*t_c$')
+
 
 plt.legend()
 plt.show()
 
-#plt.plot(x_milieu, [u0_td(test(xi,T)) for xi in x_milieu], label='initiale')
 
 
 
-# %%
+# %%  
 # Def variables
 a = -1
 b = 1
-nb_maille = 10
+nb_maille = 200
 T = 0.4
 period = 1 # 1 if u0 periodique else 0
+convexe = 0 # 1 if flux convexe else 0
 u0 = u0_nc
 
 # Def maillage
@@ -215,14 +234,17 @@ x = np.linspace(a, b, nb_maille+1)
 dx = (b-a)/nb_maille
 x_milieu = np.linspace(a+dx/2,b-dx/2,nb_maille)
 
-
-Uh_LFg = schema_VF(nb_maille, u0, a, b, fnc, fncp, "LFg", T=T,periodique=period)
-Uh_LFl = schema_VF(nb_maille, u0, a, b, fnc, fncp, "LFl", T=T,periodique=period)
-Uh_MR = schema_VF(nb_maille, u0, a, b, fnc, fncp, "MR", T=T,periodique=period)
+# FLUX  NON CONVEXE
+Uh_LFg = schema_VF(nb_maille, u0, a, b, fnc, fncp, "LFg", T=T,periodique=period,convexe=convexe)
+Uh_LFl = schema_VF(nb_maille, u0, a, b, fnc, fncp, "LFl", T=T,periodique=period,convexe=convexe)
+Uh_MR = schema_VF(nb_maille, u0, a, b, fnc, fncp, "MR", T=T,periodique=period,convexe=convexe)
 
 plt.plot(x_milieu, Uh_LFg, label='LFg')
 plt.plot(x_milieu, Uh_LFl, label='LFl')
 plt.plot(x_milieu, Uh_MR, label='MR')
+
+# Ajouter un titre avec T formaté en LaTeX
+plt.title(rf"$T = {T:.2f}, \, \text{{Nb mailles}} = {nb_maille}$")
 
 # Afficher solution prof
 fichier = 'buckley.dat'
@@ -232,7 +254,7 @@ data = np.loadtxt(fichier)
 # Extraire les colonnes
 x = data[:, 0]  # Colonne de gauche (abscisses)
 y = data[:, 1]  # Colonne de droite (ordonnées)
-plt.plot(x, y, '--',label='sol exacte')
+plt.plot(x, y, '--',label=r'exacte $t=0.4$')
 plt.legend()
 plt.show()
 
