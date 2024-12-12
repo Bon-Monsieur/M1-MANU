@@ -3,8 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import math
 
-x = 1
-y = 1
+
 
 def u(x,y):
     return np.cos(x**2 + y**2)
@@ -28,7 +27,8 @@ plt.show()
 
 
 # %%
-
+import numpy as np
+import math
 
 def CoefDF(k, xbar, x):
     x = np.array(x)
@@ -59,13 +59,25 @@ def Lh_9pt(x,y,h):
     l = [2*(coefx[i])*u(pt[i],y)/h**2 for i in range(len(pt))]
     return sum(l)
 
-
+x = 1
+y = 1
 h = 0.1
 k = 2
-ptx = np.array([x-2*h,x-h,x,x+h,x+2*h])
-coefx = CoefDF(k,x,ptx)
-#print(coefx)
+ptx = np.array([x-4*h,x-3*h,x-2*h,x-h,x])
+print(CoefDF(k-1,x,ptx))
 
+ptx1 = np.array([x-h,x,x+h,x+2*h,x+3*h])
+ptx2 = np.array([x-3*h,x-2*h,x-h,x,x+h])
+ptx3 = np.array([x-2*h,x-h,x,x+h,x+2*h])
+coefx1 = CoefDF(k,x,ptx1)
+coefx2 = CoefDF(k,x,ptx2)
+coefx3 = CoefDF(k,x,ptx3)
+print("x gauche",coefx1)
+print("x droite",coefx2)
+print("x centré",coefx3)
+
+
+#%%
 tau_h = []
 H = [5e-1,1e-1, 5e-2, 1e-2, 5e-3]  # tableau des h
 for h in H:

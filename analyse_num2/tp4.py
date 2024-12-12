@@ -166,12 +166,12 @@ def Newton(x0,x,t, tol=1e-3, max_iter=1000):
 
 #%%
 # Variables 
-a = 0
+a = -1
 b = 1
-nb_maille = 10
-T = 1 / (2 * np.pi) * 0.9
-period = 1  # 1 si u0 périodique sinon 0
-u0 = u0_td
+nb_maille = 100
+T = 2
+period = 0  # 1 si u0 périodique sinon 0
+u0 = u0_cours
 
 # Définir le maillage
 x = np.linspace(a, b, nb_maille + 1)
@@ -199,7 +199,7 @@ plt.title(rf"$T = {T:.2f}, \, \text{{Nb mailles}} = {nb_maille}$")
 # Solutions exactes
 #X = [Newton(0.9,xi,T) for xi in x_milieu]
 #plt.plot(x_milieu, [u0_td(xi) for xi in X], label='exacte')
-#plt.plot(x_milieu, [solution_exacte_cours(xi,T) for xi in x_milieu], label='exacte', linestyle='--')
+plt.plot(x_milieu, [solution_exacte_cours(xi,T) for xi in x_milieu], label='exacte', linestyle='--')
 
 
 # Solution exacte t = 4*tc
@@ -210,7 +210,7 @@ data = np.loadtxt(fichier)
 # Extraire les colonnes
 x = data[:, 0]  # Colonne de gauche (abscisses)
 y = data[:, 1]  # Colonne de droite (ordonnées)
-plt.plot(x, y, '--',label=r'exacte $t=4*t_c$')
+#plt.plot(x, y, '--',label=r'exacte $t=4*t_c$')
 
 
 plt.legend()
