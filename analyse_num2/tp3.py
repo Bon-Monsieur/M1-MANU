@@ -207,6 +207,7 @@ def schema_chaleur2D_explicite_o4(mesh_dimensions, T, D=1, CFL=0.45,Nt_print_max
 
         Uold = Uh.copy()
 
+        # Carre interne du carre interne 
         Uh[2:-2, 2:-2] = (
             Uold[2:-2, 2:-2]
             + lx * ( -1/12*Uold[:-4, 2:-2] + 4/3*Uold[1:-3,2:-2] -2.5 * Uold[2:-2, 2:-2] + 4/3*Uold[3:-1, 2:-2] - 1/12*Uold[4:,2:-2])
@@ -214,6 +215,7 @@ def schema_chaleur2D_explicite_o4(mesh_dimensions, T, D=1, CFL=0.45,Nt_print_max
             + dt * phi(Uold[2:-2, 2:-2], X[2:-2, 2:-2], Y[2:-2, 2:-2])
             )
         
+
         # Carre interne sans les 4 coins internes
         Uh[1, 2:-2] = (
             Uold[1, 2:-2]+
@@ -299,7 +301,7 @@ def schema_chaleur2D_explicite_o4(mesh_dimensions, T, D=1, CFL=0.45,Nt_print_max
 
 
 # Run the simulation
-T = 0.5
+T = 2
 D = 1  # Thermal diffusivity of air in m^2/s
 mesh_dimensions = (40,40)
 CFL = 0.25
@@ -314,5 +316,5 @@ y = np.linspace(0, 1, p)
 X, Y = np.meshgrid(x, y)
 
 # Plot the progression of temperature distributions with interactive controls
-plot_progression_with_controls(Uh_history, X, Y, plot_type='3d')
+plot_progression_with_controls(Uh_history, X, Y, plot_type='height')
 # %%
