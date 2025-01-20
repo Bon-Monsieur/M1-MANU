@@ -32,7 +32,7 @@ def plot_progression_with_controls(Uh_history, X, Y, plot_type='3d'):
     time, Uh = Uh_history[current_index]
     mean, min_val, max_val, std_dev = calculate_stats(Uh)
     if plot_type == '3d':
-        surf = ax.plot_surface(X, Y, Uh, cmap='hot', vmin=0, vmax=vmax)
+        surf = ax.plot_surface(X, Y, Uh, cmap='hot', vmin=-40, vmax=vmax)
         ax.set_zlim(0, zlim)
         ax.set_xlabel('X (m)')
         ax.set_ylabel('Y (m)')
@@ -59,7 +59,7 @@ def plot_progression_with_controls(Uh_history, X, Y, plot_type='3d'):
         time, Uh = Uh_history[current_index]
         ax.clear()  # Clear the previous plot
         if plot_type == '3d':
-            surf = ax.plot_surface(X, Y, Uh, cmap='hot', vmin=0, vmax=vmax)
+            surf = ax.plot_surface(X, Y, Uh, cmap='hot', vmin=-40, vmax=vmax)
             ax.set_zlim(0, zlim)  # Keep z-axis limit fixed
             ax.set_xlabel('X (m)')
             ax.set_ylabel('Y (m)')

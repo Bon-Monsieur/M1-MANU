@@ -150,7 +150,7 @@ def phi(Uh, X, Y):
 
 def fenetre(Uh, X, Y):
     # Masques pour les conditions spatiales
-    mask = (X == 0) & (0.4 <= Y) & (Y <= 0.6)
+    mask = (X == 0.0) & (0.4 <= Y) & (Y <= 0.6)
     # Modifier les valeurs dans Uh uniquement là où le masque est vrai
     Uh[mask] = 5
     return Uh
@@ -303,10 +303,10 @@ def schema_chaleur2D_explicite_o4(mesh_dimensions, T, D=1, CFL=0.45,Nt_print_max
 # Run the simulation
 T = 2
 D = 1  # Thermal diffusivity of air in m^2/s
-mesh_dimensions = (40,40)
+mesh_dimensions = (30,30)
 CFL = 0.25
 final_temperature_distribution, Uh_history = schema_chaleur2D_explicite_o4(
-    mesh_dimensions, T=T, D=D, CFL=CFL, Nt_print_max=40
+    mesh_dimensions, T=T, D=D, CFL=CFL, Nt_print_max=30
 )
 
 # Generate the grid for plotting
@@ -316,5 +316,5 @@ y = np.linspace(0, 1, p)
 X, Y = np.meshgrid(x, y)
 
 # Plot the progression of temperature distributions with interactive controls
-plot_progression_with_controls(Uh_history, X, Y, plot_type='height')
+plot_progression_with_controls(Uh_history, X, Y, plot_type='3d')
 # %%
