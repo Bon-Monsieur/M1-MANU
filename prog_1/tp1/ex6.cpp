@@ -22,10 +22,10 @@ int main() {
     double* pointReal = &pReal;  
     double* pointImag = &pImaginary;
 
-    // Appel de la fonction avec les adresses
+    
     CalculateRealAndImaginary(r, theta, pointReal, pointImag);
 
-    // Affichage des résultats
+    
     cout << "Real part: " << pReal << " Imaginary part: " << pImaginary << endl;
 
     return 0;
