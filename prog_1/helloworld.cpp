@@ -14,3 +14,6 @@ int main()
     }
     cout << endl;
 }
+
+// g++ -c -std=c++20 helloworld.cpp   -> Créer le fichier -o dit "objet"
+// g++ helloworld.o -o helloworld     -> Exécute le programme 
