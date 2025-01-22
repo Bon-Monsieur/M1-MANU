@@ -11,9 +11,8 @@ pair<double,double> quadraticRoot (const double & a, const double & b, const dou
         throw invalid_argument( "Delta is negative");
     }
     else{
-
+        
         pair<double,double> res ((-b-sqrt(delta))/2/a , (-b+sqrt(delta))/2/a);
-
         return res;
     }
 }
@@ -21,9 +20,12 @@ pair<double,double> quadraticRoot (const double & a, const double & b, const dou
 
 int main(){
 
-    const double a=2,b=6,c=1;
+    const double a=1,b=-3,c=2;
+    pair<double,double> racines = quadraticRoot(a,b,c);
+    double x1 = racines.first;
+    double x2 = racines.second;
 
-    cout << quadraticRoot(a,b,c).first << " " << quadraticRoot(a,b,c).second ;
+    cout << "x1=" << x1 << "  et x2=" << x2 << endl;
 
     return 0;
 }

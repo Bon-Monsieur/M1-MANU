@@ -13,7 +13,7 @@ void CalculateRealAndImaginary(double r, double theta, double* pReal, double* pI
 
 
 int main() {
-    double theta = M_PI / 3;
+    double theta = M_PI/2;
     double r = 1;
 
     double pReal = 0;
