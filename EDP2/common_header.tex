@@ -1,0 +1,119 @@
+\makeatletter % Allows the use of @ in command names
+
+% Font and Language Settings ----------------------------------------------------
+\usepackage[T1]{fontenc} % Use T1 font encoding for better character representation
+\usepackage[french]{babel} % Set document language to French
+\usepackage{lmodern} % Use Latin Modern font
+
+% List Customization ------------------------------------------------------------
+\usepackage[shortlabels]{enumitem} % Enhanced control over lists
+\setlist[itemize,1]{label={\color{gray}\small \textbullet}} % Customize the bullet style for itemize
+
+% Page subpart Customization -----------------------------------------------
+\usepackage{fancyhdr} % Create custom headers and footers
+\usepackage{titlesec} % Customize section titles
+\usepackage{titletoc} % For better TOC control
+
+% Mathematical Symbols and Enhancements -----------------------------------------
+\usepackage{centernot} % Provides the \centernot command for centered negation
+\usepackage{stmaryrd} % Provides extra mathematical symbols like \llbracket
+\usepackage[overload]{abraces} % Provides extensible braces
+\usepackage{latexsym} % Standard LaTeX symbols
+\usepackage{amsmath} % American Mathematical Society mathematical features
+
+\usepackage{amsfonts} % AMS font package
+\usepackage{amssymb} % Additional AMS symbols
+\usepackage{amsthm} % Theorem environments
+\usepackage{mathtools} % Mathematical tools to extend amsmath
+\usepackage{mathrsfs} % Provides \mathscr for script letters
+\usepackage{MnSymbol} % More math symbols
+\usepackage{etoolbox} % Conditional macros
+\usepackage{hyperref} % Hyperlinks within the document
+\usepackage{bigints}
+
+% Graphing Tools ----------------------------------------------------------------
+\usepackage{tikz} % Create graphics programmatically
+\usepackage{pgfplots} % Create plots using TikZ
+\pgfplotsset{compat=1.18} % Set compatibility level for pgfplots
+\usetikzlibrary{arrows} % Add arrow tips to TikZ
+
+% Color Customization -----------------------------------------------------------
+\usepackage{xcolor} % Color management
+\usepackage{colortbl} % Color management for tables
+\definecolor{astral}{RGB}{46,116,181} % Define astral color
+\definecolor{verdant}{RGB}{96,172,128} % Define verdant color
+\definecolor{algebraic-amber}{RGB}{255,179,102} % Define algebraic-amber color
+\definecolor{calculus-coral}{RGB}{255,191,191} % Define calculus-coral color
+\definecolor{divergent-denim}{RGB}{130,172,211} % Define divergent-denim color
+\definecolor{matrix-mist}{RGB}{204,204,204} % Define matrix-mist color
+\definecolor{numeric-navy}{RGB}{204,204,204} % Define numeric-navy color
+\definecolor{quadratic-quartz}{RGB}{204,153,153} % Define quadratic-quartz color
+
+% Custom Theorem Styles ---------------------------------------------------------
+\usepackage[]{mdframed} % Framing for environments
+
+% Custom sectioning environments ------------------------------------------------
+
+% Set up counters
+\setcounter{secnumdepth}{5}
+\setcounter{tocdepth}{5}
+
+% Define suprasection
+\titleclass{\suprasection}{straight}[\part]
+\newcounter{suprasection}
+\renewcommand\thesuprasection{\arabic{suprasection}}
+
+% Format the suprasection (in document) with matching style
+\titleformat{\suprasection}
+  {\color{astral}\normalfont\sffamily\bfseries\Large\filcenter}{\thesuprasection}{1em}{}
+\titlespacing*{\suprasection}{0pt}{3.5ex plus 1ex minus .2ex}{2.3ex plus .2ex}
+
+% Adjust TOC formatting - shift everything down one level
+\dottedcontents{suprasection}[1.5em]{}{2.3em}{1pc}  % Like a normal section
+\dottedcontents{section}[3.8em]{}{2.8em}{1pc}       % Like a normal subsection
+\dottedcontents{subsection}[7.0em]{}{3.2em}{1pc}    % Like a normal subsubsection
+\dottedcontents{subsubsection}[10.0em]{}{3.8em}{1pc}
+% Add to TOC
+\titlecontents{suprasection}
+  [0em]  % Less indentation than regular sections
+  {\addvspace{1pc}\bfseries}  % Above code (bold, extra space)
+  {\contentslabel{2em}}
+  {\hspace*{-2em}}
+  {\titlerule*[0.5pc]{.}\contentspage}
+
+
+% Redeclare math operators for customization ------------------------------------
+\makeatletter
+\newcommand\RedeclareMathOperator{%
+	\@ifstar{\def\rmo@s{m}\rmo@redeclare}{\def\rmo@s{o}\rmo@redeclare}%
+}
+\newcommand\rmo@redeclare[2]{%
+	\begingroup \escapechar\m@ne\xdef\@gtempa{{\string#1}}\endgroup
+	\expandafter\@ifundefined\@gtempa
+	{\@latex@error{\noexpand#1undefined}\@ehc}%
+	\relax
+	\expandafter\rmo@declmathop\rmo@s{#1}{#2}}
+
+\newcommand\rmo@declmathop[3]{%
+	\DeclareRobustCommand{#2}{\qopname\newmcodes@#1{#3}}%
+}
+\@onlypreamble\RedeclareMathOperator
+\makeatother
+
+
+% Miscellaneous Commands --------------------------------------------------------
+\setlength{\parindent}{0pt} % Remove paragraph indentation
+
+% Define emphasis in text
+\providecommand{\defemph}[1]{{\sffamily\bfseries\color{astral}#1}}
+
+% Section styling
+\usepackage{sectsty} % Allows customizing section fonts
+\allsectionsfont{\color{astral}\normalfont\sffamily\bfseries} % Style all section headers
+
+\newcommand{\skipline}{\vspace{\baselineskip}} % Skip a line
+\newcommand{\noi}{\noindent} % No indentation
+
+\newcommand{\ptr}{\( \triangleright \)} % Triangle right symbol
+
+\makeatother % End of @ usage

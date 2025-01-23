@@ -1,0 +1,943 @@
+\documentclass[french,a4paper,10pt]{article}
+\input{common_header.tex}
+\input{math.tex}
+\input{theorems.tex}
+\input{figures.tex}
+\usepackage[a4paper,hmargin=30mm,vmargin=30mm]{geometry}
+
+\title{\color{astral} \sffamily \bfseries Analyse des EDP 2 -- Cours}
+\author{Raphaël Bigey}
+
+
+\begin{document}
+    \maketitle
+    \tableofcontents
+
+    \newpage
+    \begin{center}
+        \section*{Chapitre 1 --- Equation de transport}\label{sec:CH1}
+    \end{center}
+    
+    \addcontentsline{toc}{section}{Chapitre 1 --- Equation de transport}
+    \setcounter{section}{1}
+    \setcounter{subsection}{0}
+    
+        \subsection{Equation de transport à coefficients constants}\label{subsec:1.1}
+        
+            Soit $v \in \R^d$ un vecteur non nul. On s'intéresse ici à l'étude de l'équation de transport (parfois nommée équation d'advection, ou de convection).
+    
+            \[
+            \partial_t u(t,x) + v \cdot \nabla u(t,x) = 0
+            \]
+            et plus particulièrement à la recherche de solutions régulières (nommées aussi \(\textbf{solutions fortes}\))
+    
+            \begin{definition}[Courbe caractéristique] \label{def:1.1.1}~
+            
+                Soit \(z \in \R \). On appelle \defemph{courbe caractéristique issue de $z$} de l'opérateur \( \partial_t + v \cdot \nabla\) l'ensemble \( \{(t,y(t)), t \in \R\}\) où $y$ est solution du problème de Cauchy 
+                \[
+                \begin{cases}
+                    \frac{dy}{dt}(t) & = v \\
+                    y(0) & = z
+                \end{cases}
+                \]           
+                
+            \end{definition}
+    
+            \begin{remark}\label{rem:1.1.2}
+                Clairement, puisque $v$ est constant, on a dans ce cas \(y(t) = z+tv\) pour tout $t \in \R$. On déduit que la courbe caractéristique $\{(t,z+tv),t\in\R\}$ est donc une droite de $\R \times \R^d$.
+            \end{remark}
+    
+            \begin{proposition}\label{prop:1.1.3}
+                Soit \( u \in \mathscr{C}^1(\R_+ \times \mathbb{R}^d) \) une solution de l'équation de transport 
+                \[
+                \partial_t u(t,x) +v \cdot \nabla u(t,x) = 0.
+                \]
+                Soit \( z \in \R^d \) et \( \{ (t, y(t)), t \in \mathbb{R}_+ \} \) la courbe caractéristique issue de \( z \). \\
+                Alors l'application \( t \mapsto u(t, y(t)) \) est de classe \( \mathscr{C}^1 \) sur \( \mathbb{R}_+ \), et \( u \) est constante le long de l'ensemble \( \{ (t, y(t)), t \in \mathbb{R}_+ \} \).
+            \end{proposition}
+        
+            \begin{proof}
+                ...
+            \end{proof}
+            
+            \begin{theorem}\label{thm:1.1.4}
+                Soit $v \in \R$ et $u_0 \in \C^1(\R^d)$. Le problème de Cauchy
+                \[
+                \begin{cases}
+                    \partial_t u(t,x) + v \cdot \nabla u(t,x)  = 0 & (t,x) \in \R^*_+ \times \R^d \\
+                    u(0,x)  = u_0(x) &x \in \R^d
+                \end{cases}
+                \]
+                admet une unique solution $u \in \C^1(\R \times \R^d)$, donnée par la formule 
+                \[
+                \forall (t,x) \in \R_+ \times \R^d, u(t,x) = u_0(x-tv)
+                \]
+            \end{theorem}
+            
+            \begin{proof}
+                ...
+            \end{proof}
+    
+        \subsection{Equation de transport à coefficients variables}\label{subsec:1.2}
+        
+            On considère dans la suite un champ de vecteur $b : [0,T]\times \R^d \xrightarrow{} \R^d$, pour $T>0$ fixé.
+            On s'intéresse ici au problème de Cauchy 
+            \[
+            \begin{cases}
+                \partial_t u(t,x) + b(t,x) \cdot \nabla u(t,x)  = 0 & (t,x) \in \oo{0,T} \times \R^d \\
+                u(0,x)  = u_0(x) &x \in \R^d
+            \end{cases}
+            \]
+            On suppose que $b$ admet des dérivées partielles d'ordre 1 par rapport à $x_i, i\in \llbracket 1, d \rrbracket$, et qu'il satisfait les conditions suivantes:
+
+           
+            \begin{enumerate}
+                \item $b \in \C^0(\ff{0,T}\times \R^d)$
+                
+                \item $\nabla b \in \C^0(\ff{0,T}\times \R^d)$
+
+                \item $\exists C_b>0, \forall (t,x)\in \ff{0,T} \times \R^d, \n{b(t,x)} \leq C_b(1+\n{x})$ ("croissance lente")
+            \end{enumerate}
+            
+            Pour tout $(t,x)\in \R \times \R^d$ considérons le pb de Cauchy suivant:
+            
+            \begin{equation}
+                \begin{cases}
+                \frac{dy}{ds}(s) & = b(s,y(s)) \\ 
+                y(t) & = x  
+                \end{cases}\label{eq:1}
+            \end{equation}
+            
+            
+            \begin{proposition}\label{prop:1.2.1}
+                Le problème de Cauchy $\eqref{eq:1}$ admet une unique solution $s\mapsto y(s) \in \C^1(\ff{0,T})$
+            \end{proposition}
+            
+            \begin{proof}
+                ...
+            \end{proof}
+
+            \begin{definition}\label{def:1.2.2}
+                L'ensemble $\{ (s,y(s)),s\in \R\} \subset \R \times \R^d$ est appelé \defemph{courbe caractéristique} de l'opérateur " $\partial_t + b \cdot \nabla$ " passant par $x$ à l'instant $t$.
+            \end{definition}
+
+            \begin{remark}\label{rem:1.2.3}
+                On note dans la suite: $X(s,t,x) = y(s)$ l'unique solution de la proposition \ref{prop:1.2.1} de sorte que 
+                
+            \begin{equation*}
+                \begin{cases}
+                    \partial_s X(s,t,x) &= b(s,X(s,t,x)) \\
+                    X(t,t,x)& = x
+                \end{cases}
+            \end{equation*}
+                
+            \end{remark}
+
+            \begin{definition}\label{def:1.2.4}
+                L'application $X:\ff{0,T} \times \ff{0,T} \times \R^d \to \R^d$ est appelée \defemph{flot caractéristique} de l'opérateur $\partial_t + b \cdot \nabla$.
+            \end{definition}
+
+            \begin{proposition}\label{prop:1.2.5}
+                Le flot caractéristique de l'opérateur $\partial_t + b \cdot \nabla$ vérifie les propriétés suivantes:
+
+                \begin{enumerate}
+                    \item $\forall t_1,t_2,t_3 \in \ff{0,T}$, on a $X(t_3,t_2,X(t_2,t_1,x)) = X(t_3,t_1,x)$
+
+                    \item $X\in \C^1(\ff{0,T}^2 \times \R^d; \R^d)$
+
+                    \item $\forall i\in \llbracket 1, d \rrbracket$, les dérivées partielles secondes $\partial_s\partial_{x_i}X(s,t,x)$ et $\partial_{x_i}\partial_sX(s,t,x)$ existent pour tout $(s,t,x) \in \ff{0,T}^2 \times \R^d$. Elles vérifient $\partial_s\partial_{x_i}X(s,t,x) = \partial_{x_i}\partial_sX(s,t,x)$ et sont continues.
+
+                    \item $\forall s,t \in \ff{0,T}$, l'application
+                    \begin{equation*}
+                        \begin{aligned}
+                            X(s,t,\cdot):\R^d&\to\R^d \\
+                            x &\mapsto X(s,t,x)
+                        \end{aligned}
+                    \end{equation*}
+                    est un $\C^1$-difféomorphisme de $\R^d$ sur lui-même, et on a $X(s,t,\cdot)^{-1} = X(t,s,\cdot)$
+                \end{enumerate}
+            \end{proposition}
+
+            \begin{proof}
+                ...
+            \end{proof}
+
+            \begin{theorem}\label{thm:1.2.6}
+                Soit $b:\ffo \times \R^d \to \R^d$ vérifiant les hypothèses du début de section et $u_0\in \C^1(\R^d)$. Notons $X$ le flot caractéristique de $\partial_t + b \cdot \nabla$.
+                Alors le problème de Cauchy 
+
+                \begin{equation*}
+                    \begin{cases}
+                    \partial_t u(t,x) + b(t,x) \cdot \nabla u(t,x)  = 0 & (t,x) \in \ooo \times \R^d \\
+                    u(0,x)  = u_0(x) &x \in \R^d
+                    \end{cases}\label{eq:2}
+                \end{equation*}
+                
+                admet une unique solution $u\in \C^1(\fo{0,T}\times \R^d)$, donnée par la formule suivante:
+                \[
+                \forall(t,x) \in \fo{0,T} \times \R^d, u(t,x) = u_0(X(0,t,x))
+                \]
+            \end{theorem}
+
+            \begin{proof}
+                ...
+            \end{proof}
+
+
+    \newpage
+    \begin{center}
+        \section*{Chapitre 2 --- Compléments sur les distributions}\label{sec:CH2}
+    \end{center}
+    
+    \addcontentsline{toc}{section}{Chapitre 2 --- Compléments sur les distributions}
+    \setcounter{section}{2}
+    \setcounter{subsection}{0}
+        \subsection{Suites de distributions}\label{subsec:2.1}
+
+            Nous allons commencer par quelques rappels du cours d'EDP1.
+    
+            \begin{definition}[Convergence d'une suite de distributions] \label{2.1.1}~
+            
+                Soit $(T_n) \in \Dp $. On dit que \defemph{\text{$(T_n)$} est convergente} si et seulement si 
+                \[
+                    \forall \vphi \in \D, (\langle T_n,\vphi \rangle)_n \text{ est convergente.}
+                \]
+            \end{definition}
+    
+            \begin{remark}\label{2.1.2}
+                On peut alors affirmer que la limite est une distribution (voir plus loin).
+            \end{remark}
+    
+            \begin{theorem}[Borne uniforme sur $\Dp(\R^d)$]\label{thm:2.1.3}~
+
+                Soit $(T_n) \in \Dp(\R^d)$  une suite convergente. Alors 
+                \begin{equation*}
+                    \begin{aligned}
+                        \forall K \subset \R^d \text{ compact},\ \exists C>0,\ \exists N\in \N \text{ tq } \forall \vphi \in \D, \\ 
+                        \text{supp}(\vphi) \subset K \ \Rightarrow \ \sup\limits_{n\in\N}\ \n{\langle T_n,\vphi \rangle} \leq C \times P_{N,K}(\vphi)
+                    \end{aligned}
+                \end{equation*}
+            \end{theorem}
+    
+            \begin{proof}
+                Ce résultat est une variante du théorème de Banach-Steinhaus et ne sera pas démontré ici.
+            \end{proof}
+    
+            \begin{remark}\label{rem:2.1.4}
+                $P_{N,K}(\vphi)$ est définie au chapitre 0. \\
+                Puisque $(T_n)_n$ est supposée convergente, cela implique que $\forall n, \ \n{\langle T_n,\vphi \rangle}$ est bornée.
+            \end{remark}
+    
+            Voici deux conséquences remarquables du théorème précédent:
+    
+            \begin{corollaire}\label{corol:2.1.5}
+                 Soit $(T_n) \in \Dp(\R^d)$ telle que $\forall \vphi \in \D(\R^d)$, la suite $(\langle T_n,\vphi \rangle)_n$ est convergente. Alors il existe $T \in \Dp(\R^d)$ telle que  $\forall \vphi \in \D(\R^d) $ \ $\underset{n \to +\infty}{\lim}\langle T_n,\vphi \rangle = \langle T,\vphi \rangle$. \\
+                 On dit que $T_n \stackrel{\Dp}{\longrightarrow} T$.
+            \end{corollaire}
+    
+            \begin{proof}
+                ...
+            \end{proof}
+    
+            \begin{corollaire}[Continuité séquentielle du crochet de dualité]\label{corol:2.1.6}~
+            
+                Soit $(T_n) \in \Dp$ et $(\vphi_n) \in \D$ telles que $T_n \stackrel{\Dp}{\longrightarrow}T$ et $\vphi_n \stackrel{\D}{\longrightarrow}\vphi$. Alors $\langle T_n,\vphi_n\rangle \underset{n \to +\infty}{\longrightarrow} \langle T,\vphi \rangle$.
+            \end{corollaire}
+    
+            \begin{proof}
+                ...
+            \end{proof}
+
+        \subsection{Familles de distributions paramétrées par un réel}\label{subsec:2.2}
+            Motivations à l'introduction de fonctions du temps à valeur dans un EVN ou équipé d'une famille de semi-normes séparantes pour l'étude de certains problèmes d'évolution. \\[3mm]
+            On se donne ici un opérateur différentiel à coefficients constants sur $\R \times \R^d$
+            \begin{equation*}
+                \begin{aligned}
+                    p(\partial_t,\partial_x) = \sum_{k=0}^{m} A_k(\partial_x)\partial_t^k
+                \end{aligned}
+            \end{equation*}
+            
+            où $A_k(\partial_x) = \sum_{finie}a_{k,\alpha}\partial_k^{\alpha}$ et $a_{k,\alpha} =$ constante $\in \mathbb{C}$. \\
+    
+            On se donne des fonctions $f,u_0,...,u_{m-1}$ et on cherche une solution $(t,x) \longmapsto u(t,x)$ du problème suivant:
+
+            \begin{equation}
+                \begin{cases}
+                    p(\partial_t,\partial_x)u &= f,\\
+                    u(0,x) &= u_0(x),\\
+                    \vdots & \\
+                    \partial_t^{m-1}u(0,x) &= u_{m-1}(x).
+                \end{cases}\label{eq:3}
+            \end{equation}
+
+            il s'agit du $\underline{\text{Problème de Cauchy}}$ pour l'équation $p(\partial_t,\partial_x)u=f$.\\
+
+            Nous verrons dans la suite une méthode de résolution de ce problème pour des équations "usuelles".
+            Pour de telles équations, essentiellement issues de la physique, les deux variables $t$ et $x$ jouent des rôles très différents, $t$ représentant le temps ($t \geq 0)$ et $x$ représentant la position ($x \in \R^d$, $d \in \{ 1,2,3\}$).\\[2mm]
+
+            Il est donc intuitivement légitime de "regarder" une fonction $\R \times \R^d \ni (t,x) \longmapsto u(t,x) \in \R$ comme une fonction $\R \ni t \longmapsto \widetilde{u}(t)$ à valeurs dans un espace vectoriels de fonctions définies sur $\R^d$. (C'est-à-dire $\R^d \ni x \longmapsto \widetilde{u}(t)(x) \in \R$).
+
+            Dans un cadre plus général, cela revient formellement à dire, étant donné trois ensembles $X,Y,Z$ , que nous avons un isomorphisme canonique $\phi$ entre les ensembles $\mathscr{F}(X\times Y;Z)$ (fonctions définies sur $X\times Y$ à valeurs dans $Z$) et $\mathscr{F}(X;\mathscr{F}(Y;Z))$. Cet isomorphisme est donné par les formules qui suivent, réciproques l'une de l'autre ($\phi(u)=\widetilde{u}$):
+
+            \begin{enumerate}
+                \item Pour $u \in \mathscr{F}(X\times Y;Z)$, on définit $\widetilde{u} \in \mathscr{F}(X;\mathscr{F}(Y;Z))$ par $\widetilde{u}(x) = u(x,\cdot)$.
+
+                \item Pour $\widetilde{u} \in \mathscr{F}(X;\mathscr{F}(Y;Z))$, on définit $u \in \mathscr{F}(X\times Y;Z)$ par $u(x,y)=\widetilde{u}(x)(y)$.
+            \end{enumerate}
+
+            Pour donner un sens aux données initiales pour le problème de Cauchy \eqref{eq:3}, il peut être intéressant de chercher les solutions dans des espaces où les fonctions sont particulièrement régulières en temps, afin que $u(0,x),..,\partial_t^{m-1}u(0,x)$ soient définies.
+
+            On utilisera de manière indifférenciée les deux notations $u(t,\cdot)$ et $u(t)(\cdot)$\\
+            \begin{definition}\label{2.2.1}~
+            
+                On considère une application $\vphi:\R \longrightarrow \D(\R^d)$. 
+                
+                On dit que \defemph{\text{$\vphi \in \C^0(\R;\D(\R^d))$}} si et seulement si, 
+                \begin{equation*}
+                    \begin{aligned}
+                        \forall s \in \mathbb{R}, \  \forall (s_n)_n \subset \mathbb{R}, \ s_n \to s \Rightarrow \ \varphi(s_n) \to \varphi(s) \text{ dans } \mathcal{D}(\mathbb{R}^d).
+                    \end{aligned}
+                \end{equation*}
+            \end{definition}
+
+            \begin{rappel}
+                Soit $(u_n)_n \subset \D(\R^d)$,
+                \begin{equation*}
+                    \begin{aligned}
+                        u_n \stackrel{\D}{\longrightarrow}0 \Leftrightarrow \ \exists K \subset \R^d \text{ compact,} \ \forall n \in \N, \ \text{supp}(u_n) \subset K \text{et } \forall j \in \N, \ P_{j,K}(u_n) \longrightarrow 0.
+                    \end{aligned}
+                \end{equation*}
+            \end{rappel}
+
+            \begin{proposition}\label{prop:2.2.2}
+                Soit $s \mapsto \vphi(s) \in \C^0(\R;\D(\R^d))$.\\
+                Alors $\forall S \subset \R \text{ compact, } \exists K \subset \R^d$ compact tels que
+                \begin{equation*}
+                    \begin{aligned}
+                        \forall s \in S, \ \text{supp}(\vphi(s)) \subset K \text{ et } \forall j \in N, \text{ l'application } S \ni s \mapsto P_{j,K}(\vphi(s)) \text{ est continue.}
+                    \end{aligned}
+                \end{equation*}
+            \end{proposition}
+
+            \begin{proof}
+                ...
+            \end{proof}
+
+            \begin{definition}\label{2.2.3}
+                On considère une application $\R \ni s \mapsto T(s)\in \Dp(\R^d)$.
+                
+                \begin{enumerate}
+                    \item On dit que \defemph{$s \mapsto T(s) \in \C^0(\R;\Dp(\R^d))$} si et seulement si,
+                    \begin{equation*}
+                        \begin{aligned}
+                            \forall \vphi \in \D(\R^d), \text{ l'application } \R \ni s\ \longmapsto \ \langle T(s),\vphi \rangle_{\Dp,\D} \text{ est continue.}
+                        \end{aligned}
+                    \end{equation*}
+
+                    \item On dit que \defemph{\text{$s \mapsto T(s) \in \C^k(\R;\Dp(\R^d))$}} si et seulement si,
+                    \begin{equation*}
+                        \begin{aligned}
+                            \forall \vphi \in \D(\R^d), \text{ l'application } \R \ni s \longmapsto {\langle T(s),\vphi \rangle}_{\Dp,\D} \text{ est de classe } \C^k(\R).
+                        \end{aligned}
+                    \end{equation*}
+                \end{enumerate}
+            \end{definition}
+
+            Il existe une variante du théorème \ref{thm:2.1.3} adaptée aux familles de distributions paramétrées:
+            
+            \begin{theorem}[Principe de la borne uniforme]\label{thm:2.2.4}~
+            
+                Soit $S \subset \R$ compact et $s \mapsto T(s) \in \C^0(\R;\Dp(\R^d))$. Alors 
+                \begin{equation*}
+                    \begin{aligned}
+                        \forall K \subset \R^d \text{ compact, } \exists &C>0, \ \exists N \in N, \ \forall s \in S,\ \forall \vphi \in \D(\R^d) \text{ tel que}\\
+                        \text{supp}(\vphi) \subset K &\Rightarrow \ \n{\langle T(s),\vphi \rangle} \leq C*P_{N,K}(\vphi)
+                    \end{aligned}
+                \end{equation*}
+            \end{theorem}
+
+            \begin{proof}
+                Tout comme le théorème \ref{thm:2.1.3}, ce résultat ne sera pas démontré.
+            \end{proof}
+            
+            \begin{proposition}\label{prop:2.2.5}
+                Soit $T \in \C^k(\R,\Dp)$. \\
+                Alors $\forall l \in \{0,..,k \}, \ \forall s \in \R,$ il existe une distribution, notée $T^{(l)}(s)$, telle que l'application $s \mapsto T^{(l)}(s) \in \C^{k-l}(\R,\Dp(\R^d))$ et telle que $\forall s_0 \in \R, \forall \vphi \in \D,$
+                \begin{equation*}
+                    \begin{aligned}
+                        {\left( \frac{d^{(l)}}{ds} \langle T(s), \varphi \rangle \right)}_{|s = s_0} = \left\langle T^{(l)}(s_0), \varphi \right\rangle.
+                    \end{aligned}
+                \end{equation*}
+            \end{proposition}
+
+            \begin{proof}
+                \dots
+            \end{proof}
+
+            \begin{proposition}\label{prop:2.2.6}
+                Soit $T \in \C^0(\R,\Dp)$ et $\psi \in \D(\R \times \R^d)$. Alors l'application
+                \begin{equation*}
+                    \begin{aligned}
+                        s \longmapsto {\langle T(s),\ \psi(s,\cdot) \rangle}
+                    \end{aligned}
+                \end{equation*}
+                est continue.
+            \end{proposition}
+
+            \begin{proof}
+                ...
+            \end{proof}
+
+            \begin{proposition}\label{prop:2.2.7}
+                Soit $T \in \C^1(\R,\Dp)$ et $\psi \in \D(\R \times \R^d)$. Alors l'application
+                \begin{equation*}
+                    \begin{aligned}
+                        s \longmapsto \ {\langle T(s),\ \psi(s,\cdot) \rangle}
+                    \end{aligned}
+                \end{equation*}
+                est $\C^1$ et on a 
+                \begin{equation*}
+                    \begin{aligned}
+                        \frac{d}{ds}{\langle T(s),\psi(s,\cdot) \rangle} \ = \ {\langle T^{(1)}(s),\psi(s,\cdot)\rangle} + {\langle T(s),\p_1 \psi(s,\cdot)\rangle}
+                    \end{aligned}
+                \end{equation*}
+            \end{proposition}
+
+            \begin{proof}
+                ...
+            \end{proof}
+
+            \begin{proposition}\label{prop:2.2.8}
+                Soit $T \in \C^0(\R,\Dp(\R^d))$. On pose, pour $\psi \in \D(\R \times \R^d)$,
+                \begin{equation*}
+                    \begin{aligned}
+                        {\langle \widetilde{T},\psi\rangle} = \int_{\R^d} {\langle T(s),\psi(s,\cdot) \rangle}_{\Dp} ds
+                    \end{aligned}
+                \end{equation*}
+                Alors $\widetilde{T} \in \Dp(\R \times \R^d)$.
+            \end{proposition}
+
+            \begin{proof}
+                ...
+            \end{proof}
+
+            \begin{proposition}\label{prop:2.2.9}
+                Soit $T \in \C^0(\R,\Dp)$. Il existe une distribution, notée $\bigintss_0^t T(s)ds$, définie $\forall t \in \R$ par:
+                \begin{equation*}
+                    \begin{aligned}
+                        \forall \vphi \in \D, \ {\langle \bigintssss_0^t T(s)ds,\vphi\rangle} \ = \bigintssss_0^t {\langle T(s),\vphi\rangle}\ ds
+                    \end{aligned}
+                \end{equation*}
+            \end{proposition}
+
+            \begin{proof}
+                ...
+            \end{proof}
+
+            \begin{theorem}[Théorème Fondamental de l'analyse]\  \label{thm:2.2.10}
+                \begin{enumerate}
+                    \item Soit $f \in \C^0(\R,\Dp)$. La fonction $F$ définie par
+                        \begin{equation*}
+                            \begin{aligned}
+                                F(t) = \int_0^t f(s)ds
+                            \end{aligned}
+                        \end{equation*}
+                        est $\C^1(\R,\Dp)$, et $F'(t)=f(t)$.
+
+                    \item Soit $F\in\C^1(\R,\Dp)$. On a: $\forall a \in \R$,
+                        \begin{equation*}
+                            \begin{aligned}
+                                F(t) = F(a) + \int_a^t F'(s)ds
+                            \end{aligned}
+                        \end{equation*}
+                \end{enumerate}
+            \end{theorem}
+
+            \begin{proof}
+                ...
+            \end{proof}
+
+            \begin{noremark}
+                Le problème: Trouver $F \in \C^1(\R,\Dp)$ vérifiant 
+                \begin{equation}
+                    \begin{cases}\label{eq:4}
+                        F'(t)&=\alpha(t),\\
+                        F(a) &= \beta
+                    \end{cases}
+                \end{equation}
+                avec $\alpha \in \C^0(\R,\Dp)$, $\beta \in \Dp$ possède une unique solution.
+
+                En effet, cette solution est donnée par le 2) du théorème \ref{thm:2.2.10}. 
+
+                Soit $F\in \C^1(\R,\Dp)$ solution de \eqref{eq:4}, alors nécessairement, $\forall t \in \R,$
+                \begin{equation*}
+                    F(t)=F(a)+\int_a^tF'(s)ds
+                \end{equation*}
+                d'où
+                \begin{equation*}
+                    F(t) = \beta + \int_a^t \alpha (s)ds
+                \end{equation*}
+
+                Réciproquement, pour $F(t) = \beta + \int_a^t \alpha (s)ds$, on a 
+                \begin{equation*}
+                    F(a)=\beta+\underbrace{\int_a^a \alpha(s)ds}_{\text{\shortstack{= 0 par \\ 
+                    théorème \ref{thm:2.2.10}}}}
+                \end{equation*}
+                et $h>0, \ F'(t) = \lim\limits_{h \to 0} \frac{F(t+h)-F(t)}{h}=\left( \bigintsss_0^t  \alpha(s)ds \right)'=\alpha(t).$ 
+            \end{noremark}
+
+            \begin{corollaire}\label{corol:2.2.11}
+                Soit $a \in \C^{\infty}(\R)$. Le problème:
+                \begin{equation*}
+                    \left| 
+                    \begin{array}{l}
+                        \text{Trouver } T \in \mathscr{C}^1(\mathbb{R}; \mathscr{D}') \text{ solution de } \\
+                        \begin{cases}
+                            T'(s) + a(x)T(s) = \alpha(s), \\
+                            T(0) = \beta,
+                        \end{cases} \\[10pt]
+                        \text{avec } \alpha \in \mathscr{C}^0(\mathbb{R}; \mathscr{D}') \text{ et } \beta \in \mathscr{D}',
+                    \end{array}
+                    \right.
+                \end{equation*}
+                admet une unique solution donnée par: 
+                \begin{equation*}
+                    T(t) = e^{-ta(x)}\beta + \int_0^t e^{-(t-s)a(x)} \alpha(s)ds
+                \end{equation*}
+            \end{corollaire}
+
+            \begin{proof}
+                ...
+            \end{proof}
+
+        \newpage
+        \subsection{Distributions tempérées, Fourier, Sobolev}\label{subsec:3}
+            On notera dans la suite $\cxi = \eqxi^{1/2}$
+
+            On a donc $\cxi^s = \eqxi^{s/2}$ et on note dans la suite $L_s^2(\R^d) := L^2(\R^d;\cxi^{2s}d\xi)$
+
+            \begin{rappel}
+            \begin{equation*}
+                \begin{aligned}
+                    H^k(\R^d) &= \{ u \in L^2(\R^d), \p^{\alpha}u \in L^2(\R^d), \forall \n{\alpha} \leq k \} \text{ pour } k\in\N,\\[2mm]
+                    H^s(\R^d) &= \{ u \in \Sp(\R^d), \cxi^s \, \widehat{u} \in L^2(\R^d) \} \text{ pour } s \in \R,\\[2mm]
+                    &\begin{rcases}
+                        \begin{aligned}
+                            \nn{u}_{H^k} &= \left(\sum\limits_{\n{\alpha}\leq k} \nn{\p^{\alpha}u}_{L^2}^2\right)^{1/2}\\[2mm]
+                            \nn{u}_{H^s} &= \left(\int_{\R^d}\cxi^{2s} \ \n{\widehat{u}(\xi)}^2 \ d\xi\right)^{1/2} \ 
+                        \end{aligned}
+                    \end{rcases}
+                    \text{ équivalence}
+                \end{aligned}
+            \end{equation*}
+
+            Lorsque $s=k \in \N, \nn{u}_{H^k}$ est équivalente à $\sum\limits_{\n{\alpha}\leq k} \nn{\p^{\alpha}u}_{L^2}$.
+
+            Soient $s,t \in \R$ et $\alpha \in \N^d$. On a les propriétés suivantes:
+            \begin{enumerate}
+                \item L'injection $\Sp(\R^d) \hookrightarrow H^s(\R^d)$ est dense.
+                \item $s\leq t \implies H^t \subset H^s$.
+                \item L'application $\p^{\alpha}\colon H^s \rightarrow H^{s-\n{\alpha}}$ est continue.
+            \end{enumerate}
+            \end{rappel}
+    
+            \begin{proposition}\label{prop:2.3.1}
+                $F$ réalise une isométrie entre $H^s(\R^d)$ et $ L^2_s(\R^d)$.
+            \end{proposition}
+    
+            \begin{proof}
+                ...
+            \end{proof}
+    
+            \begin{definition}[Transformée de Fourier partielle]\label{def:2.3.2}~
+            
+                Soit $u \in \scrS(\R \times \R^d)$, avec la notation de variables $(t,x) \in \R \times \R^d$. La \defemph{transformée de Fourier partielle par rapport à \text{$x$}} de $u$ est la fonction
+                \begin{equation*}
+                    \widetilde{u}(t,\xi) = \scrF_{x \to \xi}(u(t,x))
+                \end{equation*}
+                par 
+                \begin{equation*}
+                    \widetilde{u}(t,\xi) = \frac{1}{(2\pi)^\frac{d}{2}} \bigintsss_{\R^d}u(t,x) e^{-ix \cdot \  \xi}dx
+                \end{equation*}
+            \end{definition}
+    
+            \begin{noremark}
+                On note cette transformée partielle à l'aide d'un "$\underset{\cdot}{\widetilde{~~~}}$" pour la différencier de la transformée "usuelle" notée avec le " $\underset{\cdot}{\widehat{~~~}}$ "  .
+            \end{noremark}~
+
+            En raisonnant à $t \in \R$ fixé, on a :
+
+            \begin{proposition}\label{prop:2.3.3}
+                La transformée de Fourier partielle $\scrF_{x\to \xi}$ est un isomorphisme de $\scrS(\R 
+                \times \R^d)$, d'inverse $\scrF^{-1}_{x \to \xi}$:
+                \begin{equation*}
+                    \scrF^{-1}_{x \to \xi}(u(t,\xi)) = (2\pi)^{-\frac{d}{2}} \int_{\R^d} u(t,\xi) e^{ix\cdot \xi} d\xi
+                \end{equation*}
+                De plus, la transformée de Fourier partielle est continue:
+                \begin{equation*}
+                    \begin{aligned}
+                        \forall k \in \N^*, \ \exists C_k>0, \ \forall u \in \scrS(\R \times \R^d), \\
+                        N_k(\widetilde{u}) \leq C_k *N_{k+d+1}(u)
+                    \end{aligned}
+                \end{equation*}
+            \end{proposition}
+
+            \begin{proof}
+                Similaire à celle du chapitre 0.
+            \end{proof}
+
+            \newpage
+            
+            La transformée de Fourier partielle s'étend à $\Sp\RRd$ par dualité: pour $T\in \Sp\RRd$,
+            \begin{equation*}
+                    \widetilde{T} = \scrF_{x \to \xi}(T)
+            \end{equation*}
+            est définie par
+            \begin{equation*}
+                \forall u \in \scrS\RRd, \ \langle \scrF_{x \to \xi}T,u \rangle = \langle T, \scrF_{x \to \xi}\ u \rangle
+            \end{equation*}
+            On a alors le résultat suivant:
+        
+            \begin{proposition}\label{prop:2.3.4}
+                La transformée de Fourier partielle est un isomorpshime de $\Sp\RRd$, d'inverse 
+                \begin{equation*}
+                    \scrF_{x \to \xi}^{-1} = (2\pi)^{-\frac{d}{2}} \ \widecheck{\scrF}_{x \to \xi}
+                \end{equation*}
+                De plus, si $T_n \to T$ dans $\Sp\RRd$, alors $\widetilde{T_n} \to \widetilde{T}$ dans $\Sp\RRd$.
+            \end{proposition}
+
+            \begin{proof}
+                On procède par transposition, comme d'habitude pour prolonger de $\scrS$ vers $\Sp$.
+            \end{proof}
+
+            \begin{remark}\label{rem:2.3.5}
+                Les règles de calcul "usuelles" s'adaptent aisement:
+                \begin{equation*}
+                    \widetilde{\p_x^{\alpha}T} = \xi^{\alpha}\widetilde{T}\ \ \text{ et     } \ \ \widetilde{x^{\alpha} T} = (-\p_{\xi})^{\alpha}\widetilde{T}
+                \end{equation*}
+                \underline{La formule de permutation $\widetilde{\p_t T} = \p_t \widetilde{T}$ devra être justifiée au cas par cas}.
+            \end{remark}
+
+            \begin{remark}\label{rem:2.3.6}
+                Lorsque $u \in \scrS\RRd$ (ou $\Sp\RRd$) est vue comme une fonction dépendant de $t\in \R$ à valeurs dans $\scrS(\R^d)$, on pourra noter de manière équivalente:
+                \begin{equation*}
+                    \widehat{u(t)}(\xi) = \widetilde{u}(t,\xi)
+                \end{equation*}
+                (puisque $u(t) \in \scrS(\R^d), \ \widehat{u(t)} \in \scrS(\R^d)$)
+            \end{remark}
+
+        \subsection{Fonctions régulières à valeurs dans un Sobolev}\label{subsec:4}
+            On considère une fonction $\R \in t \mapsto u(t) \in H^s(\R^d)$.
+
+            \begin{definition}\label{def:2.4.1}
+                Soit $\R \in t \mapsto u(t) \in H^s(\R^d)$. On dit que \defemph{\text{$u \in \C^0(\R,H^s(\R^d))$}} si et seulement si 
+                \begin{equation*}
+                    \forall t \in \R, \ \forall (t_n) \text{ telle que } t_n \to t, \text{ on a } u(t_n) \stackrel{H^s}{\longrightarrow} u(t)
+                \end{equation*}
+            \end{definition}
+
+            \begin{definition}\label{def:2.4.2}
+                On dit que l'application $\rho \mapsto u(\rho)$ est \defemph{dérivable en $t$} à valeurs dans $H^s(\R^d)$ et \defemph{de dérivée} $u'(t)$ si et seulement si
+                \begin{equation*}
+                    \forall h>0, u(t+h) = u(t)+hu'(t)+h\phi(h)
+                \end{equation*}
+                avec $\phi \in \C^0(\R,H^s(\R^d))$ telle que $\phi(0)=0$.
+            \end{definition}
+
+            \begin{definition}\label{def:2.4.3}
+                On dit que \defemph{$u \in \C^1(\R,H^s(\R^d))$} si et seulement si
+                \begin{equation*}
+                    t \longmapsto u(t) \text{ est dérivable en tout point }t
+                \end{equation*}
+                avec $\forall t\in \R, u'(t) \in H^s(\R^d)$ et $t\longmapsto u'(t) \in \C^0(\R,H^s(\R^d))$.
+            \end{definition}
+
+            Pour $u \in \C^k(\R,H^s(\R^d))$, on définit $T_u$ par: $\forall \vphi \in \D\RRd$,
+            \begin{equation*}
+                \langle T_u,\vphi \rangle = \int_{\R^d} \langle u(t),\vphi(t,\cdot) \ \rangle dt
+            \end{equation*}
+
+            \begin{proposition}\label{prop:2.4.4}
+                Pour tout $u \in \C^k(\R,H^s(\R^d))$, on a $T_u \in \Dp\RRd$. De plus l'application linéaire $u \longmapsto T_u$ est injective.
+            \end{proposition}
+
+            \begin{proof}
+                ...
+            \end{proof}
+
+            \begin{proposition}\label{prop:2.4.5}
+                $\scrF_{x \to \xi}$ est une isométrie de $\C^0(\R,H^s(\R^d))$ sur $\C^0(\R,L^2_s(\R^d))$
+            \end{proposition}
+
+            \begin{proof}
+                C'est immédiat à partir de la proposition \ref{prop:2.3.1} et la définition de $\scrF_{x \to \xi}$.
+            \end{proof}
+
+            \begin{proposition}\label{2.4.6}
+                Soit $u\colon \R \times \R^d \longrightarrow \mathbb{C}$ mesurable, et $a,b \in \R$, tels que $a<b$. On suppose que :
+                \begin{enumerate}
+                    \item Il existe un ensemble négligeable $N$ tel que pour tout $x \in \R^d\setminus N$, $t \longmapsto u(t,x) $ est continue.
+
+                    \item Il existe $g \in L^2_s(\R^d)$ positive telle que: 
+                    \begin{equation*}
+                        \sup\limits_{t\in \ff{a,b}}\n{u(t,\cdot)} \leq g
+                    \end{equation*}
+                \end{enumerate}
+                Alors on a $u\in \C^0(\ff{a,b}; \ L^2_s(\R^d))$
+            \end{proposition}
+
+            \begin{proof}
+                ...
+            \end{proof}
+
+            \begin{proposition}\label{prop:2.4.7}
+                Soit $u\colon \R \times \R^d \longrightarrow \mathbb{C}$ mesurable, et $a,b \in \R$, tels que $a<b$. On suppose que :
+                \begin{enumerate}
+                    \item Il existe un ensemble négligeable $N$ tel que pour tout $x \in \R^d\setminus N$, $t \longmapsto u(t,x) $ est de régularité $\C^1$.
+
+                    \item Il existe $g \in L^2_s(\R^d)$ positive telle que: 
+                    \begin{equation*}
+                        \sup\limits_{t\in \ff{a,b}}\n{u(t,\cdot)} \leq g
+                    \end{equation*}
+
+                    \item Il existe $h \in L^2_s(\R^d)$ positive telle que: 
+                    \begin{equation*}
+                        \sup\limits_{t\in \ff{a,b}}\n{\p_tu(t,\cdot)} \leq h
+                    \end{equation*}
+                \end{enumerate}
+                Alors on a $u\in \C^1(\ff{a,b}; \ L^2_s(\R^d))$
+                
+            \end{proposition}
+
+            \begin{proof}
+                ...
+            \end{proof}
+
+
+    \newpage
+    \begin{center}
+        \section*{Chapitre 3 --- Equation de la chaleur}\label{sec:CH3}
+    \end{center}
+    
+    \addcontentsline{toc}{section}{Chapitre 3 --- Equation de la chaleur}
+    \setcounter{section}{3}
+    \setcounter{subsection}{0}
+
+        On étudie le problème de Cauchy suivant: 
+        \begin{equation}\label{eq:5}
+            \left| 
+            \begin{array}{l}
+                \text{Trouver } u:\R \times \R^d \ni (t,x) \longmapsto u(t,x) \in \R \text{ telle que } \\
+                \begin{cases}
+                    \p_tu- \Delta u = 0, \text{ sur } \R \times \R^d\\
+                    u(0,\cdot) = u_0,
+                \end{cases} \\[10pt]
+            \end{array}
+            \right.
+        \end{equation}
+        C'est l'équation de la chaleur qui modélise des phénomènes d'évolution: diffusion de la chaleur, répartition de substances chimiques \dots
+
+        Nous allons préciser dans la suite la régularité de la donnée initiale $u_0$ et ses conséquences sur la régularité de la solution.\\[2mm]
+
+        \subsection{Donnée initiale dans $\Sp(\R^d)$}\label{subsec:3.1} 
+            \begin{theorem}[Solution dans $\C^1(\R,\Sp(\R^d))$]\label{thm:3.1.1}~
+            
+                On considère le problème de Cauchy \eqref{eq:5} avec $u_0 \in \Sp(\R^d)$.
+                Alors \eqref{eq:5} admet une unique solution $u \in \C^1(\R_+;\Sp(\R^d))$ donnée par:
+                \begin{equation*}
+                    \forall t \in \R_+, u(t) = \scrF^{-1}(\widehat{u}(t))
+                \end{equation*}
+                avec
+                \begin{equation*}
+                    \widehat{u}(t) = e^{-t\n{\xi}^2}\widehat{u_0}
+                \end{equation*}
+            \end{theorem}
+
+            \begin{proof}
+                ...
+            \end{proof}
+
+        \subsection{Donnée initiale dans $\Hs$.}\label{subsec:3.2}
+            Nous imposons dans cette section une régularité beaucoup plus forte sur $u_0$.
+
+            \begin{theorem}[Solution dans $\C^1(\R_+;H^{s-2}(\R^d))$] \label{thm:3.2.1}~
+            
+                On considère me pb de Cauchy \eqref{eq:5} avec $u_0 \in \Hs, \ s \in \R$. Alors \eqref{eq:5} admet une unique solution 
+                \begin{equation*}
+                    u \in \C^0(\R_+;H^s) \cap \C^1(\R_+;H^{s-2})
+                \end{equation*}
+            \end{theorem}
+
+            \begin{remark}\label{rem:3.2.2}
+                Nous allons bien entendu utiliser le fait que $\Hs \hookrightarrow \Sp(\R^d)$ afin d'éviter de tout redémontrer.
+            \end{remark}
+
+            \begin{proof}
+                ...
+            \end{proof}
+
+        \subsection{Quelques propriétés qualitatives}\label{subsec:3.3}
+            \begin{theorem}[Noyau de la chaleur] \label{thm:3.3.1}~
+            
+                Soit $t>0, \ u_0\in \Sp(\R^d)$. Alors
+                \begin{equation*}
+                    u(t) = K_t \ast u_0
+                \end{equation*}
+                est solution de \eqref{eq:5} avec $K_t$ défini ainsi: $\forall x \in \R^d$,
+                \begin{equation*}
+                    K_t(x)= (4t\pi)^{-\frac{d}{2}}e^{-\frac{\n{x}^2}{4t}} \in \scrS (\R^d)
+                \end{equation*}
+            \end{theorem}
+
+            \begin{proof}
+                ...
+            \end{proof}
+
+            \begin{remark}\label{rem:3.3.2}
+                $K_t$ est parfois aussi appelé "Noyau de la chaleur".
+            \end{remark}
+
+            \begin{remark}\label{rem:3.3.3}
+                On observe de manière évidente que $\forall t>0, \ K_t \in \scrS(\R^d)$.
+
+                Ainsi, si $u_0 \in \scrS(\R^d), \ u(t) \in \scrS(\R^d)$.
+            \end{remark}
+
+            \begin{proposition}[Régularité parabolique]\ \label{prop:3.3.4}
+            
+                On suppose $u_0 \in \C^0_b(\R^d)$. Alors la fonction $(t,x) \mapsto  u(t,x)$ définie par 
+                \begin{equation*}
+                    u(t,x) = \frac{1}{(4t\pi)^\frac{d}{2}} \bigintsss_{\R^d} e^{-\frac{\n{x-y}^2}{4t}}u_0(y)\ dy
+                \end{equation*}
+                est $\C^{\infty}(\R^*_+ \times \R^d)$ et vérifie $\p_tu-\Delta u=0$ sur $\R^*_+ \times \R^d$.
+
+                De plus, on peut la prolonger par continuité à $\R_+ \times \R^d$ en posant 
+                \begin{equation*}
+                    u(0,x) = u_0(x) \ \forall x \in \R^d
+                \end{equation*}
+                de sorte que $u \in \C^0_b(\R_+ \times \R^d)$ et vérifie \eqref{eq:5}.
+            \end{proposition}
+
+            \begin{proof}
+                ...
+            \end{proof}
+
+            \begin{proposition}[Principe du maximum]\label{3.3.5}~ 
+            
+                Soit $u \in \C^{\infty}(\R^*_+ \times \R^d)\cap \C_b(\R_+\times \R^d)$ solution de \eqref{eq:5}. Alors 
+                \begin{equation*}
+                    \sup\limits_{(t,x)\in \R_+\times \R^d} u(t,x) = \sup\limits_{x\in \R^d}u_0(x)
+                \end{equation*}
+            \end{proposition}
+
+            \begin{proof}
+                ...
+            \end{proof}
+
+            \begin{remark}\label{rem:3.3.6}                
+                Il résulte également du principe du maximum si $u_0$ est non nulle, alors \\ 
+                $u(t,x)>0$ sur $\R^*_+ \times \R^d$. Cette propriété est particulièrement frappante lorsque $u_0 \in \D$ par exemple: une partie de la quantité étudiée s'est immédiatement propagée à l'infini. On parle parfois de "vitesse de propagation infinie".
+            \end{remark}
+
+            \begin{definition}[Semi-groupe de la chaleur]\label{def:3.3.7}~
+
+                Pour tout $t\geq 0$, on définit une application linéaire 
+                \begin{equation*}
+                    e^{t\triangle}\colon L^2 \ni u_0 \longmapsto e^{t\triangle}u_0 \in L^2
+                \end{equation*}
+                telle que $\forall x \in \R^d \ e^{t\triangle}u_0 = u(t,\cdot)$ la solution du problème de Cauchy homogène de donnée initiale $u_0$. 
+
+                La famille $(e^{t\triangle})_{t \geq0}$ est appelée "semi-groupe de la chaleur".
+            \end{definition}
+
+            \begin{remark}\label{3.3.8}
+                $e^{t\triangle}$ est une notation et ne correspond pas à une somme de série...
+            \end{remark}
+
+            Cette notation permet de souligner l'analogie entre le semi-groupe de la chaleur et la formule $u=e^{-tA}u_0$ donnant la solution du système différentiel linéaire 
+            \begin{equation*}
+                \begin{cases}
+                    \dot{u} + Au &=0,\\
+                    u(0) &= u_0
+                \end{cases}
+            \end{equation*}
+            d'inconnue $t\mapsto u(t) \in \R^n$ et $A$ matrice carrée de taille $n\times n$.
+
+            \begin{proposition}[Propriétés de $e^{t\triangle}$]\label{prop:3.3.9}~
+
+                Le semi-groupe de la chaleur $\et$ vérifie les propriétés suivantes:
+                \begin{enumerate}
+                    \item $\forall t \geq0,$ on a ${\nn{\et u_0}}_{L^2}\leq {\nn{u_0}}_{L^2}$
+
+                    \item $\forall t,s\geq 0$, on a $e^{(t+s)\triangle} = \et e^{s\triangle}$
+
+                    \item Pour tout $u_0 \in L^2$, la fonction  $\R_+ \ni t \mapsto \et u_0 \in L^2$ est continue.
+                \end{enumerate}
+            \end{proposition}
+
+            \begin{proof}
+                ...
+            \end{proof}
+
+            \begin{proposition}[Comportement en temps long]\label{3.3.10}~
+
+                Soit $u_0 \in \Hs$, on a
+                \begin{equation*}
+                    {\nn{K_t \ast u_0}}_{H^s} \underset{t \to +\infty}{\longrightarrow} 0
+                \end{equation*}
+                Si de plus on a $u_0 \in L^1(\R^d)$, alors $\forall x \in \R^d$, on a
+                \begin{equation*}
+                    \n{K_t \ast u_0(x) - (4t\pi)^{-\frac{d}{2}} \bigintsss_{\R^d} u_0(y)\ dy} = o(t^{-\frac{d}{2}})
+                \end{equation*}
+                lorsque $t \to +\infty$.
+            \end{proposition}
+
+            \begin{proof}
+                ...
+            \end{proof}
+
+        \subsection{Donnée initiale dans $\Sp$: Cas non-homogène}\label{subsec:3.4}
+
+             On considère le problème de Cauchy suivant (cas non-homogène)
+                \begin{equation}\label{eq:6}
+                    \begin{cases}
+                        \p_tu- \Delta u = f, \text{ sur } \R \times \R^d\\
+                        u(0,\cdot) = u_0,
+                    \end{cases}
+                \end{equation}
+
+            \begin{theorem}[Solution dans $\C^1(\R;\Sp(\R^d))$]\label{thm:3.4.1}~
+
+                Soit $f \in \C^0(\R_+;\Sp(\R^d))$ et $\ u_0 \in \Sp(\R^d)$.
+                
+                Alors \eqref{eq:6} admet une unique solution $u \in \C^1(\R_+;\Sp(\R^d))$ donnée par:
+                \begin{equation*}
+                     \forall t \in \R_+, \ u(t)=\scrF^{-1}(\widehat{u}(t))
+                \end{equation*}
+                et
+                \begin{equation*}
+                    \widehat{u}(t) = e^{-t\n{\xi}^2}\widehat{u_0} + \bigintsss_0^t e^{-(t-s)\n{\xi}^2}\widehat{f}(s) \ ds
+                \end{equation*}
+            \end{theorem}
+
+            \begin{proof}
+                ...
+            \end{proof}
+
+        \subsection{Donnée initiale dans $H^s$: Cas non-homogène}\label{subsec:3.5}
+
+            \begin{theorem}\label{3.5.1}~
+            
+                Soit $s \in \R, \ u_0 \in \Hs$ et $f\in \C^0(\R_+;\Hs)$. Alors la fonction
+                \begin{equation*}
+                    t \mapsto u(t) = \et u_0 + \bigintsss_0^t e^{(t-s)\triangle}f(s,\cdot) \ ds
+                \end{equation*}
+                est $\C^0(\R_+;\Hs)\cap \C^1(\R_+;H^{s-2}(\R^d))$. De plus, $u$ est l'unique solution de \eqref{eq:6} dans cet espace.
+            \end{theorem}
+
+            \begin{proof}
+                ...
+            \end{proof}
+    ~\\ ~\\
+    La partie sur l'électromagnétisme ne sera pas explicitée dans ce papier.
+\end{document}
