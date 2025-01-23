@@ -46,6 +46,6 @@ int main(){
     double x = 0.14;
     int N = 5;
 
-    cout <<"res "<< expPade(x,N) << endl;
+    cout <<"approximation de exp(" << x << ") = "<< expPade(x,N) << endl;
     return 0;
 }
