@@ -1,5 +1,7 @@
 #include <iostream>
 #include <cmath>
+#include <iomanip>      // std::setprecision
+
 
 using namespace std;
 
@@ -25,10 +27,10 @@ double expTaylor(double x, int N){
 
 int main(){
 
-    double x = 0.25;
+    double x = 15;
     int N = 10;
 
-    cout << expTaylor(x,N) << endl;
+    cout << setprecision(11)<< "Taylor:  approximation de exp(" << x << ") = "<< expTaylor(x,N) << endl;
     cout << exp(x) << endl;
     return 0;
 

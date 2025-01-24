@@ -1,5 +1,7 @@
 #include <iostream>
 #include <cmath>
+#include <iomanip>      // std::setprecision
+
 using namespace std;
 
 double factorial(int n) {
@@ -43,9 +45,9 @@ double expPade(double x,int N){
 
 int main(){
 
-    double x = 0.14;
+    double x = 15;
     int N = 5;
 
-    cout <<"approximation de exp(" << x << ") = "<< expPade(x,N) << endl;
+    cout << setprecision(11) << "Pade:  approximation de exp(" << x << ") = "<< expPade(x,N) << endl;
     return 0;
 }
