@@ -76,7 +76,7 @@ for i in range(Nt+1):
     plt.plot(x, U_1[:,i])
     #plt.plot(x, U_1[:,i], label=f't={t_val:.2f}')
     plt.title(r'Solution avec $u_0$ = $\exp(-5*(x-\frac{L}{2})^2)$')
-    plt.legend()
+    
 plt.show()
 
 
@@ -86,7 +86,7 @@ for i in range(Nt+1):
     plt.plot(x, U_2[:,i])
     #plt.plot(x, U_2[:,i], label=f't={t_val:.2f}')
     plt.title(r'Solution avec $u_0$ = 1 ou 0')
-    plt.legend()
+    
 plt.show()
 
 U_3 = chaleur_1Dimp(Nx,Nt,u0_3)
@@ -95,7 +95,7 @@ for i in range(Nt+1):
     plt.plot(x, U_3[:,i])
     #plt.plot(x, U_3[:,i], label=f't={t_val:.2f}')
     plt.title(r'Solution avec $u_0$ = $\sin(\frac{\pi x}{L}) + \sin(\frac{10\pi*x}{L})$')
-    plt.legend()
+    
 plt.show()
 
 
@@ -238,7 +238,7 @@ for i in range(Nt+1):
     plt.plot(x, U_1[:,i])
     #plt.plot(x, U_1[:,i], label=f't={t_val:.2f}')
     plt.title(r'Solution avec $u_0$ = $\exp(-5*(x-\frac{L}{2})^2)$')
-    plt.legend()
+    
 plt.show()
 
 
@@ -248,7 +248,7 @@ for i in range(Nt+1):
     plt.plot(x, U_2[:,i])
     #plt.plot(x, U_2[:,i], label=f't={t_val:.2f}')
     plt.title(r'Solution avec $u_0$ = 1 ou 0')
-    plt.legend()
+    
 plt.show()
 
 U_3 = chaleur_1DCN(Nx,Nt,u0_3)
@@ -257,6 +257,6 @@ for i in range(Nt+1):
     plt.plot(x, U_3[:,i])
     #plt.plot(x, U_3[:,i], label=f't={t_val:.2f}')
     plt.title(r'Solution avec $u_0$ = $\sin(\frac{\pi x}{L}) + \sin(\frac{10\pi*x}{L})$')
-    plt.legend()
+    
 plt.show()
 # %%
