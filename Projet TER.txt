@@ -1,0 +1,33 @@
+Projet TER:
+
+la hauteur de la forme est solution d'une equation d'irradiance de l'image
+Reflectance Lambertienne: La luminosité est la même peu importe l'angle de vue.
+
+On étudie le problème sur une surface lambertienne (renvoie la lumière avec la même intensité de tous les côtés.
+u représente la hauteur de la forme (uniformément continue sur Omega et bornée
+(alpha, beta, gamma) est le vecteur unitaire dans la direction de la source lumineuse (réels positifs)
+
+La surface n'émet pas de lumière !!!
+
+brightness value I(x, y) at each pixel
+reflectance map R(n) which specifies the reflectance of a surface as a function of its orientation,
+
+I est une fonction positive, Lipschitzienne et continue
+
+condition au bord de Omega: u=0 (sur \p\Omega)
+
+
+
+viscosity solutions: is a notion of weak solutions of first-order nonlinear equations. u est une solution visqueuse de H(x,u(x),grad(u(x))) si c'est une viscosity subsolution and supersolution
+
+first-order nonlinear equations, called Hamilton-Jacobi equations.
+
+ I is Lipschitz continuous et plus petite que 1 pour assurer l'existence de la VS strict subsolution
+Quand I vaut, 1, y'a pas de p dans R^2 verifiant l'equation H(x,p). Si I<1, alors on a une expression de u_ subsolution strict.
+
+S'il existe un point où l'intensité de la lumière est supérieure à 1, alors la solution n'est plus unique.
+
+COROLLARY 1. Under the assumptions of the previous theorem, there exists at most
+one viscosity solution of (4) verifying u = phi sur \p(Omega)
+
+L'hamiltonien ne dépend que de grad(u) donc s'il existe un point d'intensité égal à 1 quelque part (mais pas u==1), alors -u est so
