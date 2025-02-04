@@ -6,201 +6,192 @@ using namespace std;
 class point
 {
 private:
-    double x;
-    double y;
+    static const int Ndim=3;
+    double coord[Ndim];
 public:
     // get coordinates
-    double X() const{ return x; }
-    double Y() const{ return y; }
+    double icord(int ii) const;
+    static const int getNdim() { return Ndim;}
 
     // setters
     void zero();
     void set(int i, const double& a);
 
     // Constructors
-    point(double x,double y);
-    point(const point& p);
+    point(double xx);
+    point(double coo[Ndim]);
     point();
+    point(const point& p); // Constructor copy
 
     // Destructor
     ~point();
 
     const point& operator=(const point& p);  //Definir un point à partir d'un autre
-    const point& operator=(double xx);       // Definir seulement la première coordonnée d'un point
 
-    operator double() const;
+    const double operator[](int i) const; // read ieme coord
+    double& operator[]( int i );  // Assign ieme coord
 
     friend const point operator-(const point& p); // Donne -la valeur du point donné en entrée
     friend const point operator+(const point& p); // Donne valeur absolue du point donné en entrée
 
-    
     const point& operator+=(const point& p);
     const point& operator-=(const point& p); 
-    const point& operator+=(double xx); // Incrémente uniquement la coordonée x
-    const point& operator-=(double xx); // Décémente uniquement la coordonée x
 
     friend const point operator+(const point& p, const point& q); // Sum of two point
     friend const point operator-(const point& p, const point& q); // Subtract
 
-    friend const point operator+(const point& p, double xx); // point + double (x coordinate only)
-    friend const point operator+(double xx, const point& p); // double + point (x coordinate only)
-
-    friend const point operator-(const point& p, double xx); // point - double (x coordinate only)
-    friend const point operator-(double xx,const point& p); // point - double (x coordinate only)
-
 };
 
 
-
-
-
-void point::zero(){ // Set to zero mehtod
-    x = 0;
-    y = 0;
-}
-
-void point::set(int i, const double& a){
-    switch(i){
-        case 1: 
-            x = a;
-            break;
-
-        case 2:
-            y = a;
-            break;
-        default:
-            throw invalid_argument("first argument must be 1 or 2");      
+double  point::icord(int ii) const {
+    if (ii<0 || ii>=Ndim){
+        throw("le parametre doit etre compris entre 0 et Ndim");
+    }
+    else{
+        return coord[ii];
     }
 }
 
-point::point(double x, double y){ // Constructor with 2 values
-    this->x=x;
-    this->y=y;
+
+void point::zero(){ // Set to zero mehtod
+    for (int ii=0;ii<Ndim;ii++){
+        coord[ii]=0.0;
+    }
 }
 
-point::point(const point& p){ // Constructor à partir d'un autre point 
-    this->x = p.X();
-    this->y = p.Y();
+
+void point::set(int i, const double& a){
+    if (i<0 || i>=Ndim){
+        throw("le parametre doit etre compris entre 0 et Ndim");
+    }
+    else{
+        this->coord[i] = a;
+    }
 }
+
+
+point::point(double xx){ // Constructor assign one value for each coordinate
+    for (int ii=0;ii<Ndim;ii++){
+        coord[ii]=xx;
+    }
+}
+
+point::point(double coo[Ndim]){ // Constructor à partir des coo d'un autre point 
+    for (int ii=0;ii<Ndim;ii++){
+        coord[ii]=coo[ii];
+    }
+}
+
 
 point::point(){   // Constructor with no value
     this->zero();
 }
 
+
+point::point(const point& p){  // Constructor copy
+    for (int ii=0;ii<Ndim;ii++){
+        this->coord[ii]=p[ii];
+    }
+}
+
+
+
 point::~point() {   // Destructor
+}
+
+const double point::operator[](int i) const{        // getter p[i]
+    if (i<0 || i>=Ndim){
+        throw("le parametre doit etre compris entre 0 et Ndim");
+    }
+    else{
+        return this->coord[i];
+    }
 }
 
 
 ostream& operator <<(std ::ostream& os, const point& p){  // Overloading operator << to print 
-    os << "(x,y)=" <<  '(' << p.X() << ',' << p.Y() << ')' <<  endl;
+    os << "["; 
+    for (int ii=0;ii<point::getNdim()-1;ii++){
+        os << p[ii] << ",";
+    }
+    os << p[point::getNdim()-1] << "]" << endl;
     return os;
 }
 
-const point& point::operator =(const point& p){  // Overloading operator = to an easier assignment 
+double& point::operator[]( int i ){  // renvoie  l'adresse memoire de la ieme coord
+    return this->coord[i];
+}
+
+
+const point& point::operator=(const point& p){  // Overloading operator = to an easier assignment 
     if (this != &p){
-        this->x = p.x;
-        this->y = p.y;
+        for (int ii=0;ii<Ndim;ii++){
+            this->coord[ii]=p[ii];
+        }
     }
     return *this;
 }
 
 
-const point& point::operator=(double xx){ 
-    this->x = xx;
-    return *this;
-}
-
-// read the x-coordinate of a point object P
-point::operator double() const {
-    return this->x;
-}
-
-
 const point operator-(const point& p) { // Point temporaire. On ne créer pas de nouveau point
                                         // avec -P, on se sert juste de sa valeur
-    point temp(-p.x,-p.y);
-    return temp;
+    point temp1 = p;
+    point temp2;
+    for (int ii=0;ii<point::getNdim();ii++){
+        temp2[ii] = -temp1[ii];
+    }
+    return temp2;
 }
 
 const point operator+(const point& p) {// Point temporaire. On ne créer pas de nouveau point
                                         // avec +P, on se sert juste de sa valeur
-    point temp(abs(p.x),abs(p.y));
+    point temp1 = p;
+    point temp2;
+    for (int ii=0;ii<point::getNdim();ii++){
+        temp2[ii] = abs(temp1[ii]);
+    }
+    return temp2;
+}
+
+
+const point operator+(const point& p, const point& q){
+    point temp;
+    for (int ii=0;ii<point::getNdim();ii++){
+        temp[ii] = p[ii]+q[ii];
+    }
+    return temp;
+}
+
+const point operator-(const point& p, const point& q){
+    point temp;
+    for (int ii=0;ii<point::getNdim();ii++){
+        temp[ii] = p[ii]-q[ii];
+    }
     return temp;
 }
 
 
 const point& point::operator+=(const point& p){ // Ici on modifie le point de base, donc on 
                                                 //renvoie le pointeur
-    this->x = this->x + p.x;
-    this->y = this->y + p.y;
+    *this = *this + p;
     return *this;
 }
 
 const point& point::operator-=(const point& p){ // Ici on modifie le point de base, donc on 
                                                 //renvoie le pointeur
-    this->x = this->x - p.x;
-    this->y = this->y - p.y;
+    *this = *this - p;
     return *this;
 }
-
-const point& point::operator+=(double xx){ // Ici on modifie le point de base, donc on 
-                                           //renvoie le pointeur
-    this->x += xx;
-    return *this;
-} // add real number to the current point
-
-const point& point::operator-=(double xx){
-    this->x -= xx;
-    return *this;
-} // subtract real number to the current point
-
-
-const point operator+(const point& p, const point& q){
-    point temp(p.x+q.x,p.y+q.y);
-    return temp;
-}
-
-const point operator-(const point& p, const point& q){
-    point temp(p.x-q.x,p.y-q.y);
-    return temp;
-}
-
-
-const point operator+(const point& p, double xx){
-    point temp(p.x+xx,p.y);
-    return temp;
-}
-
-
-const point operator+(double xx, const point& p){
-    point temp(p.x+xx,p.y);
-    return temp;
-}
-
-
-const point operator-(const point& p, double xx){
-    point temp(p.x-xx,p.y);
-    return temp;
-}
-
-
-const point operator-(double xx, const point& p){
-    point temp = -p + xx;
-    return temp;
-}
-
 
 int main(){
 
-    
-    
-    point P(1,2);
-    point Q(3,4);
+    double coo1[point::getNdim()]={-1,-2,3};
+    point P(coo1);
+    point Q(2);
     point W;
-    
-    W = P - 1.;
-    cout << "W" << W;
+    W = Q;
+    W -=P;
+    cout << W;
    
-    
     return 0;
 }
