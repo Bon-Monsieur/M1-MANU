@@ -8,7 +8,7 @@ pair<double,double> quadraticRoot (const double & a, const double & b, const dou
     double delta = pow(b,2) - 4*a*c;
 
     if (delta<0){
-        throw invalid_argument( "Delta is negative");
+        throw invalid_argument("Delta is negative");
     }
     else{
         

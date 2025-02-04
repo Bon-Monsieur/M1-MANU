@@ -6,13 +6,10 @@ using namespace std;
 
 int main()
 {
-    vector<string> msg {"Hello", "C++", "World", "from", "VS Code", "and the C++ extension!"};
-    
-    for (const string& word : msg)
-    {
-        cout << word << " ";
-    }
-    cout << endl;
+    int i = 5;
+    bool m = 0<=i && i<=6;
+    cout << !m; 
+    return 0;
 }
 
 // g++ -c -std=c++20 helloworld.cpp   -> Créer le fichier -o dit "objet"
