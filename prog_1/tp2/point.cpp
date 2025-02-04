@@ -33,10 +33,14 @@ public:
     friend const point operator-(const point& p); // Donne -la valeur du point donné en entrée
     friend const point operator+(const point& p); // Donne valeur absolue du point donné en entrée
 
+    
     const point& operator+=(const point& p);
     const point& operator-=(const point& p); 
-    const point& operator+=(double xx); // Incrémente que la coordonée x
+    const point& operator+=(double xx); // Incrémente uniquement la coordonée x
+    const point& operator-=(double xx); // Décémente uniquement la coordonée x
 
+    friend const point operator+(const point& p, const point& q); // Sum of two point
+    friend const point operator-(const point& p, const point& q); // Subtract
 };
 
 
@@ -105,33 +109,54 @@ point::operator double() const {
 }
 
 
-const point operator-(const point& p) {
+const point operator-(const point& p) { // Point temporaire. On ne créer pas de nouveau point
+                                        // avec -P, on se sert juste de sa valeur
     point temp(-p.x,-p.y);
     return temp;
 }
 
-const point operator+(const point& p) {
-    point temp(abs(p.x),(p.y));
+const point operator+(const point& p) {// Point temporaire. On ne créer pas de nouveau point
+                                        // avec +P, on se sert juste de sa valeur
+    point temp(abs(p.x),abs(p.y));
     return temp;
 }
 
 
-const point& point::operator+=(const point& p){
+const point& point::operator+=(const point& p){ // Ici on modifie le point de base, donc on 
+                                                //renvoie le pointeur
     this->x = this->x + p.x;
     this->y = this->y + p.y;
     return *this;
 }
 
-const point& point::operator-=(const point& p){
+const point& point::operator-=(const point& p){ // Ici on modifie le point de base, donc on 
+                                                //renvoie le pointeur
     this->x = this->x - p.x;
     this->y = this->y - p.y;
     return *this;
 }
 
-const point& point::operator+=(double xx){
+const point& point::operator+=(double xx){ // Ici on modifie le point de base, donc on 
+                                           //renvoie le pointeur
     this->x += xx;
     return *this;
 } // add real number to the current point
+
+const point& point::operator-=(double xx){
+    this->x -= xx;
+    return *this;
+} // subtract real number to the current point
+
+
+const point operator+(const point& p, const point& q){
+    point temp(p.x+q.x,p.y+q.y);
+    return temp;
+}
+
+const point operator-(const point& p, const point& q){
+    point temp(p.x-q.x,p.y-q.y);
+    return temp;
+}
 
 int main(){
 
@@ -139,8 +164,8 @@ int main(){
     
     point P,W;
     point Q(-1,2);
-    P=W=Q;
     /*
+    P=W=Q;
     cout << "P" << P;
     cout << "Q" << Q;
     
@@ -163,11 +188,24 @@ int main(){
     */
     
 
-
-    P = W -= Q; // Same as P.operator=(W.operator-=(Q))
+   /*
+   P = W -= Q; // Same as P.operator=(W.operator-=(Q))
     cout << "P" << P;
     cout << "Q" << Q;
     cout << "W" << W;
 
+    P += 1.;
+    cout << "P" << P;
+    P -= 1.;
+    cout << "P" << P;
+   */
+    Q.set(1,3);
+    Q.set(2,4);
+    W.set(1,1);
+    W.set(2,2);
+    cout << Q;
+    cout << W;
+    P = Q - W;
+    cout << "P" << P;
     return 0;
 }
