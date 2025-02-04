@@ -41,6 +41,13 @@ public:
 
     friend const point operator+(const point& p, const point& q); // Sum of two point
     friend const point operator-(const point& p, const point& q); // Subtract
+
+    friend const point operator+(const point& p, double xx); // point + double (x coordinate only)
+    friend const point operator+(double xx, const point& p); // double + point (x coordinate only)
+
+    friend const point operator-(const point& p, double xx); // point - double (x coordinate only)
+    friend const point operator-(double xx,const point& p); // point - double (x coordinate only)
+
 };
 
 
@@ -158,54 +165,42 @@ const point operator-(const point& p, const point& q){
     return temp;
 }
 
+
+const point operator+(const point& p, double xx){
+    point temp(p.x+xx,p.y);
+    return temp;
+}
+
+
+const point operator+(double xx, const point& p){
+    point temp(p.x+xx,p.y);
+    return temp;
+}
+
+
+const point operator-(const point& p, double xx){
+    point temp(p.x-xx,p.y);
+    return temp;
+}
+
+
+const point operator-(double xx, const point& p){
+    point temp = -p + xx;
+    return temp;
+}
+
+
 int main(){
 
     
     
-    point P,W;
-    point Q(-1,2);
-    /*
-    P=W=Q;
-    cout << "P" << P;
-    cout << "Q" << Q;
+    point P(1,2);
+    point Q(3,4);
+    point W;
     
-    P.set(2,7);
-    P = 3;
-    cout << "P" << P;
-    
-    P= -Q;
-    cout << "P" << P;
-    
-    P= +Q;
-    cout << "P" << P;
-    */
-    
-    /*
-    P = W += Q; // Same as P.operator=(W.operator+=(Q))
-    cout << "P" << P;
-    cout << "Q" << Q;
+    W = P - 1.;
     cout << "W" << W;
-    */
+   
     
-
-   /*
-   P = W -= Q; // Same as P.operator=(W.operator-=(Q))
-    cout << "P" << P;
-    cout << "Q" << Q;
-    cout << "W" << W;
-
-    P += 1.;
-    cout << "P" << P;
-    P -= 1.;
-    cout << "P" << P;
-   */
-    Q.set(1,3);
-    Q.set(2,4);
-    W.set(1,1);
-    W.set(2,2);
-    cout << Q;
-    cout << W;
-    P = Q - W;
-    cout << "P" << P;
     return 0;
 }
