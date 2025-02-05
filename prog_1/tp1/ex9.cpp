@@ -11,15 +11,16 @@ double myOtherFunction(double x ) {
     return x*x*x;
 }
 
-double (*p_function)(double x); // Déclaration d'un pointeur de fonction
 
 int main(){
 
     double x = 3;
+    double (*p_function)(double x); // Déclaration d'un pointeur de fonction
     p_function = &myFunction; // Le pointeur pointe vers l'adresse de myFunction
     cout << "pointe vers myFunction = " << (*p_function)(x) << endl;
-
+    // cout << "pointe vers myFunction = " << p_function(x) << endl;    fonctionne aussi si envie
     p_function = &myOtherFunction; // Maintenant le pointeur pointe vers l'adresse de myOtherFunction
     cout << "pointe vers myOtherFunction = " << (*p_function)(x) << endl; 
+    // cout << "pointe vers myOtherFunction = " << (*p_function)(x) << endl; fonctionne aussi si envie
     return 0;
 }

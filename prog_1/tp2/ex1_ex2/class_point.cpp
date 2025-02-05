@@ -1,46 +1,6 @@
 #include <iostream>
-
+#include "class_point.hpp"
 using namespace std;
-
-
-class point
-{
-private:
-    static const int Ndim=3;
-    double coord[Ndim];
-public:
-    // get coordinates
-    double icord(int ii) const;
-    static const int getNdim() { return Ndim;}
-
-    // setters
-    void zero();
-    void set(int i, const double& a);
-
-    // Constructors
-    point(double xx);
-    point(double coo[Ndim]);
-    point();
-    point(const point& p); // Constructor copy
-
-    // Destructor
-    ~point();
-
-    const point& operator=(const point& p);  //Definir un point à partir d'un autre
-
-    const double operator[](int i) const; // read ieme coord
-    double& operator[]( int i );  // Assign ieme coord
-
-    friend const point operator-(const point& p); // Donne -la valeur du point donné en entrée
-    friend const point operator+(const point& p); // Donne valeur absolue du point donné en entrée
-
-    const point& operator+=(const point& p);
-    const point& operator-=(const point& p); 
-
-    friend const point operator+(const point& p, const point& q); // Sum of two point
-    friend const point operator-(const point& p, const point& q); // Subtract
-
-};
 
 
 double  point::icord(int ii) const {
@@ -95,7 +55,6 @@ point::point(const point& p){  // Constructor copy
 }
 
 
-
 point::~point() {   // Destructor
 }
 
@@ -108,15 +67,6 @@ const double point::operator[](int i) const{        // getter p[i]
     }
 }
 
-
-ostream& operator <<(std ::ostream& os, const point& p){  // Overloading operator << to print 
-    os << "["; 
-    for (int ii=0;ii<point::getNdim()-1;ii++){
-        os << p[ii] << ",";
-    }
-    os << p[point::getNdim()-1] << "]" << endl;
-    return os;
-}
 
 double& point::operator[]( int i ){  // renvoie  l'adresse memoire de la ieme coord
     return this->coord[i];
@@ -181,17 +131,4 @@ const point& point::operator-=(const point& p){ // Ici on modifie le point de ba
                                                 //renvoie le pointeur
     *this = *this - p;
     return *this;
-}
-
-int main(){
-
-    double coo1[point::getNdim()]={-1,-2,3};
-    point P(coo1);
-    point Q(2);
-    point W;
-    W = Q;
-    W -=P;
-    cout << W;
-   
-    return 0;
 }

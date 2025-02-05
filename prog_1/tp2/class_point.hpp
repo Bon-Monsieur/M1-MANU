@@ -1,7 +1,0 @@
-class point{
-    private:
-
-    public:
-        
-
-};
