@@ -16,15 +16,15 @@ ostream& operator <<(std ::ostream& os, const dynamic_vector& v){  // Overloadin
 int main(){
 
     size_t dim = 6;
-    double* coo1 = new double[dim]{1,-2,3,-4,5,0};
-    double* coo2 = new double[dim]{1,-2,3,-4,5,6};
+    double* coo1 = new double[dim]{1,-2,3,-4,5,-6};
+    double* coo2 = new double[dim]{3,4,5,6,7,9};
 
     dynamic_vector v(dim,coo1);
-    dynamic_vector v2(dim,coo2);
-    double lambda  = 3;
-    dynamic_vector a;
-    a = v*lambda;
-    cout << a;
+    dynamic_vector v2(dim);
+    double a = 10.0;
+    v2 = a;
+    cout << v2;
+
     
     delete[] coo1;
     delete[] coo2;

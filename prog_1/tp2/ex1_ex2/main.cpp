@@ -19,8 +19,7 @@ int main(){
     point P(coo1);
     point Q(2);
     point W;
-    W = Q;
-    W -=P;
+    W = Q+P;
     cout << W;
    
     return 0;

@@ -33,7 +33,7 @@ dynamic_vector::dynamic_vector(const dynamic_vector& v){  // Copy constructor
     } 
 }
 
-/*
+
 void dynamic_vector::set(int i, const double& a){
     if (i<0 || i>=this->getDim()){
         throw("Le premier parametre doit être compris entre 0 et la dim du vecteur");
@@ -42,7 +42,7 @@ void dynamic_vector::set(int i, const double& a){
         this->coord[i] = a;
     }
 }
-*/
+
 
 
 
@@ -85,5 +85,32 @@ const dynamic_vector operator*(const dynamic_vector& v, const double& lambda){
     for (int ii=0;ii<n;ii++){
         temp[ii] = v[ii] * lambda;
     }
+    return temp;
+}
+
+
+const dynamic_vector operator*(const double& lambda, const dynamic_vector& v ){
+    size_t n = v.getDim();
+    dynamic_vector temp(n,0.0);
+    for (int ii=0;ii<n;ii++){
+        temp[ii] = v[ii] * lambda;
+    }
+    return temp;
+}
+
+
+const dynamic_vector& dynamic_vector::operator=(const double& xx){
+    delete[] this->coord;
+    this->coord = new double[Ndim];
+    for (int ii=0;ii<Ndim;ii++){
+        this->coord[ii] = xx;
+    }
+    return *this;
+}
+
+
+const dynamic_vector operator+(const dynamic_vector& v1, const dynamic_vector& v2){
+    dynamic_vector temp;
+    
     return temp;
 }

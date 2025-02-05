@@ -1,6 +1,6 @@
 # Définir les variables pour les fichiers source et objets
 CXX = g++                 # Le compilateur à utiliser
-CXXFLAGS = -Wall -std=c++11 # Les options de compilation (pour activer les avertissements et spécifier la norme C++11)
+CXXFLAGS = -Wall -std=c++20 # Les options de compilation (pour activer les avertissements et spécifier la norme C++11)
 OBJECTS = main.o class_point.o # Les fichiers objets à compiler
 TARGET = main               # Le nom de l'exécutable
 

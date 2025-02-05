@@ -23,7 +23,9 @@ class dynamic_vector{
 
         void set(int i, const double& a);
 
+        
         const dynamic_vector& operator=(const dynamic_vector& v);
+        const dynamic_vector& operator=(const double& xx);
 
         double operator[]( int ii ) const;
         double& operator[] ( int ii );
@@ -31,4 +33,5 @@ class dynamic_vector{
         friend const dynamic_vector operator*(const dynamic_vector& p, const double& lambda);
         friend const dynamic_vector operator*(const double& lambda, const dynamic_vector& p );
 
+        const dynamic_vector& operator+(const dynamic_vector& v1, const dynamic_vector& v2);
 };
