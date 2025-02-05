@@ -1,0 +1,7 @@
+class point{
+    private:
+
+    public:
+        
+
+};
