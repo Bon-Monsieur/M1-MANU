@@ -33,5 +33,9 @@ class dynamic_vector{
         friend const dynamic_vector operator*(const dynamic_vector& p, const double& lambda);
         friend const dynamic_vector operator*(const double& lambda, const dynamic_vector& p );
 
-        const dynamic_vector& operator+(const dynamic_vector& v1, const dynamic_vector& v2);
+        friend const dynamic_vector operator+(const dynamic_vector& v1, const dynamic_vector& v2);
+
+        const dynamic_vector& operator+=(const dynamic_vector& v);
+        const dynamic_vector& operator-=(const dynamic_vector& v);
+
 };

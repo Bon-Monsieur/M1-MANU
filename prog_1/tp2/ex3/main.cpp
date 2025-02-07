@@ -20,10 +20,11 @@ int main(){
     double* coo2 = new double[dim]{3,4,5,6,7,9};
 
     dynamic_vector v(dim,coo1);
-    dynamic_vector v2(dim);
+    dynamic_vector v2(dim,coo2);
+    dynamic_vector v3;
     double a = 10.0;
-    v2 = a;
-    cout << v2;
+    v += v2;
+    cout << v;
 
     
     delete[] coo1;

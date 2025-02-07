@@ -28,6 +28,7 @@ dynamic_vector::dynamic_vector(size_t N, double* xx){
 
 dynamic_vector::dynamic_vector(const dynamic_vector& v){  // Copy constructor
     this->Ndim = v.getDim();
+    this->coord = new double[Ndim];
     for (int ii=0;ii<Ndim;ii++){
         this->coord[ii] = v.getCoord()[ii];
     } 
@@ -79,6 +80,16 @@ const dynamic_vector& dynamic_vector::operator=(const dynamic_vector& v){
 }
 
 
+const dynamic_vector& dynamic_vector::operator=(const double& xx){
+    delete[] this->coord;
+    this->coord = new double[Ndim];
+    for (int ii=0;ii<Ndim;ii++){
+        this->coord[ii] = xx;
+    }
+    return *this;
+}
+
+
 const dynamic_vector operator*(const dynamic_vector& v, const double& lambda){
     size_t n = v.getDim();
     dynamic_vector temp(n,0.0);
@@ -99,18 +110,41 @@ const dynamic_vector operator*(const double& lambda, const dynamic_vector& v ){
 }
 
 
-const dynamic_vector& dynamic_vector::operator=(const double& xx){
-    delete[] this->coord;
-    this->coord = new double[Ndim];
-    for (int ii=0;ii<Ndim;ii++){
-        this->coord[ii] = xx;
+const dynamic_vector operator+(const dynamic_vector& v1, const dynamic_vector& v2){
+    if (v1.getDim()!=v2.getDim()){
+        throw("v1 and v2 have not same dimension");
     }
-    return *this;
+    else{
+        dynamic_vector temp(v1.getDim(),0.0);
+        for (int ii=0;ii<v1.getDim();ii++){
+            temp[ii] = v1[ii]+v2[ii];
+        }
+        return temp;
+    }
 }
 
 
-const dynamic_vector operator+(const dynamic_vector& v1, const dynamic_vector& v2){
-    dynamic_vector temp;
-    
-    return temp;
+const dynamic_vector& dynamic_vector::operator+=(const dynamic_vector& v){
+    if (this->getDim()!=v.getDim()){
+        throw("v1 and v2 have not same dimension");
+    }
+    else{
+        for (int ii=0;ii<this->getDim();ii++){
+            this->coord[ii]= this->coord[ii]+v[ii];
+        }
+        return *this;
+    }
+}
+
+
+const dynamic_vector& dynamic_vector::operator-=(const dynamic_vector& v){
+    if (this->getDim()!=v.getDim()){
+        throw("v1 and v2 have not same dimension");
+    }
+    else{
+        for (int ii=0;ii<this->getDim();ii++){
+            this->coord[ii]= this->coord[ii]-v[ii];
+        }
+        return *this;
+    }
 }
