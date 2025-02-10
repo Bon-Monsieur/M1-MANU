@@ -31,3 +31,8 @@ COROLLARY 1. Under the assumptions of the previous theorem, there exists at most
 one viscosity solution of (4) verifying u = phi sur \p(Omega)
 
 L'hamiltonien ne dépend que de grad(u) donc s'il existe un point d'intensité égal à 1 quelque part (mais pas u==1), alors -u est so
+
+
+The amout of light falling on a surface is called the irradiance. = "quantité de lumière qui est projettée sur la surface"
+The amout of light radiated from a surface is called radiance. = "quantité de lumière émit en un point", en fonction de l'angle 
+de vue, cette quantité n'est pas la même (lumière speculaire en modé 3D)
