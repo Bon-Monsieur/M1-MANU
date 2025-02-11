@@ -47,5 +47,7 @@ int main(){
     afficherTableau(resultat,N);
     double err = numerical_error(t_0,T,N,resultat,x_0);
     cout << "erreur numerique:" << err << endl;
+
+    delete[] resultat;
     return 0;
 }
