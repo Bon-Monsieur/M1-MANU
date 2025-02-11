@@ -4,7 +4,8 @@
         "stdexcept": "cpp",
         "random": "cpp",
         "iosfwd": "cpp",
-        "new": "cpp"
+        "new": "cpp",
+        "iomanip": "cpp"
     },
     "makefile.makefilePath": "C:\\Users\\2raph\\OneDrive\\Bureau\\FAC\\M1-MANU\\prog_1\\tp2\\ex1_ex2>"
 }
