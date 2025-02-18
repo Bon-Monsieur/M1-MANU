@@ -2,14 +2,14 @@
 #include <iostream>
 
 
-class integral{
+class Integral{
     private:
         double a;
         double b;
         double (*p_func)(double);
     public:
         // Constructor 
-        integral(double a, double b, double (*f)(double));
+        Integral(double a, double b, double (*f)(double));
 
         //  Getters
         double lowbd(){ return a;}
