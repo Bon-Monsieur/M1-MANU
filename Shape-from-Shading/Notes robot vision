@@ -1,0 +1,15 @@
+NOTES DU LIVRE ROBOT VISION -- BKP Horn
+
+
+Chapitre 10: 
+BRDF = bidirectionnal reflectance distribution function f(t_i,fi_i,t_e,fi_e) est la fonction qui 
+renvoie how bright a surface appears when viewed from one direction
+
+ideal Lambertian surface: renvoie equitablement la lumière dans toutes les directions sans en absorber
+=> Pour une surface lambertienne, la fonction BRDF est une constante. 
+?=> BRDF = 1/pi
+?=> radiance L = E0/pi avec E0 l'irradiance
+
+
+
+
