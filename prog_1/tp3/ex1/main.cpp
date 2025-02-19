@@ -1,14 +1,7 @@
-#include <iostream>
-#include <cmath>
-using namespace std;
+#include "test.hpp"
 
 
 
-
-template <typename T>
-T square(T x){
-    return x*x;
-}
 
 int main() {
 

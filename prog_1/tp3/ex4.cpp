@@ -57,6 +57,10 @@ public:
     }
 };
 
+
+// ====================================================
+
+
 // Implémentation des méthodes
 template<int Ndim>
 point<Ndim>::point() {
