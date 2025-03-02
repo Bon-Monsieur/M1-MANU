@@ -1,0 +1,55 @@
+On peut exprimer les solution de viscosité comme des values funciton d'un certain probleme de controle optimal. On utilise alors la formulation de u  en temps que value function
+ (dynamic programming principle of Bellman) dans le but de construire un schema monotone et consistent.
+
+On construit la formulation de u en utilisant le principe de programmation de Bellman et on obtient (9).
+Le schema numerique explicit approxime la solution de viscosité de (8) en discretisant (9).
+
+On définit une grille sur Omega un rectangle.
+-> On note U_ij la solution u au point (x_i,y_i)=(i*Dx,j*Dy) du maillage.
+-> On note N_ij la valeur de n au point (x_i,y_i) du maillage.
+
+RAPPEL: Omega' = {x in Omega | I(x) != 1}
+On définit des ensembles d'indices du maillage:
+Q' = {(i,j) in N² | (x_i,y_i) in Omega'}
+dQ' = {(i,j) in N² | (x_i,y_i) in dOmega'}
+adQ = {(i,j) in N² | (x_i,y_i) in adOmega'}
+
+On veut calculer u sur adOmega grâce au principe de programmation dynamique en posant tau = Dt.
+
+Dt = Dx*Dy/sqrt(Dx²+Dy²)
+
+SCHEMA NUMERIQUE
+On définit plusieurs notations d'approximation de dérivées (voir page 7)
+On définit un ensemble de fonction (g_ij)_ij tq g_ij(a,b,c,d) = sqrt(max(a+,b-)²+max(c+,d-)²) - N_ij
+
+
+Une approximation numérique de U vérifiant (8) va alors vérifier (10):
+    -> u vérifie la condition au bord
+    -> la norme2 du gradient de u - sa normale vaut 0 
+
+La précision de ce type de schema consistant et monotone est de l'ordre de Dt.
+
+
+
+PREUVE DE LA CONVERGENCE DU SCHEMA:
+On va utiliser des arguments présents dans [5]     (à détailler car pas clair du tout)
+THM2 avec les définitions de u_ et ^_u le schéma définit par (10) converge vers la solution de viscosité de (8)
+We shall now prove that _u is greater than u on adOmega
+
+
+ALGORITHM NUMERIQUE
+On présente maintenant un algorithme qui calcule une approximation de la solution U de (10) for un (Dx,Dy) donné. 
+Cet algo proposé par Osher and Rudin in [17], est efficace car il est explicite et met peu de d'itérartion à converger.
+
+On définit G(U) qui vaut: G(U)_ij = (g_ij)_ij (*) (Pour une approximation U donnée, renvoie la valeur de son gradient approché - la normale pour tous les points)
+Alors U est une approxiamtion de ma solution de viscosité de (8) pour la discretisation (Dx,Dy) si G(U) = 0 et U_ij = phi(x_i,y_j) sur le bord
+
+
+On détermine la valeur adV_ij en résolvant l'equation g_ij(a,b,c,d) = C
+On pose alors des approximations a*,b*,c*,d*.
+
+On aurait pu utiliser une méthode de point fixe pour résoudre notre pb, mais ça aurait été beaucoup trop long (notre algo 21 fois plus rapide que (11)):
+the simplest way to find a solution of (10) would have been to look for the fixedpoints of 
+U -> U- Dt*G(U)
+en utilisant le schema explicit consistant et monotone (11)
+

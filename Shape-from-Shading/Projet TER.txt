@@ -9,6 +9,12 @@ u représente la hauteur de la forme (uniformément continue sur Omega et borné
 
 La surface n'émet pas de lumière !!!
 
+I(x) is the greylevel measured in the image at point x (in fact, I(x) is
+the irradiance at point x, but both quantities are proportional) and R(n(x)) is
+the reflectance function, giving the value of the light re-emitted by the surface
+as a function of its orientation
+
+
 brightness value I(x, y) at each pixel
 reflectance map R(n) which specifies the reflectance of a surface as a function of its orientation,
 
@@ -36,3 +42,4 @@ L'hamiltonien ne dépend que de grad(u) donc s'il existe un point d'intensité �
 The amout of light falling on a surface is called the irradiance. = "quantité de lumière qui est projettée sur la surface"
 The amout of light radiated from a surface is called radiance. = "quantité de lumière émit en un point", en fonction de l'angle 
 de vue, cette quantité n'est pas la même (lumière speculaire en modé 3D)
+
