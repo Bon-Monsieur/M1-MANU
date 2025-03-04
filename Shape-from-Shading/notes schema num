@@ -27,7 +27,9 @@ Une approximation numérique de U vérifiant (8) va alors vérifier (10):
     -> u vérifie la condition au bord
     -> la norme2 du gradient de u - sa normale vaut 0 
 
-La précision de ce type de schema consistant et monotone est de l'ordre de Dt.
+La précision de ce type de schema consistant et monotone est de l'ordre de qsrt(Dt).
+Pour s'assurer de la convergence monotone du schema, l'algorithme doit commencer avec une subsolution que vérifie proprement les conditions au bord.
+
 
 
 
