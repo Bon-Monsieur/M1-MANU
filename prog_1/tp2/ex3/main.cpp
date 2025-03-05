@@ -2,7 +2,7 @@
 using namespace std;
 
 // Affichage vector 
-ostream& operator <<(std ::ostream& os, const dynamic_vector& v){  // Overloading operator << to print 
+ostream& operator<<(std ::ostream& os, const dynamic_vector& v){  // Overloading operator << to print 
     size_t dim = v.dynamic_vector::getDim();
     os << "["; 
     for (auto ii=0;ii<dim-1;ii++){
