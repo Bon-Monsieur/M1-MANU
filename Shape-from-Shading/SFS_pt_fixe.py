@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import tkinter as tk
 
 # Fonction qui permet de forcer la valeur de mon estimation aux points critiques de ma forme
 def cond(Un,nb_pt,fig="parabola"):
@@ -21,7 +22,7 @@ def cond(Un,nb_pt,fig="parabola"):
         Un[a,a] = 47/81  # modifie uniquement le centre de la parabole
         return Un
 
-    if fig == "fig8":
+    if fig == "fig7":
         a = int((nb_pt-1)/2) # moitié du maillage
         Un[a,a] = 0
         b = int(a/2)  # quart du maillage
@@ -29,20 +30,40 @@ def cond(Un,nb_pt,fig="parabola"):
         Un[b,b]=Un[c,c]=1
         Un[b,c]=Un[c,b]=-1
         return Un
+    if fig == "fig8":
+        a = int((nb_pt-1)/2) # moitié du maillage
+        Un[a,a] = 2
+        b = int(a/2)  # quart du maillage
+        c = 3*b
+        Un[b,b]=Un[c,c]=Un[b,c]=Un[c,b]=1
+        return Un
     if fig == "test":
         return Un
 
 def erreur(Un,nb_pt,fig,x,y):
     res = 0
+    count = 0
+
     if fig=="parabola":
         sol_exacte = lambda v: 16*(v[1]*(1-v[1])*v[0]*(1-v[0]))
+    if fig=="reverse_parabola":
+        sol_exacte = lambda v: -16*(v[1]*(1-v[1])*v[0]*(1-v[0]))
+    if fig=="parabola_with_forced_elevation":
+        sol_exacte = lambda v: -16*(v[1]*(1-v[1])*v[0]*(1-v[0]))
     if fig=="pyramid": 
-        sol_exacte = lambda v: 1- np.linalg.norm(np.array([0.5-v[0],0.5-v[1]]))
-    
+        sol_exacte = lambda v: 1- np.linalg.norm(np.array([0.5-v[0],0.5-v[1]]),np.inf)
+    if fig=="fig7":
+        sol_exacte = lambda v: np.sin(2*np.pi*v[0])*np.sin(2*np.pi*v[1])
+    if fig=="fig8":
+        sol_exacte = lambda v: np.sin(2*np.pi*v[0])*np.sin(2*np.pi*v[1])
+
     for i in range(1,nb_pt-1):
         for j in range(1,nb_pt-1):
+            count +=1
             res += np.abs(Un[i,j]-sol_exacte([x[i],y[i]]))
-    res = res/nb_pt**2
+           
+    res = res/(count)**2
+    
     return res
 
 # Methode du point fixe pour le probleme de SFS
@@ -66,6 +87,8 @@ def SFS_fixed_point_method(nb_pt=21,fig="parabola"):
         I = lambda v: 1/np.sqrt(5)
     if fig == "parabola_with_forced_elevation":
         I = lambda v: 1 / np.sqrt(1 + (16 * v[1] * (1 - v[1]) * (1 - 2 * v[0]))**2 + (16 * v[0] * (1 - v[0]) * (1 - 2 * v[1]))**2)
+    if fig == "fig7":
+        I = lambda v: 1 / np.sqrt(1 + (2 * np.pi * np.sin(2 * np.pi * v[1]) * np.cos(2 * np.pi * v[0]))**2 + (2 * np.pi * np.sin(2 * np.pi * v[0]) * np.cos(2 * np.pi * v[1]))**2)
     if fig == "fig8":
         I = lambda v: 1 / np.sqrt(1 + (2 * np.pi * np.sin(2 * np.pi * v[1]) * np.cos(2 * np.pi * v[0]))**2 + (2 * np.pi * np.sin(2 * np.pi * v[0]) * np.cos(2 * np.pi * v[1]))**2)
     if fig == "test":
@@ -91,7 +114,7 @@ def SFS_fixed_point_method(nb_pt=21,fig="parabola"):
 
     # Boucle itérative à modifier en while pour forcer la convergence en fonction d'un epsilon donné
     # Ici on fait 200 itérations, mais on peut demander plus (attention à la lenteur du code)
-    for k in range(400):
+    for k in range(450):
         Un = Up1.copy()
         Un = cond(Un,nb_pt,fig)     #Applique les conditions pour les endroits où I(x)=1
 
@@ -102,19 +125,22 @@ def SFS_fixed_point_method(nb_pt=21,fig="parabola"):
                     continue
                 Up1[i, j] = Un[i, j] - Dt * G(Un, i, j)           # methode du pt fixe
 
-    
-    
-    #Up1 = cond(Up1,nb_pt,fig)       # On applique les conditions aux pt critiques après la dernière itération
-    #print(erreur(Up1,nb_pt,fig,x,y))
+    #Up1 = cond(Up1,nb_pt,fig)
+    erreur_globale = erreur(Up1,nb_pt,fig,x,y)      # Calcul de l'erreur
+
 
 
     # ======== AFFICHAGE ======= #
+
+    
+
+    fig = plt.figure(figsize=(10, 4))  # 80% de l'écran
+    ax = fig.add_subplot(1,2,1)
+   
     # Calcul des valeurs de I sur le maillage
     Z = np.array([[I([X[i, j], Y[i, j]]) for j in range(X.shape[1])] for i in range(X.shape[0])])
 
-    # Création de la figure avec deux sous-graphiques
-    fig = plt.figure(figsize=(10, 4))
-    ax = fig.add_subplot(1,2,1)
+    
     # Premier graphique
     contour1 = ax.contourf(X, Y, Z, levels=np.linspace(0,1,51), cmap='viridis', vmin=0, vmax=1)
     cbar = fig.colorbar(contour1, ax=ax, label='I(v)')
@@ -129,10 +155,14 @@ def SFS_fixed_point_method(nb_pt=21,fig="parabola"):
     ax = fig.add_subplot(1, 2, 2, projection='3d')
     ax.plot_wireframe(X, Y, Up1, color='black', linewidth=1)
     surf = ax.plot_surface(X, Y, Up1, color='white', alpha=1)
-    ax.view_init(elev=25, azim=-135)  
+    ax.view_init(elev=15, azim=-135)  
     ax.set_xlabel('x')
     ax.set_ylabel('y')
     ax.set_title('Shape reconstructed from the intensity')
+    
+    print(erreur_globale)
+    ax.text2D(0.35, -0.1, f"Erreur: ${erreur_globale:.2e}$", transform=ax.transAxes)
+
     plt.show()
     
 
@@ -156,4 +186,4 @@ Exemple d'appel:    SFS_fixed_point_method(nb_pt=21,fig="parabola")
 ''' 
 
 
-SFS_fixed_point_method(nb_pt=21,fig="fig8") 
+SFS_fixed_point_method(nb_pt=41,fig="fig8") 

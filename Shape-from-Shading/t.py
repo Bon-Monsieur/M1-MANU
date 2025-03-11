@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
 # Définition de la fonction
-I = lambda v: -np.cos(2*np.pi*(v[0])) * np.cos(2*np.pi*(v[1])) +1
+I  = lambda v: np.sin(2*np.pi*v[0])*np.sin(2*np.pi*v[1])
 
 # Création de la grille
 x = np.linspace(0, 1, 21)
@@ -20,6 +20,6 @@ ax.plot_surface(X, Y, Z, cmap='spring')
 ax.set_xlabel('X')
 ax.set_ylabel('Y')
 ax.set_zlabel('I(X, Y)')
-ax.set_title('Plot de la fonction I en 3D')
+
 
 plt.show()
