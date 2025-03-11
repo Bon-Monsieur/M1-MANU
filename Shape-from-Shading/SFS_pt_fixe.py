@@ -32,6 +32,18 @@ def cond(Un,nb_pt,fig="parabola"):
     if fig == "test":
         return Un
 
+def erreur(Un,nb_pt,fig,x,y):
+    res = 0
+    if fig=="parabola":
+        sol_exacte = lambda v: 16*(v[1]*(1-v[1])*v[0]*(1-v[0]))
+    if fig=="pyramid": 
+        sol_exacte = lambda v: 1- np.linalg.norm(np.array([0.5-v[0],0.5-v[1]]))
+    
+    for i in range(1,nb_pt-1):
+        for j in range(1,nb_pt-1):
+            res += np.abs(Un[i,j]-sol_exacte([x[i],y[i]]))
+    res = res/nb_pt**2
+    return res
 
 # Methode du point fixe pour le probleme de SFS
 def SFS_fixed_point_method(nb_pt=21,fig="parabola"):
@@ -79,7 +91,7 @@ def SFS_fixed_point_method(nb_pt=21,fig="parabola"):
 
     # Boucle itérative à modifier en while pour forcer la convergence en fonction d'un epsilon donné
     # Ici on fait 200 itérations, mais on peut demander plus (attention à la lenteur du code)
-    for k in range(450):
+    for k in range(400):
         Un = Up1.copy()
         Un = cond(Un,nb_pt,fig)     #Applique les conditions pour les endroits où I(x)=1
 
@@ -92,8 +104,8 @@ def SFS_fixed_point_method(nb_pt=21,fig="parabola"):
 
     
     
-    Up1 = cond(Up1,nb_pt,fig)       # On applique les conditions aux pt critiques après la dernière itération
-    
+    #Up1 = cond(Up1,nb_pt,fig)       # On applique les conditions aux pt critiques après la dernière itération
+    #print(erreur(Up1,nb_pt,fig,x,y))
 
 
     # ======== AFFICHAGE ======= #
@@ -101,7 +113,7 @@ def SFS_fixed_point_method(nb_pt=21,fig="parabola"):
     Z = np.array([[I([X[i, j], Y[i, j]]) for j in range(X.shape[1])] for i in range(X.shape[0])])
 
     # Création de la figure avec deux sous-graphiques
-    fig = plt.figure(figsize=(12, 6))
+    fig = plt.figure(figsize=(10, 4))
     ax = fig.add_subplot(1,2,1)
     # Premier graphique
     contour1 = ax.contourf(X, Y, Z, levels=np.linspace(0,1,51), cmap='viridis', vmin=0, vmax=1)
@@ -144,4 +156,4 @@ Exemple d'appel:    SFS_fixed_point_method(nb_pt=21,fig="parabola")
 ''' 
 
 
-SFS_fixed_point_method(nb_pt=21,fig="parabola") 
+SFS_fixed_point_method(nb_pt=21,fig="fig8") 
