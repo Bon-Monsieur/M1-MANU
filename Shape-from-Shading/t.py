@@ -1,25 +1,38 @@
-import numpy as np
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
+import numpy as np
 
-# Définition de la fonction
-I = lambda v: -np.cos(2*np.pi*(v[0])) * np.cos(2*np.pi*(v[1])) +1
 
-# Création de la grille
-x = np.linspace(0, 1, 21)
-y = np.linspace(0, 1, 21)
-X, Y = np.meshgrid(x, y)
-Z = np.array([[I([X[i, j], Y[i, j]]) for j in range(X.shape[1])] for i in range(X.shape[0])])
+def f(t):
+    return np.cos(2*np.pi*t) * np.exp(-t)
 
-# Tracé de la surface
-fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
-ax.plot_surface(X, Y, Z, cmap='spring')
 
-# Étiquettes des axes
-ax.set_xlabel('X')
-ax.set_ylabel('Y')
-ax.set_zlabel('I(X, Y)')
-ax.set_title('Plot de la fonction I en 3D')
+# Set up a figure twice as tall as it is wide
+fig = plt.figure(figsize=plt.figaspect(2.))
+fig.suptitle('A tale of 2 subplots')
+
+# First subplot
+ax = fig.add_subplot(2, 1, 1)
+
+t1 = np.arange(0.0, 5.0, 0.1)
+t2 = np.arange(0.0, 5.0, 0.02)
+t3 = np.arange(0.0, 2.0, 0.01)
+
+ax.plot(t1, f(t1), 'bo',
+        t2, f(t2), 'k--', markerfacecolor='green')
+ax.grid(True)
+ax.set_ylabel('Damped oscillation')
+
+# Second subplot
+ax = fig.add_subplot(2, 1, 2, projection='3d')
+
+X = np.arange(-5, 5, 0.25)
+Y = np.arange(-5, 5, 0.25)
+X, Y = np.meshgrid(X, Y)
+R = np.sqrt(X**2 + Y**2)
+Z = np.sin(R)
+
+surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1,
+                       linewidth=0, antialiased=False)
+ax.set_zlim(-1, 1)
 
 plt.show()

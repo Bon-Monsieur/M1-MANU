@@ -101,27 +101,28 @@ def SFS_fixed_point_method(nb_pt=21,fig="parabola"):
     Z = np.array([[I([X[i, j], Y[i, j]]) for j in range(X.shape[1])] for i in range(X.shape[0])])
 
     # Création de la figure avec deux sous-graphiques
-    fig, axes = plt.subplots(1, 2, figsize=(12, 6))
-
+    fig = plt.figure(figsize=(12, 6))
+    ax = fig.add_subplot(1,2,1)
     # Premier graphique
-    contour1 = axes[0].contourf(X, Y, Z, levels=np.linspace(0,1,51), cmap='viridis', vmin=0, vmax=1)
-    cbar = fig.colorbar(contour1, ax=axes[0], label='I(v)')
+    contour1 = ax.contourf(X, Y, Z, levels=np.linspace(0,1,51), cmap='viridis', vmin=0, vmax=1)
+    cbar = fig.colorbar(contour1, ax=ax, label='I(v)')
     cbar.set_ticks(np.linspace(0, 1, 5))
-    axes[0].set_aspect('equal')
-    axes[0].set_xlabel('x')
-    axes[0].set_ylabel('y')
-    axes[0].set_title('Intensité lumineuse')
-
-    # Deuxième figure
-    axes[1] = fig.add_subplot(1, 2, 2, projection='3d')
-    axes[1].plot_wireframe(X, Y, Up1, color='black', linewidth=1)
-    axes[1].plot_surface(X, Y, Up1,color='white', alpha=1)
-    axes[1].view_init(elev=25, azim=-135)  
-    axes[1].set_xlabel('x')
-    axes[1].set_ylabel('y')
-    axes[1].set_title('Shape reconstructed from the intensity')
+    ax.set_aspect('equal')
+    ax.set_xlabel('x')
+    ax.set_ylabel('y')
+    ax.set_title('Intensité lumineuse')
     
+    
+    # Deuxième figure
+    ax = fig.add_subplot(1, 2, 2, projection='3d')
+    ax.plot_wireframe(X, Y, Up1, color='black', linewidth=1)
+    surf = ax.plot_surface(X, Y, Up1, color='white', alpha=1)
+    ax.view_init(elev=25, azim=-135)  
+    ax.set_xlabel('x')
+    ax.set_ylabel('y')
+    ax.set_title('Shape reconstructed from the intensity')
     plt.show()
+    
 
 
 '''
@@ -143,4 +144,4 @@ Exemple d'appel:    SFS_fixed_point_method(nb_pt=21,fig="parabola")
 ''' 
 
 
-SFS_fixed_point_method(nb_pt=21,fig="pyramid") 
+SFS_fixed_point_method(nb_pt=21,fig="parabola") 
