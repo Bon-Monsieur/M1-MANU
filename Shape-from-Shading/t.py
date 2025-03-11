@@ -1,23 +1,22 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 
-# Définition du domaine
-x_min, x_max = 0,1
-y_min, y_max = 0,1
-nb_pixels = 21
-x = np.linspace(x_min, x_max, nb_pixels)
-y = np.linspace(y_min, y_max, nb_pixels)
+# Définition de la fonction
+I = lambda v: 1 / np.sqrt(1 + (16 * v[1] * (1 - v[1]) * (1 - 2 * v[0]))**2 + (16 * v[0] * (1 - v[0]) * (1 - 2 * v[1]))**2)
+
+# Définition du maillage
+x = np.linspace(0, 1, 41)
+y = np.linspace(0, 1, 41)
 X, Y = np.meshgrid(x, y)
-print(x[10],y[10])
-print(len(x))
-Z = 1
-# Tracé en 3D
-fig = plt.figure(figsize=(8, 6))
-ax = fig.add_subplot(111, projection='3d')
-ax.plot_surface(X, Y, Z, cmap='viridis')
-ax.set_xlabel('X')
-ax.set_ylabel('Y')
-ax.set_zlabel('U_SV')
-ax.set_title('Image synthétique du vase en 3D')
+
+# Calcul des valeurs de I sur le maillage
+Z = np.array([[I([X[i, j], Y[i, j]]) for j in range(X.shape[1])] for i in range(X.shape[0])])
+
+# Tracé du graphique
+plt.figure(figsize=(8, 6))
+contour = plt.contourf(X, Y, Z, levels=50, cmap='viridis')
+plt.colorbar(contour, label='I(v)')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.title('Tracé de la fonction I(v)')
 plt.show()
