@@ -51,12 +51,13 @@ def erreur(Un,nb_pt,fig,x,y):
     if fig=="parabola_with_forced_elevation":
         sol_exacte = lambda v: -16*(v[1]*(1-v[1])*v[0]*(1-v[0]))
     if fig=="pyramid": 
-        sol_exacte = lambda v: 1- np.linalg.norm(np.array([0.5-v[0],0.5-v[1]]),np.inf)
+        sol_exacte = lambda v: 1- 2*np.linalg.norm(np.array([0.5-v[0],0.5-v[1]]),np.inf)
     if fig=="fig7":
         sol_exacte = lambda v: np.sin(2*np.pi*v[0])*np.sin(2*np.pi*v[1])
     if fig=="fig8":
         sol_exacte = lambda v: np.sin(2*np.pi*v[0])*np.sin(2*np.pi*v[1])
-
+    if fig=="test":
+        return 0
     for i in range(1,nb_pt-1):
         for j in range(1,nb_pt-1):
             count +=1
@@ -92,7 +93,7 @@ def SFS_fixed_point_method(nb_pt=21,fig="parabola"):
     if fig == "fig8":
         I = lambda v: 1 / np.sqrt(1 + (2 * np.pi * np.sin(2 * np.pi * v[1]) * np.cos(2 * np.pi * v[0]))**2 + (2 * np.pi * np.sin(2 * np.pi * v[0]) * np.cos(2 * np.pi * v[1]))**2)
     if fig == "test":
-        I = lambda v: (1-v[0]**100 )**(1/100) 
+        I = lambda v: 1/np.sqrt(1+1/np.sqrt(1-2*np.abs(np.maximum(1/2-v[0],1/2-v[1]))))
 
     # Définition de la normale pour le SFS 
     n = lambda v: np.sqrt(1/I(v)**2 - 1)
@@ -114,7 +115,7 @@ def SFS_fixed_point_method(nb_pt=21,fig="parabola"):
 
     # Boucle itérative à modifier en while pour forcer la convergence en fonction d'un epsilon donné
     # Ici on fait 200 itérations, mais on peut demander plus (attention à la lenteur du code)
-    for k in range(450):
+    for k in range(500):
         Un = Up1.copy()
         Un = cond(Un,nb_pt,fig)     #Applique les conditions pour les endroits où I(x)=1
 
@@ -186,4 +187,4 @@ Exemple d'appel:    SFS_fixed_point_method(nb_pt=21,fig="parabola")
 ''' 
 
 
-SFS_fixed_point_method(nb_pt=41,fig="fig8") 
+SFS_fixed_point_method(nb_pt=101,fig="pyramid") 
