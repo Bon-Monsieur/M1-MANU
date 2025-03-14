@@ -24,7 +24,7 @@ def cond(Un, Nx, Ny, fig="parabola"):
     if fig == "pyramid":
         return Un
 
-    if fig == "parabola_with_forced_elevation":
+    if fig == "pwfe":
         ax = int((Nx - 1) / 2)
         ay = int((Ny - 1) / 2)
         Un[ax, ay] = 47 / 81  # modifie uniquement le centre de la parabole
@@ -41,6 +41,7 @@ def cond(Un, Nx, Ny, fig="parabola"):
         Un[bx, by] = Un[cx, cy] = 1
         Un[bx, cy] = Un[cx, by] = -1
         return Un
+    
     if fig == "fig8":
         ax = int((Nx - 1) / 2)  # moitié du maillage
         ay = int((Ny - 1) / 2)  # moitié du maillage
@@ -51,7 +52,17 @@ def cond(Un, Nx, Ny, fig="parabola"):
         cy = 3 * by
         Un[bx, by] = Un[cx, cy] = Un[bx, cy] = Un[cx, by] = 1
         return Un
-    if fig == "test":
+    
+    if fig == "x2_0bd":
+        ax0 = int((Nx-1)/2)
+        for j in range(Nx):
+            Un[j,ax0] = 0
+        return Un
+    
+    if fig == "x2_mixed_bd":
+        ax0 = int((Nx-1)/2)
+        for j in range(Nx):
+            Un[j,ax0] = 0
         return Un
 
 
@@ -64,49 +75,62 @@ def erreur(Un, Nx, Ny, fig, x, y):
 
     if fig == "parabola":
         sol_exacte = lambda x, y: 16 * (y * (1 - y) * x * (1 - x))
+
     elif fig == "reverse_parabola":
         sol_exacte = lambda x, y: -16 * (y * (1 - y) * x * (1 - x))
-    elif fig == "parabola_with_forced_elevation":
+
+    elif fig == "pwfe":
         sol_exacte = lambda x, y: -16 * (y * (1 - y) * x * (1 - x))
+
     elif fig == "pyramid":
         sol_exacte = lambda x, y: 1 - 2 * np.maximum(np.abs(0.5 - x), np.abs(0.5 - y))
+
     elif fig in ["fig7", "fig8"]:
         sol_exacte = lambda x, y: np.sin(2 * np.pi * x) * np.sin(2 * np.pi * y)
-    elif fig=="test":
-        sol_exacte = lambda x, y: np.sqrt(1 - np.maximum(np.abs(x - 0.5), np.abs(y - 0.5)))
-    return np.mean(np.abs(Un - sol_exacte(X, Y)))
+        
+    elif fig=="x2_0bd":
+        x = np.linspace(-1, 1, Nx)
+        y = np.linspace(-1, 1, Ny)
+        # === Ajouter la solution exacte === #
+        return 2
+    
+    elif fig=="x2_mixed_bd":
+        x = np.linspace(-1, 1, Nx)
+        y = np.linspace(-1, 1, Ny)
+        # === Ajouter la solution exacte === #
+        return 2
 
+    return np.mean(np.abs(Un - sol_exacte(X, Y)))
 
 
 
 # Methode du point fixe pour le probleme de SFS
 def SFS_fixed_point_method(Nx, Ny, fig="parabola",epsilon=1e-4,maxiter=2000):
 
-    # Définition du maillage
     x = np.linspace(0, 1, Nx)
     y = np.linspace(0, 1, Ny)
 
-    X, Y = np.meshgrid(x, y)
-    Dx = x[1] - x[0]
-    Dy = y[1] - y[0]
-    Dt = Dx * Dy / np.sqrt(Dx**2 + Dy**2)
+    # Initialisation de mon itération
+    Un = np.full((Nx, Ny), 0.0)  # U0 == 0
 
-    # Fonction de l'intensité lumineuse en fonction de la figure demandée
+    # Fonction de l'intensité lumineuse en fonction de la figure demandée et définition des bonnes bornes du maillage pour un bel affichage
     if fig == "parabola":
         I = (
             lambda x, y: 1/np.sqrt(1+(16 * y * (1 - y) * (1 - 2 * x))**2
             + (16 * x * (1 - x) * (1 - 2 * y))**2)
         )
-
-    if fig == "reverse_parabola":
+    elif fig == "reverse_parabola":
         I = (
             lambda x, y: 1/np.sqrt(1+(16*y*(1-y)*(1-2*x))**2
             + (16*x*(1-x)*(1-2*y))**2)
         )
     elif fig == "pyramid":
-        I = lambda x, y: np.ones_like(X) / np.sqrt(5)
-    elif fig == "parabola_with_forced_elevation":
         I = (
+            lambda x, y: np.ones_like(X) / np.sqrt(5)
+        )
+    elif fig == "pwfe":
+        I = (
+            
             lambda x, y: 1/np.sqrt(1+(16 * y * (1 - y) * (1 - 2 * x)) ** 2
             + (16 * x * (1 - x) * (1 - 2 * y)) ** 2)
         )
@@ -122,8 +146,29 @@ def SFS_fixed_point_method(Nx, Ny, fig="parabola",epsilon=1e-4,maxiter=2000):
             ** 2
             + (2 * np.pi * np.sin(2 * np.pi * x) * np.cos(2 * np.pi * y)) ** 2)
         )
-    elif fig == "test":
-        I = lambda x, y: np.ones_like(X)*0.01
+    elif fig == "x2_0bd":
+        x = np.linspace(-1, 1, Nx)
+        y = np.linspace(-1, 1, Ny)
+        I = (
+            lambda x, y: 1/np.sqrt(1+(2*x)**2)
+        )
+    elif fig == "x2_mixed_bd":
+        x = np.linspace(-1, 1, Nx)
+        y = np.linspace(-1, 1, Ny)
+        I = (
+            lambda x, y: 1/np.sqrt(1+(2*x)**2)
+        )
+        # Conditions aux bords
+        Un[:,0] = Un[:,-1] = 1
+        Un[0,:] = Un[-1,:] = x**2
+
+
+    # Def maillage et pas
+    X, Y = np.meshgrid(x, y)
+    Dx = x[1] - x[0]
+    Dy = y[1] - y[0]
+    Dt = Dx * Dy / np.sqrt(Dx**2 + Dy**2)
+
 
     # Définition de la normale pour le SFS
     n = lambda x, y: np.sqrt(1/I(x, y)**2-1)
@@ -150,22 +195,17 @@ def SFS_fixed_point_method(Nx, Ny, fig="parabola",epsilon=1e-4,maxiter=2000):
             + np.maximum(np.maximum(DDym @ fU, 0.0), np.maximum(-DDyp @ fU, 0.0)) ** 2
         ).reshape(Nx, Ny) - n(X, Y)
         return R
-
-    # Initialisation de mon itération
-    Un = np.full((Nx, Ny), 0.0)  # U0 == 0
-
-    # Boucle itérative à modifier en while pour forcer la convergence en fonction d'un epsilon donné
-    # Ici on fait 200 itérations, mais on peut demander plus (attention à la lenteur du code)
-    
+   
+    # Methode du pt fixe
     for k in range(maxiter+1):
         if(erreur(Un,Nx,Ny,fig,x,y)<=epsilon):
             break
         Un = cond(
-            Un, Nx, Ny, fig
-        )  # Applique les conditions pour les endroits où I(x)=1
-        Un[1:-1, 1:-1] = Un[1:-1, 1:-1] - Dt * G(Un)[1:-1, 1:-1]  # methode du pt fixe
+            Un, Nx, Ny, fig      # Applique les conditions pour les endroits où I(x)=1
+        ) 
+        Un[1:-1, 1:-1] = Un[1:-1, 1:-1] - Dt * G(Un)[1:-1, 1:-1]  
         
-    # Up1 = cond(Up1,nb_pt,fig)
+    #Up1 = cond(Up1,nb_pt,fig)
     erreur_globale = erreur(Un, Nx, Ny, fig, x, y)  # Calcul de l'erreur
 
     # ======== AFFICHAGE ======= #
@@ -194,9 +234,10 @@ def SFS_fixed_point_method(Nx, Ny, fig="parabola",epsilon=1e-4,maxiter=2000):
     ax.view_init(elev=15, azim=-135)
     ax.set_xlabel("x")
     ax.set_ylabel("y")
+    ax.set_zlabel("z")
     ax.set_title("Shape reconstructed from the intensity")
 
-    print(erreur_globale)
+    #print(erreur_globale)
     ax.text2D(0., -0.1, f"Erreur: ${erreur_globale:.2e}$", transform=ax.transAxes)
     ax.text2D(0.6, -0.1, f"Nb_itération: ${k:.2f}$", transform=ax.transAxes)
 
@@ -215,11 +256,11 @@ Il est possible de donner les formes suivantes comme argument (sous la forme de 
     - "parabola"
     - "reverse_parabola"
     - "pyramid"
-    - "parabola_with_forced_elevation"
+    - "pwfe"
     - "fig8"
 
 Exemple d'appel:    SFS_fixed_point_method(nb_pt=21,fig="parabola")
 """
 
 
-SFS_fixed_point_method(Nx=101, Ny=101, fig="test",epsilon=1e-5,maxiter=2000)
+SFS_fixed_point_method(Nx=200, Ny=200, fig="pyramid",epsilon=1e-5,maxiter=5000)

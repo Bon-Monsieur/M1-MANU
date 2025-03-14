@@ -22,4 +22,7 @@ ax.set_xlabel('X')
 ax.set_ylabel('Y')
 ax.set_zlabel('I(X, Y)')
 
-plt.show()
+Nx = Ny = 5
+Un = np.full((Nx, Ny), 1.0)  # U0 == 0
+Un[0,:]= 2
+print(Un)

@@ -38,6 +38,8 @@ def cond(Un,nb_pt,fig="parabola"):
         Un[b,b]=Un[c,c]=Un[b,c]=Un[c,b]=1
         return Un
     if fig == "test":
+        for j in range(nb_pt):
+            Un[int((nb_pt-1)/2),j] = 0
         return Un
 
 def erreur(Un,nb_pt,fig,x,y):
@@ -93,7 +95,7 @@ def SFS_fixed_point_method(nb_pt=21,fig="parabola"):
     if fig == "fig8":
         I = lambda v: 1 / np.sqrt(1 + (2 * np.pi * np.sin(2 * np.pi * v[1]) * np.cos(2 * np.pi * v[0]))**2 + (2 * np.pi * np.sin(2 * np.pi * v[0]) * np.cos(2 * np.pi * v[1]))**2)
     if fig == "test":
-        I = lambda v: 1/np.sqrt(1+1/np.sqrt(1-2*np.abs(np.maximum(1/2-v[0],1/2-v[1]))))
+        I = lambda v: 1/np.sqrt(1+(2*v[0])**2)
 
     # Définition de la normale pour le SFS 
     n = lambda v: np.sqrt(1/I(v)**2 - 1)
@@ -110,11 +112,19 @@ def SFS_fixed_point_method(nb_pt=21,fig="parabola"):
 
 
     #Initialisation de mon itération
-    Un = np.full((nb_pt,nb_pt), 0.0) #U0 == 0 
+    # Initialisation de mon itération
+    Un = np.full((nb_pt, nb_pt), 0.0)  # U0 == 0
+    #Un[:,0] = Un[:,-1] = 1
+    #Un[0,:] = Un[-1,:] = x**2
     Up1= np.full((nb_pt,nb_pt), 0.0) 
+    # Initialisation de mon itération
+    
+    #Up1[:,0] = Up1[:,-1] = 1
+    #Up1[0,:] = Up1[-1,:] = x**2
 
     # Boucle itérative à modifier en while pour forcer la convergence en fonction d'un epsilon donné
     # Ici on fait 200 itérations, mais on peut demander plus (attention à la lenteur du code)
+    
     for k in range(500):
         Un = Up1.copy()
         Un = cond(Un,nb_pt,fig)     #Applique les conditions pour les endroits où I(x)=1
@@ -126,7 +136,9 @@ def SFS_fixed_point_method(nb_pt=21,fig="parabola"):
                     continue
                 Up1[i, j] = Un[i, j] - Dt * G(Un, i, j)           # methode du pt fixe
 
-    #Up1 = cond(Up1,nb_pt,fig)
+    Up1 = cond(Up1,nb_pt,fig)
+    
+    
     erreur_globale = erreur(Up1,nb_pt,fig,x,y)      # Calcul de l'erreur
 
 
@@ -187,4 +199,4 @@ Exemple d'appel:    SFS_fixed_point_method(nb_pt=21,fig="parabola")
 ''' 
 
 
-SFS_fixed_point_method(nb_pt=101,fig="pyramid") 
+SFS_fixed_point_method(nb_pt=51,fig="parabola") 
