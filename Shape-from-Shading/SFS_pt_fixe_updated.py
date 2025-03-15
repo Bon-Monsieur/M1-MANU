@@ -6,6 +6,7 @@ from mpl_toolkits.mplot3d import Axes3D
 
 matplotlib.use("TkAgg")  # or 'Qt5Agg' if you prefer Qt
 
+# Merci Ronan pour l'optimisation :D
 
 # Fonction qui permet de forcer la valeur de mon estimation aux points critiques de ma forme
 def cond(Un, Nx, Ny, fig="parabola"):
@@ -64,6 +65,12 @@ def cond(Un, Nx, Ny, fig="parabola"):
         for j in range(Nx):
             Un[j,ax0] = 0
         return Un
+    
+    if fig == "test":
+        ax0 = int((Nx-1)/2)
+        for j in range(Nx):
+            Un[j,ax0] = 1
+        return Un
 
 
 
@@ -71,7 +78,7 @@ def erreur(Un, Nx, Ny, fig, x, y):
     x = np.linspace(0, 1, Nx)
     y = np.linspace(0, 1, Ny)
 
-    X, Y = np.meshgrid(x, y)
+    
 
     if fig == "parabola":
         sol_exacte = lambda x, y: 16 * (y * (1 - y) * x * (1 - x))
@@ -99,6 +106,9 @@ def erreur(Un, Nx, Ny, fig, x, y):
         y = np.linspace(-1, 1, Ny)
         # === Ajouter la solution exacte === #
         return 2
+    elif fig=="test":
+        return 2
+    X, Y = np.meshgrid(x, y)
 
     return np.mean(np.abs(Un - sol_exacte(X, Y)))
 
@@ -161,6 +171,13 @@ def SFS_fixed_point_method(Nx, Ny, fig="parabola",epsilon=1e-4,maxiter=2000):
         # Conditions aux bords
         Un[:,0] = Un[:,-1] = 1
         Un[0,:] = Un[-1,:] = x**2
+    elif fig == "test":
+        x = np.linspace(-np.pi, np.pi, Nx)
+        y = np.linspace(-np.pi, np.pi, Ny)
+        I = (
+            lambda x, y: 1/np.sqrt(1+(np.cos(x))**2)
+        )
+        Un[:,0] = Un[:,-1] = 1
 
 
     # Def maillage et pas
@@ -214,7 +231,7 @@ def SFS_fixed_point_method(Nx, Ny, fig="parabola",epsilon=1e-4,maxiter=2000):
     ax = fig.add_subplot(1, 2, 1)
 
     # Calcul des valeurs de I sur le maillage
-    Z = I(X, Y)
+    Z = np.where(I(X, Y)!=1,I(X,Y),1 )
     
     # Premier graphique
     contour1 = ax.contourf(
@@ -244,23 +261,7 @@ def SFS_fixed_point_method(Nx, Ny, fig="parabola",epsilon=1e-4,maxiter=2000):
     plt.show()
 
 
-"""
-======= Utilisation =======
-Il est possible de consulter 5 résultats différents de Shape-From-Shading
-Pour utiliser le code il suffit d'appeler la fonction SFS_fixed_point_method avec deux arguments:
-    - le nombre de points du maillage 
-    - La forme que l'on souhaite reconstruire
 
-Il est recommandé d'utiliser un nombre de point impair afin d'avoir une belle symétrie des résultats 
-Il est possible de donner les formes suivantes comme argument (sous la forme de chaîne de caractère):
-    - "parabola"
-    - "reverse_parabola"
-    - "pyramid"
-    - "pwfe"
-    - "fig8"
+#======  UTILISATION  ======#
 
-Exemple d'appel:    SFS_fixed_point_method(nb_pt=21,fig="parabola")
-"""
-
-
-SFS_fixed_point_method(Nx=200, Ny=200, fig="pyramid",epsilon=1e-5,maxiter=5000)
+SFS_fixed_point_method(Nx=101, Ny=101, fig="fig8",epsilon=1e-4,maxiter=2000)
