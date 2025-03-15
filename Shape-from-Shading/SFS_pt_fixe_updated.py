@@ -98,16 +98,16 @@ def erreur(Un, Nx, Ny, fig, x, y):
     elif fig=="x2_0bd":
         x = np.linspace(-1, 1, Nx)
         y = np.linspace(-1, 1, Ny)
-        # === Ajouter la solution exacte === #
-        return 2
+        sol_exacte = lambda x, y: np.where(x**2 >= 0, x**2, 0)
+        
     
     elif fig=="x2_mixed_bd":
         x = np.linspace(-1, 1, Nx)
         y = np.linspace(-1, 1, Ny)
-        # === Ajouter la solution exacte === #
-        return 2
+        sol_exacte = lambda x, y: np.where(x**2 >= 0, x**2, 0)
     elif fig=="test":
         return 2
+    
     X, Y = np.meshgrid(x, y)
 
     return np.mean(np.abs(Un - sol_exacte(X, Y)))
@@ -231,7 +231,7 @@ def SFS_fixed_point_method(Nx, Ny, fig="parabola",epsilon=1e-4,maxiter=2000):
     ax = fig.add_subplot(1, 2, 1)
 
     # Calcul des valeurs de I sur le maillage
-    Z = np.where(I(X, Y)!=1,I(X,Y),1 )
+    Z = I(X,Y)
     
     # Premier graphique
     contour1 = ax.contourf(
@@ -264,4 +264,4 @@ def SFS_fixed_point_method(Nx, Ny, fig="parabola",epsilon=1e-4,maxiter=2000):
 
 #======  UTILISATION  ======#
 
-SFS_fixed_point_method(Nx=101, Ny=101, fig="fig8",epsilon=1e-4,maxiter=2000)
+SFS_fixed_point_method(Nx=101, Ny=101, fig="x2_0bd",epsilon=1e-4,maxiter=2000)
