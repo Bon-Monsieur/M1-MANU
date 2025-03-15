@@ -225,3 +225,5 @@ Exemple d'appel:    SFS_fixed_point_method(nb_pt=21,fig="parabola")
 
 
 SFS_fixed_point_method(Nx=101, Ny=101, fig="parabola",epsilon=1e-5,maxiter=200)
+
+
