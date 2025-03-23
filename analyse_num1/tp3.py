@@ -3,9 +3,9 @@ import numpy as np
 import matplotlib.pyplot as plt 
 
 a = 0
-b = 3
-alpha = -5
-beta = 3 
+b = 1
+alpha = 0
+beta = 0
 
 def exact(x):
     return np.exp(x)-np.exp(b) + (alpha-np.exp(a))*(x-b) + beta
@@ -16,9 +16,9 @@ def exact(x):
 def poisson1D(nint,f,opt_plot):
 
     a = 0
-    b = 3
-    alpha = -5
-    beta = 3 
+    b = 1
+    alpha = 0
+    beta = 0 
     
     h = (b-a)/nint
     x = np.arange(a,b+h,h)
@@ -75,7 +75,7 @@ def poisson1D(nint,f,opt_plot):
 # Solution approchée
 Uh, err = poisson1D(nint=20,f=np.exp,opt_plot=1)
 print("erreur:",err)
-
+'''
 # Tracer le graphique en log-log
 hvec = [1000,2000,4000,8000]
 err_vec = []
@@ -83,6 +83,8 @@ for nint in hvec:
     err_vec.append(poisson1D(nint=nint,f=np.exp,opt_plot=0)[1])
 
 plt.loglog(hvec,err_vec)
+'''
+
 
 
 
