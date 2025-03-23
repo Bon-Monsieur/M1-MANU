@@ -3,10 +3,10 @@ import matplotlib.pyplot as plt
 from scipy.linalg import lu_factor, lu_solve, cho_factor, cho_solve
 
 def phi(i, x, X):
-    h = X[2] - X[0]
+    h = X[1] - X[0]
     return np.where((X[i-1] <= x) & (x <= X[i]), (x - X[i-1])/h,
            np.where((X[i] <= x) & (x <= X[i+1]), (X[i+1] - x)/h, 0))
-#plt.plot(np.linspace(0, 1, 11), [phi(2, x, np.linspace(0, 1, 11)) for x in np.linspace(0, 1, 11)])
+#plt.plot(np.linspace(0, 1, 11), [phi(1, x, np.linspace(0, 1, 11)) for x in np.linspace(0, 1, 11)])
  
 
 
@@ -47,7 +47,8 @@ def finite_elements1D(N=50, f=np.exp,method="trapeze"):
     # Solution exacte pour f(x) = exp(x)
     def exact(x):
         return -np.exp(x) + (-1+np.exp(1))*x + 1
-    plt.plot(X, exact(X), label='Solution exacte')
+    plt.plot(np.linspace(0,1,100), exact(np.linspace(0,1,100)), label='Solution exacte')
+    
     # Calcul de l'erreur
     err = np.mean(np.abs(U[1:-1] - exact(X)[1:-1]))
     print(err)
@@ -59,5 +60,5 @@ def finite_elements1D(N=50, f=np.exp,method="trapeze"):
 def f1(x):
     return np.exp(x)
 
-finite_elements1D(N=100, f=f1,method="point_milieu")
+finite_elements1D(N=10, f=f1,method="point_milieu")
 
