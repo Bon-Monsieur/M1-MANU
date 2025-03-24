@@ -78,8 +78,6 @@ def erreur(Un, Nx, Ny, fig, x, y):
     x = np.linspace(0, 1, Nx)
     y = np.linspace(0, 1, Ny)
 
-    
-
     if fig == "parabola":
         sol_exacte = lambda x, y: 16 * (y * (1 - y) * x * (1 - x))
 
@@ -98,9 +96,8 @@ def erreur(Un, Nx, Ny, fig, x, y):
     elif fig=="x2_0bd":
         x = np.linspace(-1, 1, Nx)
         y = np.linspace(-1, 1, Ny)
-        sol_exacte = lambda x, y: np.where(x**2 >= 0, x**2, 0)
+        return 2
         
-    
     elif fig=="x2_mixed_bd":
         x = np.linspace(-1, 1, Nx)
         y = np.linspace(-1, 1, Ny)
@@ -117,10 +114,11 @@ def erreur(Un, Nx, Ny, fig, x, y):
 # Methode du point fixe pour le probleme de SFS
 def SFS_fixed_point_method(Nx, Ny, fig="parabola",epsilon=1e-4,maxiter=2000):
 
+    # Maillage par défaut
     x = np.linspace(0, 1, Nx)
     y = np.linspace(0, 1, Ny)
 
-    # Initialisation de mon itération
+    # Initialisation 
     Un = np.full((Nx, Ny), 0.0)  # U0 == 0
 
     # Fonction de l'intensité lumineuse en fonction de la figure demandée et définition des bonnes bornes du maillage pour un bel affichage
