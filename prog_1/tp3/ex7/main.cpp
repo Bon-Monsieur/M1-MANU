@@ -7,7 +7,7 @@ int main(){
     Vector<n,int> v1(tab);
     Vector<n,double> v2(tab2);
     v1*=3 ;
-    std::cout << v1;
+    std::cout << v1*4;
     std::cout << v2;
     //std::cout << v1*v2 << std::endl;
 
