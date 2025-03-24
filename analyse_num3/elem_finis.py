@@ -16,15 +16,16 @@ def finite_elements1D(N=50, f=np.exp,method="trapeze"):
     X = np.linspace(0, 1, N+2)
     h = X[1] - X[0]
 
-    if method == "trapeze":
+    if method == "point_milieu":
         def l(i):
-            return  (X[i+1] - X[i-1]) * (f(X[i+1]) * phi(i, X[i+1],X) + f(X[i-1]) * phi(i, X[i-1],X))/2
+            return  (X[i+1] - X[i-1]) * f((X[i+1]+X[i-1])/2) * phi(i, (X[i+1]+X[i-1])/2,X)
+    elif method == "trapeze":
+        def l(i):
+            return  (X[i+1] - X[i-1]) * ( (f(X[i+1]) * phi(i, X[i+1],X)) + (f(X[i-1]) * phi(i, X[i-1],X)) )/2
     elif method == "simpson":
         def l(i):
             return  (X[i+1] - X[i-1])/6 * (f(X[i+1]) * phi(i, X[i+1],X) + 4*f((X[i+1]+X[i-1])/2) * phi(i, (X[i+1]+X[i-1])/2,X) + f(X[i-1]) * phi(i, X[i-1],X))
-    elif method == "point_milieu":
-        def l(i):
-            return  (X[i+1] - X[i-1]) * f((X[i+1]+X[i-1])/2) * phi(i, (X[i+1]+X[i-1])/2,X)
+    
     
 
     K = (np.identity(N)*2 + np.diag([-1]*(N-1), 1) + np.diag([-1]*(N-1), -1))/h         # Matrice de a
@@ -54,11 +55,13 @@ def finite_elements1D(N=50, f=np.exp,method="trapeze"):
     print(err)
     
     plt.plot(X, U, label='Solution approchée', linestyle='--')
+    plt.title(f"Éléments finis avec {N} points")
+    plt.legend()
     plt.show()
 
 
 def f1(x):
     return np.exp(x)
 
-finite_elements1D(N=10, f=f1,method="point_milieu")
+finite_elements1D(N=100, f=f1,method="point_milieu")
 

@@ -28,12 +28,8 @@ public:
     const point& operator-=(const point& p);
 
     // Opérateurs amis (sans template ici)
-    friend point operator-(const point& p) {
-        point temp;
-        for (int i = 0; i < Ndim; i++)
-            temp[i] = -p[i];
-        return temp;
-    }
+    template<int N>
+    friend point<N> operator-(const point<N>& p);
 
     friend point operator+(const point& p) {
         point temp;
@@ -56,6 +52,17 @@ public:
         return temp;
     }
 };
+
+
+template<int Ndim>
+point<Ndim> operator-(const point<Ndim>& p){
+    cout << "yo";
+    point<Ndim> temp;
+    for (int i = 0; i < Ndim; i++)
+        temp[i] = -p[i];
+    return temp;
+    
+}
 
 
 // ====================================================
@@ -146,12 +153,10 @@ int main() {
     double coo1[3] = {-1, -2, 3};
     point<2> p(2);
     point<3> q(coo1);
-    point<3> w = q;
-    point<3> z;
-    cout << p;
-    cout << q;
+    point<3> w = -q;
     cout << w;
-    z+=(q-w);
+    point<3> z;
+    z= w-q;
     cout << z;
 
     return 0;
