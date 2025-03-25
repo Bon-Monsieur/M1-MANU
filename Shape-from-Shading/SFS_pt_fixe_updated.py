@@ -67,9 +67,10 @@ def cond(Un, Nx, Ny, fig="parabola"):
         return Un
     
     if fig == "test":
-        ax0 = int((Nx-1)/2)
-        for j in range(Nx):
-            Un[j,ax0] = 1
+        Un[-1,-1] = 1
+        ax = int((Nx - 1) / 2)
+        ay = int((Ny - 1) / 2)
+        Un[ax, ay] = 1
         return Un
 
 
@@ -96,14 +97,14 @@ def erreur(Un, Nx, Ny, fig, x, y):
     elif fig=="x2_0bd":
         x = np.linspace(-1, 1, Nx)
         y = np.linspace(-1, 1, Ny)
-        return 2
+        return 1000
         
     elif fig=="x2_mixed_bd":
         x = np.linspace(-1, 1, Nx)
         y = np.linspace(-1, 1, Ny)
         sol_exacte = lambda x, y: np.where(x**2 >= 0, x**2, 0)
     elif fig=="test":
-        return 2
+        return 1000
     
     X, Y = np.meshgrid(x, y)
 
@@ -170,12 +171,11 @@ def SFS_fixed_point_method(Nx, Ny, fig="parabola",epsilon=1e-4,maxiter=2000):
         Un[:,0] = Un[:,-1] = 1
         Un[0,:] = Un[-1,:] = x**2
     elif fig == "test":
-        x = np.linspace(-np.pi, np.pi, Nx)
-        y = np.linspace(-np.pi, np.pi, Ny)
         I = (
-            lambda x, y: 1/np.sqrt(1+(np.cos(x))**2)
+            lambda x, y: 1/np.sqrt(1+(16 * y * (1 - y) * (1 - 2 * x))**2
+            + (16 * x * (1 - x) * (1 - 2 * y))**2)
         )
-        Un[:,0] = Un[:,-1] = 1
+        Un[:,-1] = Un[-1,:] = 1
 
 
     # Def maillage et pas
@@ -216,11 +216,11 @@ def SFS_fixed_point_method(Nx, Ny, fig="parabola",epsilon=1e-4,maxiter=2000):
         if(erreur(Un,Nx,Ny,fig,x,y)<=epsilon):
             break
         Un = cond(
-            Un, Nx, Ny, fig      # Applique les conditions pour les endroits où I(x)=1
+            Un, Nx, Ny, fig      # Applique les conditions pour les endroits sur la frontière
         ) 
         Un[1:-1, 1:-1] = Un[1:-1, 1:-1] - Dt * G(Un)[1:-1, 1:-1]  
         
-    #Up1 = cond(Up1,nb_pt,fig)
+    #Un = cond(Un,Nx,Ny,fig)
     erreur_globale = erreur(Un, Nx, Ny, fig, x, y)  # Calcul de l'erreur
 
     # ======== AFFICHAGE ======= #
@@ -262,4 +262,4 @@ def SFS_fixed_point_method(Nx, Ny, fig="parabola",epsilon=1e-4,maxiter=2000):
 
 #======  UTILISATION  ======#
 
-SFS_fixed_point_method(Nx=101, Ny=101, fig="x2_0bd",epsilon=1e-4,maxiter=2000)
+SFS_fixed_point_method(Nx=101, Ny=101, fig="fig7",epsilon=1e-4,maxiter=20)
