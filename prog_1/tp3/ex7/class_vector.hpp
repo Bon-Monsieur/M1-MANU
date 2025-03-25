@@ -19,12 +19,9 @@ public:
     const T& operator[](int i) const;
 
     // Opérateurs de multiplication par un scalaire
-    friend Vector operator*(const Vector<Ndim,T>& p, const T& lambda) {
-        Vector temp;
-        for (int ii = 0; ii < Ndim; ii++)
-            temp[ii] = p[ii] * lambda;
-        return temp;
-    }
+    template<int Ndim2, typename T2>
+    friend Vector<Ndim2, T2> operator*(const Vector<Ndim2, T2>& p, const T2& lambda);
+    
 
     friend Vector operator*(const T& lambda, const Vector<Ndim,T>& p) {
         Vector temp;
@@ -100,4 +97,13 @@ const Vector<Ndim,T>& Vector<Ndim,T>::operator*=(const T& lambda ){
 template<int Ndim,typename T>
 T Vector<Ndim,T>::norm2(){
     return std::sqrt(*this*(*this));
+}
+
+template<int Ndim, typename T>
+Vector<Ndim, T> operator*(const Vector<Ndim, T>& p, const T& lambda) {
+    std::cout << "coucou" ;
+    Vector<Ndim, T> temp;
+    for (int ii = 0; ii < Ndim; ii++)
+        temp[ii] = p[ii] * lambda;
+    return temp;
 }
