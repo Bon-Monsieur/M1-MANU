@@ -1,0 +1,32 @@
+func u = sin(2*pi*x)*sin(2*pi*y);
+func f=8*pi^2*sin(2*pi*x)*sin(2*pi*y);
+real[int] L2error(4); //an array of 4 values
+real[int] H1error(4); //an array of 4 values
+int[int] nn = [10, 20, 40, 80];
+
+real cpu = clock();
+for (int i=0;i<4;i++){
+  int nb = nn[i];
+  mesh Th=square(nb,nb,[x,y]);
+  fespace Vh(Th, P1);
+  Vh uh, vh;
+  problem chaleur(uh,vh,solver=LU)=int2d(Th)(dx(uh)*dx(vh)+dy(uh)*dy(vh))
+    -int2d(Th)(f*vh)+on(1,2,3,4,uh=0);
+  chaleur;
+  plot(uh,wait=1,fill=1);
+  L2error[i] = sqrt(int2d(Th)((u-uh)^2));
+  H1error[i] = sqrt(int2d(Th)((2*pi*cos(2*pi*x)*sin(2*pi*y)-dx(uh))^2 
+                     + (2*pi*cos(2*pi*y)*sin(2*pi*x)-dy(uh))^2)); 
+	
+}
+cout <<"temp"<< cpu << endl;
+cout << "erreur P1" << endl;
+for(int n = 0; n < 4; n++){
+	cout << "L2error " << n << " = " << L2error[n] << endl;
+}
+for(int n = 0; n < 4; n++){
+	cout << "H1error " << n << " = " << H1error[n] << endl;
+}
+
+cout << "convergence rate L2norm= "<< abs(log(L2error[3]/L2error[0])/log(8.)) << endl;
+cout << "convergence rate H1norm= "<< abs(log(H1error[3]/H1error[0])/log(8.)) << endl;
