@@ -13,7 +13,7 @@ for (int i=0;i<4;i++){
   problem chaleur(uh,vh,solver=LU)=int2d(Th)(dx(uh)*dx(vh)+dy(uh)*dy(vh))
     -int2d(Th)(f*vh)+on(1,2,3,4,uh=0);
   chaleur;
-  plot(uh,wait=1,fill=1);
+  plot(uh,wait=1,fill=1,dim=3);
   L2error[i] = sqrt(int2d(Th)((u-uh)^2));
   H1error[i] = sqrt(int2d(Th)((2*pi*cos(2*pi*x)*sin(2*pi*y)-dx(uh))^2 
                      + (2*pi*cos(2*pi*y)*sin(2*pi*x)-dy(uh))^2)); 

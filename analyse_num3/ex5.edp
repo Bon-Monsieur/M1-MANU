@@ -1,0 +1,24 @@
+int np = 100;
+
+// Définition des frontières du carré unité [0,1] x [0,1]
+border C1(t=0,1){ x=t; y=0; label=1; };  // Bas
+border C2(t=0,0.5){ x=1; y=t; label=2; };  // Droite (jusqu'à la moitié)
+border C3(t=0,0.5){ x=1-t; y=0.5; label=3; };  // Haut (de la moitié à 1)
+border C4(t=0.5,1){ x=0.5; y=t; label=4; };  // Gauche (de la moitié à 1)
+border C5(t=0.5,1){ x=1-t; y=1; label=5; };  // Haut (jusqu'à la moitié)
+border C6(t=0,1){ x=0; y=1-t; label=6; };  // Gauche
+
+// Construction du maillage avec un trou rectangulaire (en fermant correctement le trou)
+mesh Th = buildmesh(C1(np) + C2(np) + C3(np) + C4(np) + C5(np) + C6(np));
+
+// Affichage du maillage
+//plot(Th, wait=1);
+
+fespace Vh(Th,P1);
+Vh uh,vh;
+func f=9;
+
+problem Test(uh,vh) = int2d(Th)((dx(uh)*dx(vh)) + (dy(uh)*dy(vh))) -int2d(Th)(f*vh) +on(1,2,3,4,5,6,uh=0);
+Test;
+
+plot(uh,dim=3,wait=1,fill=true,value=true);

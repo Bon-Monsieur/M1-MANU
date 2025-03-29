@@ -16,4 +16,7 @@ problem Test(uh, vh) =
 Test;
 
 // Affichage du résultat
-plot(uh, wait=1, fill=1);
+plot(uh, wait=1, fill=1,dim=3,value=true);
+// Affichage des valeurs minimales et maximales de u
+cout << "Valeur minimale de u: " << uh[].min << endl;
+cout << "Valeur maximale de u: " << uh[].max << endl;

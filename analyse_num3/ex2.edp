@@ -16,4 +16,4 @@ problem Test(uh, vh) =
 Test;
 
 // Affichage du résultat
-plot(uh, wait=1, fill=1);
+plot(uh, wait=1, fill=1,dim=3);
