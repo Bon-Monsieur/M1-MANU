@@ -67,11 +67,35 @@ def cond(Un, Nx, Ny, fig="parabola"):
         return Un
     
     if fig == "test":
-        Un[-1,-1] = 1
-        ax = int((Nx - 1) / 2)
-        ay = int((Ny - 1) / 2)
-        Un[ax, ay] = 1
-        return Un
+        x_vals = np.linspace(-0.5, 0.5, Nx)
+        y_vals = np.linspace(-0.5, 0.5, Ny)
+        g = lambda x: 0.15 - 0.025 * (6*x - 1) * (2*x - 1)**2 * (3*x + 2)**2 * (2*x + 1)
+
+        X, Y = np.meshgrid(x_vals, y_vals, indexing="ij")  # Créer les grilles X et Y
+        mask = g(X)**2 <= Y**2  # Si on est en dehors du vase
+
+        Un[mask] = 0  # Appliquer le masque
+        dg_dx = lambda x, dx=1e-5: (g(x + dx) - g(x - dx)) / (2 * dx)
+
+        # Dérivées partielles dz/dx et dz/dy sous forme lambda
+        dz_dx = lambda x, y: np.where(g(x)**2 - y**2 > 0, 
+                              (g(x) * dg_dx(x)) / np.sqrt(g(x)**2 - y**2), 
+                              0)
+        dz_dy = lambda x, y: np.where(g(x)**2 - y**2 > 0, 
+                              y / np.sqrt(g(x)**2 - y**2), 
+                              0)
+
+        # Fonction f(x, y) sous forme lambda
+        I = lambda x, y: np.where(
+            np.isnan(dz_dx(x, y)) | np.isnan(dz_dy(x, y)), 1,
+            1 / np.sqrt(1 + dz_dx(x, y)**2 + dz_dy(x, y)**2)
+        )
+        z = lambda x, y: np.where(g(x)**2 - y**2 >= 0, np.sqrt(g(x)**2 - y**2), 0)
+        mask2 = (I(X, Y) == 1) & (g(X)**2 <= Y**2)
+
+        Un[mask2] = z(X[mask2],Y[mask2])
+
+    return Un
 
 
 
@@ -171,11 +195,25 @@ def SFS_fixed_point_method(Nx, Ny, fig="parabola",epsilon=1e-4,maxiter=2000):
         Un[:,0] = Un[:,-1] = 1
         Un[0,:] = Un[-1,:] = x**2
     elif fig == "test":
-        I = (
-            lambda x, y: 1/np.sqrt(1+(16 * y * (1 - y) * (1 - 2 * x))**2
-            + (16 * x * (1 - x) * (1 - 2 * y))**2)
+        x = np.linspace(-0.5, 0.5, Nx)
+        y = np.linspace(-0.5, 0.5, Ny)
+        g = lambda x: 0.15 - 0.025 * (6*x - 1) * (2*x - 1)**2 * (3*x + 2)**2 * (2*x + 1)
+        dg_dx = lambda x, dx=1e-5: (g(x + dx) - g(x - dx)) / (2 * dx)
+
+        # Dérivées partielles dz/dx et dz/dy sous forme lambda
+        dz_dx = lambda x, y: np.where(g(x)**2 - y**2 > 0, 
+                              (g(x) * dg_dx(x)) / np.sqrt(g(x)**2 - y**2), 
+                              0)
+        dz_dy = lambda x, y: np.where(g(x)**2 - y**2 > 0, 
+                              y / np.sqrt(g(x)**2 - y**2), 
+                              0)
+
+        # Fonction f(x, y) sous forme lambda
+        I = lambda x, y: np.where(
+            np.isnan(dz_dx(x, y)) | np.isnan(dz_dy(x, y)), 1,
+            1 / np.sqrt(1 + dz_dx(x, y)**2 + dz_dy(x, y)**2)
         )
-        Un[:,-1] = Un[-1,:] = 1
+
 
 
     # Def maillage et pas
@@ -262,4 +300,4 @@ def SFS_fixed_point_method(Nx, Ny, fig="parabola",epsilon=1e-4,maxiter=2000):
 
 #======  UTILISATION  ======#
 
-SFS_fixed_point_method(Nx=101, Ny=101, fig="fig7",epsilon=1e-4,maxiter=20)
+SFS_fixed_point_method(Nx=51, Ny=51, fig="test",epsilon=1e-4,maxiter=3000)
