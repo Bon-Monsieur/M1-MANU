@@ -125,7 +125,7 @@ def SFS_fixed_point_method(nb_pt=21,fig="parabola"):
     # Boucle itérative à modifier en while pour forcer la convergence en fonction d'un epsilon donné
     # Ici on fait 200 itérations, mais on peut demander plus (attention à la lenteur du code)
     
-    for k in range(500):
+    for k in range(200):
         Un = Up1.copy()
         Un = cond(Un,nb_pt,fig)     #Applique les conditions pour les endroits où I(x)=1
 
@@ -134,9 +134,9 @@ def SFS_fixed_point_method(nb_pt=21,fig="parabola"):
                 if i == 0 or i == nb_pt - 1 or j == 0 or j == nb_pt - 1:
                     # Si on est sur un bord, on ne met pas à jour
                     continue
-                Up1[i, j] = Un[i, j] - Dt * G(Un, i, j)           # methode du pt fixe
+                Up1[i, j] =   n((x[i],y[j])) + max(Un[i-1,j],Un[i+1,j],Un[i,j-1],Un[i,j+1])         # methode du pt fixe
 
-    Up1 = cond(Up1,nb_pt,fig)
+    #Up1 = cond(Up1,nb_pt,fig)
     
     
     erreur_globale = erreur(Up1,nb_pt,fig,x,y)      # Calcul de l'erreur
@@ -199,4 +199,4 @@ Exemple d'appel:    SFS_fixed_point_method(nb_pt=21,fig="parabola")
 ''' 
 
 
-SFS_fixed_point_method(nb_pt=51,fig="parabola") 
+SFS_fixed_point_method(nb_pt=51,fig="pyramid") 
