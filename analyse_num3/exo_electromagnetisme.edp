@@ -1,0 +1,23 @@
+int np = 100;
+real R = 0.1;
+
+border C(t=0,2*pi){ 
+    x= R*cos(t);
+    y = R*sin(t);
+    label=1;
+};
+
+mesh Th = buildmesh(C(np));
+
+fespace Vh(Th,P1);
+Vh<complex> Ech, vh;
+
+real sigma = 57*1.0e6;
+real mu = 1.0 / (4.0 * pi * 1.0e-7);
+real eps = 8.8*1.0e-12;
+real omega = 100*pi;
+complex c = 0. + 1i;
+
+problem elec(Ech,vh) = int2d(Th)((mu*dx(Ech))*dx(vh) + (mu*dy(Ech)*dy(vh))) + int2d(Th)((c*omega*sigma-omega^2*eps)*Ech*vh) +on(1,Ech=1.0 / sigma);
+elec;
+plot(Ech,wait=1,dim=3,fill=1);
