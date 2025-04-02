@@ -1,17 +1,23 @@
 #include "class_RectangleIntegrator.hpp"
+#include "class_TrapezoidalIntegrator.hpp"
 #include <iostream>
 #include <cmath>
-using namespace std;
 
 
-double exp(double x){
-    return exp(x);
+
+double carre(double x){
+    return x*x;
 }
 
 
 int main(){
 
-    std::cout <<  exp(1.);
+    pfn pcarre=carre;
+    RectangleIntegrator rec(0.,1.,pcarre);
+    rec.computeIntegral(500);
+
+    TrapezoidalIntegrator trap(0.,1.,pcarre);
+    trap.computeIntegral(500);
 
     return 0;
 }
