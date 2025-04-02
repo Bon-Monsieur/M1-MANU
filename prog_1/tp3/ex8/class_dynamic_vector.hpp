@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cassert>
 #include <cmath>
+#pragma once
 
 template<typename T>
 class DynamicVector {

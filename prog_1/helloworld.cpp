@@ -42,11 +42,9 @@ void afficherTableau(double* tab, int n){
 
 int main()
 {
-    int n = 30;
-    double* res = new double[n];
-    Fibonnaci(n,res);
-    afficherTableau(res,n);
-
+    std::vector<double> vec(10);
+    vec[9]=12;
+    std::cout << vec.back();
     return 0;
 }
 
