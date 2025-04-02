@@ -1,0 +1,32 @@
+
+real lambda = 13;
+real mu = 5.56;
+
+// Poutre de longueur 4 et de largeur 1
+mesh Th = square(20, 3,[4*x,y]);
+
+// Définir l'espace des éléments finis [P2,P2] pour les déplacements
+fespace Vh(Th, [P2, P2]);
+Vh [u1, u2], [v1, v2]; 
+
+
+problem Elasticity([u1, u2], [v1, v2])
+    = int2d(Th)(
+        lambda * (dx(u1)+dy(u2)) * (dx(v1) + dy(v2))
+        // e(u):e(v)
+        + 2*mu * (dx(u1)*dx(v1) + dy(u2)*dy(v2) + (dx(u2)+dy(u1))/2*(dx(v2)+dy(v1))/2)
+        
+    )
+    -int2d(Th)(
+        -1e-2*v2    // il faut mettre une force plus petite pour pas trop pousser la poutre
+    )
+    + on(4,u1=0,u2=0);
+
+// Résoudre le problème
+Elasticity;
+Th = movemesh(Th, [x+u1, y+u2]);
+[u1,u2] = [u1,u2];
+
+
+// Afficher les déplacements
+plot([u1, u2],wait=1);
