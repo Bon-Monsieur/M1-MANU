@@ -14,6 +14,8 @@ class mesh_1d{
     public:
         mesh_1d(T x_left , T x_right , size_t n_cells );
         ~mesh_1d() { };
+        inline const std::vector<T>& vertices_coordinates() const { return vertices_coordinates_ ; };
+        inline const std::vector<T>& cells_centers() const { return cells_centers_ ; };
         inline const size_t n_vertices() const { return n_vertices_ ; };
         inline const size_t n_cells() const { return n_cells_ ; };
         inline const T dx() const { return dx_; };
