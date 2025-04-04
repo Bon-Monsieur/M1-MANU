@@ -2,6 +2,7 @@
 #include "class_field.hpp"
 #include <iostream>
 #include <vector>
+#include <algorithm>
 #pragma once
 
 template<typename T>
@@ -34,6 +35,28 @@ class time_loop{
 
 
 template<typename T>
-void compute_dt( field <T>& uh){
-    this->dt_ = cfl_number_ * mesh_.dx();
+void time_loop<T>::compute_dt(field <T>& uh){
+    
+    double maximum = *std::max_element(uh().begin(), uh().end());   // Selectionnne le max des uh
+    this->dt_ = cfl_number_ * mesh_.dx() / maximum;   // A modifier en fonction du F 
+}
+
+
+template<typename T>
+void time_loop<T>::run(field <T>& uh){
+    
+    while (physical_time_ < final_time_){
+        compute_dt(uh); // Calcul du dt
+        if (physical_time_ + dt_ > final_time_){ 
+            dt_ = final_time_ - physical_time_; 
+            last_iteration_ = true; 
+        }
+        residual_ .assemble_from_field(uh); // Calcul le residual puis l'ajoute à uh
+        uh += dt_*residual_; // Il faut overload le += et le *
+        
+        physical_time_ += dt_; 
+        iteration_counter_++; 
+        
+    }
+    
 }
