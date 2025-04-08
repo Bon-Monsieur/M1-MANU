@@ -71,7 +71,7 @@ def cond(Un, Nx, Ny, fig="parabola"):
         y_vals = np.linspace(-0.5, 0.5, Ny)
         g = lambda x: 0.15 - 0.025 * (6*x - 1) * (2*x - 1)**2 * (3*x + 2)**2 * (2*x + 1)
 
-        X, Y = np.meshgrid(x_vals, y_vals, indexing="ij")  # Créer les grilles X et Y
+        X, Y = np.meshgrid(x_vals, y_vals)  # Créer les grilles X et Y
         mask = g(X)**2 <= Y**2  # Si on est en dehors du vase
 
         Un[mask] = 0  # Appliquer le masque
@@ -86,10 +86,8 @@ def cond(Un, Nx, Ny, fig="parabola"):
                               0)
 
         # Fonction f(x, y) sous forme lambda
-        I = lambda x, y: np.where(
-            np.isnan(dz_dx(x, y)) | np.isnan(dz_dy(x, y)), 1,
-            1 / np.sqrt(1 + dz_dx(x, y)**2 + dz_dy(x, y)**2)
-        )
+        I = lambda x, y: np.where(g(x)**2 - y**2 > 0, 
+            1 / np.sqrt(1 + dz_dx(x, y)**2 + dz_dy(x, y)**2), 1)
         z = lambda x, y: np.where(g(x)**2 - y**2 >= 0, np.sqrt(g(x)**2 - y**2), 0)
         mask2 = (I(X, Y) == 1) & (g(X)**2 <= Y**2)
 
@@ -300,4 +298,4 @@ def SFS_fixed_point_method(Nx, Ny, fig="parabola",epsilon=1e-4,maxiter=2000):
 
 #======  UTILISATION  ======#
 
-SFS_fixed_point_method(Nx=51, Ny=51, fig="test",epsilon=1e-4,maxiter=3000)
+SFS_fixed_point_method(Nx=51, Ny=51, fig="test",epsilon=1e-4,maxiter=4000)
