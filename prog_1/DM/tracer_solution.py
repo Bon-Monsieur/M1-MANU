@@ -11,13 +11,11 @@ def lire_et_tracer(fichier):
                 abscisses.append(x)
                 valeurs.append(u)
 
-    plt.plot(abscisses, valeurs, marker='.', linestyle='-')
+    plt.plot(abscisses, valeurs)
     plt.xlabel("Abscisse (x)")
     plt.ylabel("Valeur (u)")
-    plt.title("Profil de la solution")
+    plt.title("Tracé des valeurs")
     plt.grid(True)
     plt.show()
 
-# Exemple d’utilisation :
-# Remplace "resultats_0.txt" par le nom exact de ton fichier
-lire_et_tracer("solution_0.txt")
+lire_et_tracer("GAUSS_PULSE_initial.txt")

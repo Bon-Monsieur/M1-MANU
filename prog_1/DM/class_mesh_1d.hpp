@@ -19,6 +19,7 @@ class mesh_1d{
         inline const size_t n_vertices() const { return n_vertices_ ; };
         inline const size_t n_cells() const { return n_cells_ ; };
         inline const T dx() const { return dx_; };
+        
         inline T xc( size_t ii ) const { return cells_centers_ [ ii ]; };
         void print();
     

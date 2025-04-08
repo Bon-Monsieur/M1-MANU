@@ -15,19 +15,15 @@ void plot_vector(std::vector<double> const& vec){
 
 
 
-
-
-
 int main(){
 
-    mesh_1d<double> mesh(0.0, 10., 40);
+    mesh_1d<double> mesh(0.0, 10., 100);
     mesh.print();
     
-    field<double> field(0,mesh);
-    //time_loop<double> time_loop(mesh, 1.0);
-    output_writer<double> out_stream(mesh, "solution");
-    
-    out_stream.write_solution(field, "0");
+    field<double> field(0,mesh);  // u0 = gauss_pulse
+
+    output_writer<double> out_stream(mesh, "GAUSS_PULSE");
+    out_stream.write_solution(field, "initial");
 
     return 0;
 }

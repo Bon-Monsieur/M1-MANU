@@ -11,10 +11,12 @@ class output_writer{
     protected:
         mesh_1d<T> const& mesh_; // aggregation
         std::string radical_name_;
+        
     public:
         output_writer(mesh_1d<T> const& msh, std::string filename ):mesh_(msh) , radical_name_(filename ) { } ;
-        void write_solution ( field <T> solution , std::string loop_counter );
         inline const mesh_1d<T>& mesh() const {return mesh_; };
+        void write_solution ( field <T> solution , std::string loop_counter );
+        
 };
 
 

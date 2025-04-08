@@ -17,6 +17,7 @@ class field{
         field (int test_label , mesh_1d<T> const& msh);
         inline const size_t n_cells () const { return n_cells_ ; };
         inline const std::vector<T>& operator()() const { return values_; };
+        
         inline double operator()( size_t ii ) const { return values_[ ii ] ; };
         field<T>& operator+=(residual<T> res );
 
