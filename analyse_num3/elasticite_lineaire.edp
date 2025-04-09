@@ -17,14 +17,14 @@ problem Elasticity([u1, u2], [v1, v2])
         + 2*mu * (dx(u1)*dx(v1) + dy(u2)*dy(v2) + (dx(u2)+dy(u1))/2*(dx(v2)+dy(v1))/2)
         
     )
-    -int2d(Th)(
-        -1e-2*v2    // il faut mettre une force plus petite pour pas trop pousser la poutre
+    +int2d(Th)(
+        v2    // il faut mettre une force plus petite pour pas trop pousser la poutre
     )
     + on(4,u1=0,u2=0);
 
 // Résoudre le problème
 Elasticity;
-Th = movemesh(Th, [x+u1, y+u2]);
+Th = movemesh(Th, [x+u1*1e-2, y+u2*1e-2]);
 [u1,u2] = [u1,u2];
 
 
