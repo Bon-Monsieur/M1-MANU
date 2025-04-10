@@ -1,0 +1,27 @@
+load "msh3";
+int np = 20;
+
+mesh3 Th = cube(np,np,np,[10*x,10*y,10*z]);
+
+
+func f = sin(y)*sin(x)*sin(z);
+
+fespace Vh(Th,P13d);
+Vh uh,vh;
+
+problem pb3d(uh,vh) = 
+    int3d(Th)(
+        (dx(uh)*dx(vh) + dy(uh)*dy(vh) + dz(uh)*dz(vh))
+    )
+    - int2d(Th,2)(
+        0.25*25*vh
+    )
+    - int2d(Th,2)(
+        -0.25*uh*vh
+    )
+    - int3d(Th)(
+        f*vh
+    );
+
+pb3d;
+plot(uh, wait=1,fill=1);

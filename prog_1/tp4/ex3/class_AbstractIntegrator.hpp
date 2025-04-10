@@ -12,7 +12,7 @@ public:
     double lowbd() const; // accessor: get lower bound
     double upbd() const; // accessor: get upper bound
     void change_bounds(double a, double b); //change integral bounds to a, b
-    virtual void computeIntegral(int Nint) const = 0; // pure virtual function
+    virtual void computeIntegral(int Nint) const = 0; // pure ( = 0 ) virtual function
 
     pfn getIntegrand() const {return integrand;}
 };

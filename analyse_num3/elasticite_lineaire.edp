@@ -30,3 +30,14 @@ Th = movemesh(Th, [x+u1*1e-2, y+u2*1e-2]);
 
 // Afficher les déplacements
 plot([u1, u2],wait=1);
+
+
+fespace Wh(Th,P1);
+Wh sigma11, sigma12, sigma21, sigma22;
+sigma11 = lambda*(dx(u1)+dy(u2)) + 2*mu*dx(u1);
+sigma12 = mu*(dy(u1)+dx(u2));
+sigma21 = mu*(dy(u1)+dx(u2));
+sigma22 = lambda*(dx(u1)+dy(u2)) + 2*mu*dy(u2);
+
+Wh sigmaVM = sqrt(sigma11^2 + sigma22^2 + 3*sigma12^2 - sigma11*sigma22);
+plot(sigmaVM,wait=1,fill=1,nbiso=100);
