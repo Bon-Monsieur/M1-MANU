@@ -1,69 +1,40 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
-# Définition de g(x)
-def g(x):
-    return 0.15 - 0.025 * (6*x - 1) * (2*x - 1)**2 * (3*x + 2)**2 * (2*x + 1)
+# Définir le polynôme P(bar_x)
+def P(bar_x):
+    return (-138.24 * bar_x**6 +
+             92.16 * bar_x**5 +
+             84.48 * bar_x**4 -
+             48.64 * bar_x**3 -
+             17.60 * bar_x**2 +
+              6.40 * bar_x +
+              3.20)
 
-# Approximation numérique de la dérivée de g(x)
-def dg_dx(x, dx=1e-5):
-    return (g(x + dx) - g(x - dx)) / (2 * dx)
+# Définir u_SV(x, y) en évitant les racines négatives
+def u_sv(x, y):
+    bar_x = x / 12.8
+    p_val = P(bar_x)
+    result = np.zeros_like(x)
+    mask = p_val**2 >= y**2
+    result[mask] = np.sqrt(p_val[mask]**2 - y[mask]**2)
+    return result
 
-# Définition de la fonction z(x, y)
-def z(x, y):
-    val = g(x)**2 - y**2
-    return np.sqrt(val) if val >= 0 else np.nan  # Éviter les valeurs complexes
-
-# Définition des dérivées partielles de z
-def dz_dx(x, y):
-    val = g(x)**2 - y**2
-    return (g(x) * dg_dx(x)) / np.sqrt(val) if val > 0 else np.nan
-
-def dz_dy(x, y):
-    val = g(x)**2 - y**2
-    return -y / np.sqrt(val) if val > 0 else np.nan
-
-# Fonction f(x, y)
-def f(x, y):
-    grad_x = dz_dx(x, y)
-    grad_y = dz_dy(x, y)
-    return 1 / np.sqrt(1 + grad_x**2 + grad_y**2) if not np.isnan(grad_x) and not np.isnan(grad_y) else np.nan
-
-# Création de la grille de points
-x_vals = np.linspace(-0.5, 0.5, 256)
-y_vals = np.linspace(-0.5, 0.5, 256)
+# Domaine pour x et y
+x_vals = np.linspace(-6.4, 6.4, 300)
+y_vals = np.linspace(-5, 5, 300)
 X, Y = np.meshgrid(x_vals, y_vals)
+Z = u_sv(X, Y)
 
-# Calcul des valeurs de f(x, y)
-F = np.vectorize(f)(X, Y)
+# Tracé 3D
+fig = plt.figure(figsize=(10, 7))
+ax = fig.add_subplot(111, projection='3d')
+surf = ax.plot_surface(X, Y, Z, cmap='viridis', linewidth=0, antialiased=True)
 
-# Seuil pour détecter les valeurs proches de 1
-threshold = 1e-4
-mask = np.abs(F - 1) < threshold
-
-# Sélection des indices uniques où f(x, y) ≈ 1
-X_points = X[mask]
-Y_points = Y[mask]
-
-# Éviter trop de points rouges en en prenant un seul par cluster (espacement)
-if len(X_points) > 0:
-    X_selected = X_points[::]  # Prendre 1 point tous les 10 pour éviter trop de superposition
-    Y_selected = Y_points[::]
-else:
-    X_selected = []
-    Y_selected = []
-
-# Tracé de la fonction en 2D
-plt.figure(figsize=(8, 6))
-contour = plt.contourf(X, Y, F, levels=50, cmap='viridis')
-plt.colorbar(label="1 / sqrt(1 + |∇z|²)")
-
-# Ajout des points rouges uniques aux endroits où f(x, y) ≈ 1
-plt.scatter(X_selected, Y_selected, color='red', s=20, marker='o', label="f(x,y) ≈ 1")
-
-# Étiquettes et titre
-plt.xlabel("X")
-plt.ylabel("Y")
-plt.title("Tracé de 1 / sqrt(1")
-plt.legend()
+ax.set_title('Surface 3D de $u_{SV}(x, y)$')
+ax.set_xlabel('x')
+ax.set_ylabel('y')
+ax.set_zlabel('$u_{SV}(x, y)$')
+fig.colorbar(surf, ax=ax, shrink=0.5, aspect=10, label='$u_{SV}$')
 plt.show()
