@@ -20,6 +20,7 @@ def lire_et_tracer(fichier):
         plt.xlabel("x")
         plt.ylabel("y")
         plt.title("Solution approchée")
+        plt.xlim(0, 10)
         plt.ylim(-0.2, 1.2)
         plt.grid(True)
         plt.show()

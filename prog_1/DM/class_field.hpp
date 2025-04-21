@@ -28,6 +28,11 @@ double gauss_pulse(double xx){
     return exp(-pow((xx-5.) ,2));
 }
 
+double test(double xx){
+    if (xx<0.3) return 0.0;
+    else if (xx >= 0.3 && xx < 0.7) return -1.0;
+    else return 0.5;
+}
 
 
 // =========== DEFINITION ============ //
@@ -41,6 +46,11 @@ field<T>::field(int test_label, mesh_1d<T> const& msh){
         case 0: // Gauss_pulse
             for (size_t ii = 0; ii < n_cells_; ii++){
                 this->values_[ii] = gauss_pulse(msh.xc(ii));
+            }
+            break;
+        case 1: // test
+            for (size_t ii = 0; ii < n_cells_; ii++){
+                this->values_[ii] = test(msh.xc(ii));
             }
             break;
     }
