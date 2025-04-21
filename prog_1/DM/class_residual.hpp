@@ -35,12 +35,6 @@ class residual {
 
 // ============ DEFINITION ============ //
 
-template <typename T>
-T flux_Burgers(T const& u)
-{
-    return 0.5*u*u;
-}
-
 
 template <typename T, typename Func>
 T flux_LF(T const ul , T const ur , T max_vel, Func flux )    // Fi+1/2
@@ -54,10 +48,10 @@ void residual<T>::assemble_from_field(field <T> const& uh){
     values_.resize(uh().size()); 
     double maximum = 0.0;
     for (size_t ii = 0; ii < uh().size(); ++ii) {
-        maximum = std::max(maximum, std::abs(uh(ii))); // Selectionne le max des uh
+        maximum = std::max(maximum, std::abs(uh.fp_()(uh(ii)))); // Selectionne le max des uh
     }
 
-    T (*flux)(T const&) = flux_Burgers<T>;
+    T (*flux)(T const&) = uh.flux_(); // Pointer vers la fonction flux de field
 
     for (size_t ii = 0; ii < uh().size(); ++ii) {
         if (ii == 0) {

@@ -1,7 +1,7 @@
 import os
 import matplotlib.pyplot as plt
 
-def lire_et_tracer(fichier):
+def lire_fichier(fichier):
     abscisses = []
     valeurs = []
 
@@ -15,18 +15,25 @@ def lire_et_tracer(fichier):
                     x, u = map(float, ligne.split())
                     abscisses.append(x)
                     valeurs.append(u)
-
-        plt.plot(abscisses, valeurs)
-        plt.xlabel("x")
-        plt.ylabel("y")
-        plt.title("Solution approchée")
-        plt.xlim(0, 10)
-        plt.ylim(-0.2, 1.2)
-        plt.grid(True)
-        plt.show()
     except FileNotFoundError:
         print(f"Fichier non trouvé : {fichier}")
     except Exception as e:
         print(f"Erreur lors de la lecture : {e}")
 
-lire_et_tracer("GAUSS_PULSE_final.txt")
+    return abscisses, valeurs
+
+
+# Lecture des deux fichiers
+x_init, u_init = lire_fichier("GAUSS_PULSE_initial.txt")
+x_final, u_final = lire_fichier("GAUSS_PULSE_final.txt")
+
+# Tracé sur le même graphique
+plt.plot(x_init, u_init, label="Solution initiale", linestyle='--', color='blue')
+plt.plot(x_final, u_final, label="Solution finale", linestyle='-', color='red')
+
+plt.xlabel("Abscisse (x)")
+plt.ylabel("Valeur (u)")
+plt.title("Comparaison solution initiale et finale")
+plt.grid(True)
+plt.legend()
+plt.show()

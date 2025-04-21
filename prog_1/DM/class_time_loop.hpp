@@ -40,9 +40,9 @@ void time_loop<T>::compute_dt(field <T>& uh){
     
     double maximum = 0.0;
     for (size_t ii = 0; ii < uh().size(); ++ii) {
-        maximum = std::max(maximum, std::abs(uh(ii))); // Selectionne le max des uh
+        maximum = std::max(maximum, std::abs(uh.fp_()(uh(ii)))); // Selectionne le max des F'(uh)
     }
-    this->dt_ = cfl_number_ * mesh_.dx() / std::abs(maximum);   // A modifier en fonction du F 
+    this->dt_ = cfl_number_ * mesh_.dx() / maximum;   // A modifier en fonction du F 
 }
 
 
