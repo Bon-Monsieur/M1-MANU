@@ -43,15 +43,17 @@ int main(){
 
     mesh_1d<double> mesh(0.0, 10., 1500);
     mesh.print();
-    double (*flux)(double const&) = test<double>;
-    double (*fp)(double const&) = test2<double>;
+
+    // Il faut definir la fonction de flux et sa derivee pour la classe field afin d'avoir une flexibilite quant au choix de la fonction de flux
+    double (*flux)(double const&) = flux_Burgers<double>;
+    double (*fp)(double const&) = Derivee_flux_Burgers<double>;
 
     field<double> field(0,mesh,flux,fp);  // 0 = gauss_pulse ; 1 = sin(2*pi*x)
 
     output_writer<double> out_stream(mesh, "GAUSS_PULSE");
     out_stream.write_solution(field, "initial");
 
-    time_loop<double> loop(mesh, 2); 
+    time_loop<double> loop(mesh, 3); 
     loop.run(field); // Applique la methode FV sur uh
     out_stream.write_solution(field, "final");
 

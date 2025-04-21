@@ -21,13 +21,13 @@ class residual {
         
         template <typename S>
         friend residual<S> operator*(S lambda, residual<S> const& res) {
-            residual<S> res_new(res.mesh());
-            res_new.values_.resize(res.n_cells());
+            residual<S> temp(res.mesh());
+            temp.values_.resize(res.n_cells());
 
             for (size_t ii = 0; ii < res.n_cells(); ++ii) {
-                res_new.values_[ii] = lambda * res(ii);
+                temp.values_[ii] = lambda * res(ii);
             }
-            return res_new;
+            return temp;
         }
 
 };
@@ -51,7 +51,7 @@ void residual<T>::assemble_from_field(field <T> const& uh){
         maximum = std::max(maximum, std::abs(uh.fp_()(uh(ii)))); // Selectionne le max des uh
     }
 
-    T (*flux)(T const&) = uh.flux_(); // Pointer vers la fonction flux de field
+    T (*flux)(T const&) = uh.flux_(); // Pointeur vers la fonction F de field
 
     for (size_t ii = 0; ii < uh().size(); ++ii) {
         if (ii == 0) {
