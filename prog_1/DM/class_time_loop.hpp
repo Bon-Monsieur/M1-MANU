@@ -1,13 +1,12 @@
 #include "class_mesh_1d.hpp"
 #include "class_field.hpp"
+#include "class_residual.hpp"
 #include <iostream>
 #include <vector>
 #include <algorithm>
 #include <cmath>
 #pragma once
 
-template<typename T>
-class residual;
 
 
 template <typename T>
@@ -19,6 +18,7 @@ class time_loop{
         T final_time_ {0.};
         bool last_iteration_ {false };
         double cfl_number_ = 0.5;
+        
         residual<T> residual_ ; // class composition
         mesh_1d<T> const& mesh_; // class aggregation
         
@@ -38,8 +38,11 @@ class time_loop{
 template<typename T>
 void time_loop<T>::compute_dt(field <T>& uh){
     
-    double maximum = *std::max_element(uh().begin(), uh().end());   // Selectionnne le max des uh
-    this->dt_ = cfl_number_ * mesh_.dx() / abs(maximum);   // A modifier en fonction du F 
+    double maximum = 0.0;
+    for (size_t ii = 0; ii < uh().size(); ++ii) {
+        maximum = std::max(maximum, std::abs(uh(ii))); // Selectionne le max des uh
+    }
+    this->dt_ = cfl_number_ * mesh_.dx() / std::abs(maximum);   // A modifier en fonction du F 
 }
 
 
@@ -53,7 +56,7 @@ void time_loop<T>::run(field <T>& uh){
             last_iteration_ = true; 
         }
         residual_.assemble_from_field(uh); // Calcul le residual par rapport a uh
-        uh += dt_*residual_; // Il faut overload le += et le *
+        uh += (dt_*residual_);
         
         physical_time_ += dt_; // Incremente le temps physique
         iteration_counter_++;   // Incremente le compteur d'iteration

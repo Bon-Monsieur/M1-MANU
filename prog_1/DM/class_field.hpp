@@ -30,8 +30,6 @@ double gauss_pulse(double xx){
 
 
 
-
-
 // =========== DEFINITION ============ //
 
 template<typename T>
@@ -46,8 +44,13 @@ field<T>::field(int test_label, mesh_1d<T> const& msh){
             }
             break;
     }
-
-    
 }
 
+template<typename T>
+field<T>& field<T>::operator+=(residual<T> res ){
+    for (size_t ii = 0; ii < n_cells_; ++ii) {
+        this->values_[ii] = this->values_[ii]+res(ii);
+    }
+    return *this;
+}
 
