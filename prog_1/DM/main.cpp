@@ -48,13 +48,13 @@ int main(){
     double (*flux)(double const&) = flux_Burgers<double>;
     double (*fp)(double const&) = Derivee_flux_Burgers<double>;
 
-    field<double> field(0,mesh,flux,fp);  // 0 = gauss_pulse ; 1 = sin(2*pi*x)
+    field<double> field(0,mesh,flux,fp);  // 0 = gauss_pulse ; 1 = sin(2*pi*x) pour l'initialisation
 
     output_writer<double> out_stream(mesh, "GAUSS_PULSE");
     out_stream.write_solution(field, "initial");
 
-    time_loop<double> loop(mesh, 3); 
-    loop.run(field); // Applique la methode FV sur uh
+    time_loop<double> loop(mesh, 10); 
+    loop.run(field);            
     out_stream.write_solution(field, "final");
 
     return 0;

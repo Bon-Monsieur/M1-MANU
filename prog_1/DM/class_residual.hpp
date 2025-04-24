@@ -53,7 +53,7 @@ void residual<T>::assemble_from_field(field <T> const& uh){
 
     T (*flux)(T const&) = uh.flux_(); // Pointeur vers la fonction F de field
 
-    for (size_t ii = 0; ii < uh().size(); ++ii) {
+    for (size_t ii = 0; ii < uh().size(); ++ii) {   // Calcul du residual avec des calculs different aux bords
         if (ii == 0) {
             values_[ii] = -1.0/ mesh_.dx() * (flux_LF<T>(uh(ii), uh(ii+1), maximum, flux) - flux_LF<T>(uh(ii), uh(ii), maximum, flux));
         } else if (ii == uh().size()-1) {

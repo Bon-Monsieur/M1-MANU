@@ -16,7 +16,7 @@ class field{
         T (*fp)(T const&); // pointer to derivative function
 
     public:
-        field (int test_label , mesh_1d<T> const& msh, T (*flux)(T const&), T(*fp)(T const&)) ; // constructor
+        field (int test_label , mesh_1d<T> const& msh, T (*flux)(T const&), T(*fp)(T const&)) ; 
         inline T (*flux_() const)(T const&) { return flux; }
         inline T (*fp_() const)(T const&) { return fp; }
         inline const size_t n_cells () const { return n_cells_ ; };
@@ -46,13 +46,13 @@ field<T>::field(int test_label, mesh_1d<T> const& msh, T (*flux)(T const&),T (*f
     this->flux = flux; 
     this->fp = fp;  
     
-    switch(test_label){
-        case 0: // Gauss_pulse
+    switch(test_label){     // 0 = gauss_pulse ; 1 = test
+        case 0: 
             for (size_t ii = 0; ii < n_cells_; ii++){
                 this->values_[ii] = gauss_pulse(msh.xc(ii));
             }
             break;
-        case 1: // test
+        case 1: 
             for (size_t ii = 0; ii < n_cells_; ii++){
                 this->values_[ii] = test(msh.xc(ii));
             }

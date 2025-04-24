@@ -39,8 +39,8 @@ template<typename T>
 void time_loop<T>::compute_dt(field <T>& uh){
     
     double maximum = 0.0;
-    for (size_t ii = 0; ii < uh().size(); ++ii) {
-        maximum = std::max(maximum, std::abs(uh.fp_()(uh(ii)))); // Selectionne le max des F'(uh)
+    for (size_t ii = 0; ii < uh().size(); ++ii) {       // Selectionne le max des F'(uh)
+        maximum = std::max(maximum, std::abs(uh.fp_()(uh(ii)))); 
     }
     this->dt_ = cfl_number_ * mesh_.dx() / maximum;    
 }
