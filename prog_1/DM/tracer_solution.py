@@ -4,7 +4,7 @@ def lire_et_tracer(fichier):
     abscisses = []
     valeurs = []
 
-    with open(fichier, 'r') as f:
+    with open(fichier) as f:
         for ligne in f:
             if ligne.strip():  # Ignore les lignes vides
                 x, u = map(float, ligne.split())
