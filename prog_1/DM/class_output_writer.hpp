@@ -2,7 +2,7 @@
 #include "class_field.hpp"
 #include <string>
 #include <fstream>
-#include <iostream>  // pour std::cerr
+#include <iostream>  
 #pragma once
 
 
@@ -15,7 +15,7 @@ class output_writer{
     public:
         output_writer(mesh_1d<T> const& msh, std::string filename ):mesh_(msh) , radical_name_(filename ) { } ;
         inline const mesh_1d<T>& mesh() const {return mesh_; };
-        void write_solution ( field <T> solution , std::string loop_counter );
+        void write_solution ( field <T> solution , std::string etat );
         
 };
 
@@ -23,13 +23,12 @@ class output_writer{
 // ======== DEFINITION ======= //
 
 template<typename T>
-void output_writer<T>::write_solution( field<T> solution,std::string loop_counter) {
-    std::string nom_fichier = radical_name_ + "_" + loop_counter + ".txt";
+void output_writer<T>::write_solution( field<T> solution,std::string etat) {
+    std::string nom_fichier = radical_name_ + "_" + etat + ".txt";
     std::ofstream fichier(nom_fichier);
 
     if (!fichier) {
-        std::cerr << " Problème d'bouerture du fichier " << nom_fichier << std::endl;
-        
+        std::cerr << " Problème d'bouerture du fichier " << nom_fichier << std::endl; 
     }
 
     const std::vector<T>& x = mesh_.cells_centers();
