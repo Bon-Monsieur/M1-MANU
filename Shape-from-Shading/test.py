@@ -8,49 +8,20 @@ matplotlib.use("TkAgg")  # or 'Qt5Agg' if you prefer Qt
 
 # Merci Ronan pour l'optimisation :D
 
-
-# Définir le polynôme P(bar_x)
-def P(bar_x):
-    return (
-        -138.24 * bar_x**6 +
-        92.16 * bar_x**5 +
-        84.48 * bar_x**4 -
-        48.64 * bar_x**3 -
-        17.60 * bar_x**2 +
-        6.40 * bar_x +
-        3.20
-    )
-
-def dP(bar_x):
-    return (-829.44 * bar_x**5 +
-             460.8 * bar_x**4 +
-             337.92 * bar_x**3 -
-             145.92 * bar_x**2 -
-              35.2 * bar_x +
-               6.4)
-
-# Définir u_SV(x, y) en évitant les racines négatives
-def u_sv(x, y):
-    bar_x = x / 12.8
-    p_val = P(bar_x)
-    val = np.sqrt(np.maximum(p_val**2 - y**2, 0))
-    val[(p_val**2 - y**2) < 0] = 0
-    return val
-
-def intenstite(x,y):
-    # Calcul de la fonction d'intensité
-    bar_x = x / 12.8
-    p_val = P(bar_x)
-    dp_val = dP(bar_x)
-    result = np.zeros_like(x)
-    mask = p_val**2 >= y**2
-    result[mask] = 1/np.sqrt(1 + ((dP(x[mask])/np.sqrt(P(bar_x[mask])**2-y[mask]**2))**2 +(-y[mask]/np.sqrt(P(bar_x[mask])**2-y[mask]**2))**2))
-    return result 
-
-
 # Fonction qui permet de forcer la valeur de mon estimation aux points critiques de ma forme
 def cond(Un, Nx, Ny, fig="parabola"):
     if fig == "parabola":
+        x = np.linspace(0, 1, Nx)
+        y = np.linspace(0, 1, Ny)
+        X, Y = np.meshgrid(x, y)
+        g = lambda x: 0.15 - 0.025 * (6*x - 1) * (2*x - 1)**2 * (3*x + 2)**2 * (2*x + 1)
+        I = (
+            lambda x, y: 1/np.sqrt(1+(16 * y * (1 - y) * (1 - 2 * x))**2
+            + (16 * x * (1 - x) * (1 - 2 * y))**2)
+        )
+        mask = (I(x, y) >= 0)
+        Un[mask] = (16 * (Y * (1 - Y) * X * (1 - X)))[mask]
+        
         ax = int((Nx - 1) / 2)
         ay = int((Ny - 1) / 2)
         Un[ax, ay] = 1  # modifie uniquement le centre de la parabole
@@ -107,9 +78,30 @@ def cond(Un, Nx, Ny, fig="parabola"):
         return Un
     
     if fig == "test":
-        x = np.linspace(-6.4, 6.4, 100)
-        y = np.linspace(-5, 5, 100)
-        return Un
+        x_vals = np.linspace(-0.5, 0.5, Nx)
+        y_vals = np.linspace(-0.5, 0.5, Ny)
+        X,Y = np.meshgrid(x_vals, y_vals)
+        g = lambda x: 0.15 - 0.025 * (6*x - 1) * (2*x - 1)**2 * (3*x + 2)**2 * (2*x + 1)
+
+        X, Y = np.meshgrid(x_vals, y_vals)  # Créer les grilles X et Y
+        dg_dx = lambda x, dx=1e-5: (g(x + dx) - g(x - dx)) / (2 * dx)
+
+        # Dérivées partielles dz/dx et dz/dy sous forme lambda
+        dz_dx = lambda x, y: np.where(g(x)**2 - y**2 > 1, 
+                              (g(x) * dg_dx(x)) / np.sqrt(g(x)**2 - y**2), 
+                              0)
+        dz_dy = lambda x, y: np.where(g(x)**2 - y**2 > 1, 
+                              -y / np.sqrt(g(x)**2 - y**2), 
+                              0) 
+        
+        I = lambda x, y: np.where(
+            np.isnan(dz_dx(x, y)) & np.isnan(dz_dy(x, y)), 1,
+            1 / np.sqrt(1 + dz_dx(x, y)**2 + dz_dy(x, y)**2)
+        )
+        
+        mask = (I(x_vals, y_vals) == 1 ) & (g(X)**2 - Y**2 > 0)
+        
+        Un[mask] = (np.sqrt(g(X)**2 - Y**2))[mask]
 
     return Un
 
@@ -211,14 +203,31 @@ def SFS_fixed_point_method(Nx, Ny, fig="parabola",epsilon=1e-4,maxiter=2000):
         Un[:,0] = Un[:,-1] = 1
         Un[0,:] = Un[-1,:] = x**2
     elif fig == "test":
-        # Domaine pour x et y
-        x = np.linspace(-6.4, 6.4, Nx)
-        y = np.linspace(-5, 5, Ny)
+        x = np.linspace(-0.5, 0.5, Nx)
+        y = np.linspace(-0.5, 0.5, Ny)
+        g = lambda x: 0.15 - 0.025 * (6*x - 1) * (2*x - 1)**2 * (3*x + 2)**2 * (2*x + 1)
+        dg_dx = lambda x, dx=1e-5: (g(x + dx) - g(x - dx)) / (2 * dx)
 
-        I = (
-            lambda x,y : np.where()
+        # Dérivées partielles dz/dx et dz/dy sous forme lambda
+        dz_dx = lambda x, y: np.where(g(x)**2 - y**2 > 0, 
+                              (g(x) * dg_dx(x)) / np.sqrt(g(x)**2 - y**2), 
+                              0)
+        dz_dy = lambda x, y: np.where(g(x)**2 -y**2 > 0, 
+                              -y / np.sqrt(g(x)**2 - y**2), 
+                              0)
+
+        # Fonction f(x, y) sous forme lambda
+        I = lambda x, y: np.where(
+            np.isnan(dz_dx(x, y)) & np.isnan(dz_dy(x, y)), 1,
+            1 / np.sqrt(1 + dz_dx(x, y)**2 + dz_dy(x, y)**2)
         )
-        # Il faut définir la fonction intensité  I(x,y) = 1/sqrt(1+()^2+(dz/dy)^2)
+
+        X,Y = np.meshgrid(x, y)  
+        # Condition aux bords
+        Un[:,0]  = np.sqrt(np.maximum(g(-0.5)**2 - y**2, 0))
+        Un[:,-1] = np.sqrt(np.maximum(g(0.5)**2 - y**2, 0))
+        
+        
 
     # Def maillage et pas
     X, Y = np.meshgrid(x, y)
@@ -262,7 +271,10 @@ def SFS_fixed_point_method(Nx, Ny, fig="parabola",epsilon=1e-4,maxiter=2000):
         ) 
         Un[1:-1, 1:-1] = Un[1:-1, 1:-1] - Dt * G(Un)[1:-1, 1:-1]  
         
-    #Un = cond(Un,Nx,Ny,fig)
+    # Corrige les imperfections de la solution pour l'affichage
+    #if fig=="test":
+        #Un = cond(Un,Nx,Ny,fig)
+
     erreur_globale = erreur(Un, Nx, Ny, fig, x, y)  # Calcul de l'erreur
 
     # ======== AFFICHAGE ======= #
@@ -275,10 +287,10 @@ def SFS_fixed_point_method(Nx, Ny, fig="parabola",epsilon=1e-4,maxiter=2000):
     
     # Premier graphique
     contour1 = ax.contourf(
-        X, Y, Z, levels=np.linspace(0, 1, 51), cmap="viridis", vmin=0, vmax=1
+        X, Y, Z, levels=np.linspace(0, 1, 101), cmap="viridis", vmin=0, vmax=1
     )
     cbar = fig.colorbar(contour1, ax=ax, label="I(v)")
-    cbar.set_ticks(np.linspace(0, 1, 5))
+    cbar.set_ticks(np.linspace(0, 1, 6))
     ax.set_aspect("equal")
     ax.set_xlabel("x")
     ax.set_ylabel("y")
@@ -304,4 +316,4 @@ def SFS_fixed_point_method(Nx, Ny, fig="parabola",epsilon=1e-4,maxiter=2000):
 
 #======  UTILISATION  ======#
 
-SFS_fixed_point_method(Nx=101, Ny=101, fig="test",epsilon=1e-4,maxiter=2000)
+SFS_fixed_point_method(Nx=31, Ny=31, fig="test",epsilon=1e-4,maxiter=2)
