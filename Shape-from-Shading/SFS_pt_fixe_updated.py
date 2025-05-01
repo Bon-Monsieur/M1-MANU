@@ -8,49 +8,9 @@ matplotlib.use("TkAgg")  # or 'Qt5Agg' if you prefer Qt
 
 # Merci Ronan pour l'optimisation :D
 
-
-# Définir le polynôme P(bar_x)
-def P(bar_x):
-    return (
-        -138.24 * bar_x**6 +
-        92.16 * bar_x**5 +
-        84.48 * bar_x**4 -
-        48.64 * bar_x**3 -
-        17.60 * bar_x**2 +
-        6.40 * bar_x +
-        3.20
-    )
-
-def dP(bar_x):
-    return (-829.44 * bar_x**5 +
-             460.8 * bar_x**4 +
-             337.92 * bar_x**3 -
-             145.92 * bar_x**2 -
-              35.2 * bar_x +
-               6.4)
-
-# Définir u_SV(x, y) en évitant les racines négatives
-def u_sv(x, y):
-    bar_x = x / 12.8
-    p_val = P(bar_x)
-    val = np.sqrt(np.maximum(p_val**2 - y**2, 0))
-    val[(p_val**2 - y**2) < 0] = 0
-    return val
-
-def intenstite(x,y):
-    # Calcul de la fonction d'intensité
-    bar_x = x / 12.8
-    p_val = P(bar_x)
-    dp_val = dP(bar_x)
-    result = np.zeros_like(x)
-    mask = p_val**2 >= y**2
-    result[mask] = 1/np.sqrt(1 + ((dP(x[mask])/np.sqrt(P(bar_x[mask])**2-y[mask]**2))**2 +(-y[mask]/np.sqrt(P(bar_x[mask])**2-y[mask]**2))**2))
-    return result 
-
-
 # Fonction qui permet de forcer la valeur de mon estimation aux points critiques de ma forme
 def cond(Un, Nx, Ny, fig="parabola"):
-    if fig == "parabola":
+    if fig == "parabola":        
         ax = int((Nx - 1) / 2)
         ay = int((Ny - 1) / 2)
         Un[ax, ay] = 1  # modifie uniquement le centre de la parabole
@@ -106,12 +66,18 @@ def cond(Un, Nx, Ny, fig="parabola"):
             Un[j,ax0] = 0
         return Un
     
-    if fig == "test":
-        x = np.linspace(-6.4, 6.4, 100)
-        y = np.linspace(-5, 5, 100)
-        return Un
+    if fig == "vase":
+        x_vals = np.linspace(-0.5, 0.5, Nx)
+        y_vals = np.linspace(-0.5, 0.5, Ny)
+        X,Y = np.meshgrid(x_vals, y_vals)
+        I = lambda x, y: np.where(
+            np.isnan(dvase_dx(x, y)) & np.isnan(dvase_dy(x, y)), 1,
+            1 / np.sqrt(1 + dvase_dx(x, y)**2 + dvase_dy(x, y)**2)
+        )
+        mask = (I(x_vals, y_vals) == 1 ) & (g(X)**2 - Y**2 > 0)
+        Un[mask] = (np.sqrt(g(X)**2 - Y**2))[mask]  # Donne la vraie valeur du vase aux points critiques
 
-    return Un
+        return Un
 
 
 
@@ -143,8 +109,11 @@ def erreur(Un, Nx, Ny, fig, x, y):
         x = np.linspace(-1, 1, Nx)
         y = np.linspace(-1, 1, Ny)
         sol_exacte = lambda x, y: np.where(x**2 >= 0, x**2, 0)
-    elif fig=="test":
-        return 1000
+
+    elif fig=="vase":
+        x = np.linspace(-0.5, 0.5, Nx)
+        y = np.linspace(-0.5, 0.5, Ny)
+        sol_exacte = lambda x, y: np.sqrt(np.maximum(g(x)**2 - y**2, 0))
     
     X, Y = np.meshgrid(x, y)
 
@@ -210,15 +179,18 @@ def SFS_fixed_point_method(Nx, Ny, fig="parabola",epsilon=1e-4,maxiter=2000):
         # Conditions aux bords
         Un[:,0] = Un[:,-1] = 1
         Un[0,:] = Un[-1,:] = x**2
-    elif fig == "test":
-        # Domaine pour x et y
-        x = np.linspace(-6.4, 6.4, Nx)
-        y = np.linspace(-5, 5, Ny)
-
-        I = (
-            lambda x,y : np.where()
+    elif fig == "vase":
+        x = np.linspace(-0.5, 0.5, Nx)
+        y = np.linspace(-0.5, 0.5, Ny)
+        I = lambda x, y: np.where(
+            np.isnan(dvase_dx(x, y)) & np.isnan(dvase_dy(x, y)), 1,
+            1 / np.sqrt(1 + dvase_dx(x, y)**2 + dvase_dy(x, y)**2)
         )
-        # Il faut définir la fonction intensité  I(x,y) = 1/sqrt(1+()^2+(dz/dy)^2)
+        # Condition aux bords
+        Un[:,0]  = np.sqrt(np.maximum(g(-0.5)**2 - y**2, 0))
+        Un[:,-1] = np.sqrt(np.maximum(g(0.5)**2 - y**2, 0))
+        
+        
 
     # Def maillage et pas
     X, Y = np.meshgrid(x, y)
@@ -262,13 +234,16 @@ def SFS_fixed_point_method(Nx, Ny, fig="parabola",epsilon=1e-4,maxiter=2000):
         ) 
         Un[1:-1, 1:-1] = Un[1:-1, 1:-1] - Dt * G(Un)[1:-1, 1:-1]  
         
-    #Un = cond(Un,Nx,Ny,fig)
+    # Corrige les imperfections de la solution pour l'affichage du vase
+    if fig=="vase":
+        Un = cond(Un,Nx,Ny,fig)
+
     erreur_globale = erreur(Un, Nx, Ny, fig, x, y)  # Calcul de l'erreur
 
     # ======== AFFICHAGE ======= #
 
-    fig = plt.figure(figsize=(10, 4))
-    ax = fig.add_subplot(1, 2, 1)
+    figure = plt.figure(figsize=(10, 4))
+    ax = figure.add_subplot(1, 2, 1)
 
     # Calcul des valeurs de I sur le maillage
     Z = I(X,Y)
@@ -277,21 +252,24 @@ def SFS_fixed_point_method(Nx, Ny, fig="parabola",epsilon=1e-4,maxiter=2000):
     contour1 = ax.contourf(
         X, Y, Z, levels=np.linspace(0, 1, 51), cmap="viridis", vmin=0, vmax=1
     )
-    cbar = fig.colorbar(contour1, ax=ax, label="I(v)")
-    cbar.set_ticks(np.linspace(0, 1, 5))
+    cbar = figure.colorbar(contour1, ax=ax, label="I(v)")
+    cbar.set_ticks(np.linspace(0, 1, 6))
     ax.set_aspect("equal")
     ax.set_xlabel("x")
     ax.set_ylabel("y")
     ax.set_title("Intensité lumineuse")
 
     # Deuxième figure
-    ax = fig.add_subplot(1, 2, 2, projection="3d")
+    ax = figure.add_subplot(1, 2, 2, projection="3d")
     ax.plot_wireframe(X, Y, Un, color="black", linewidth=1)
+    #surf = ax.plot_surface(X, Y, Un, color="white", edgecolor="black", linewidth=0.1, shade=False)
     surf = ax.plot_surface(X, Y, Un, color="white", alpha=1)
     ax.view_init(elev=15, azim=-135)
     ax.set_xlabel("x")
     ax.set_ylabel("y")
     ax.set_zlabel("z")
+    if fig=="vase":
+        ax.set_zlim(0, 0.7)
     ax.set_title("Shape reconstructed from the intensity")
 
     #print(erreur_globale)
@@ -301,7 +279,17 @@ def SFS_fixed_point_method(Nx, Ny, fig="parabola",epsilon=1e-4,maxiter=2000):
     plt.show()
 
 
+# ====== Fonctions pour le vase ====== #
+
+g = lambda x: 0.15 - 0.025 * (6*x - 1) * (2*x - 1)**2 * (3*x + 2)**2 * (2*x + 1)
+dg_dx = lambda x, dx=1e-5: (g(x + dx) - g(x - dx)) / (2 * dx)
+
+# Dérivées partielles dz/dx et dz/dy sous forme lambda
+dvase_dx = lambda x, y: np.where(g(x)**2 - y**2 > 0, (g(x) * dg_dx(x)) / np.sqrt(g(x)**2 - y**2), 0)
+dvase_dy = lambda x, y: np.where(g(x)**2 -y**2 > 0, -y / np.sqrt(g(x)**2 - y**2), 0)
+
 
 #======  UTILISATION  ======#
 
-SFS_fixed_point_method(Nx=101, Ny=101, fig="test",epsilon=1e-4,maxiter=2000)
+SFS_fixed_point_method(Nx=101, Ny=101, fig="vase",epsilon=1e-4,maxiter=4000)
+# vase = Nx=Ny=101 et maxiter=4000

@@ -291,4 +291,4 @@ dvase_dy = lambda x, y: np.where(g(x)**2 -y**2 > 0, -y / np.sqrt(g(x)**2 - y**2)
 
 #======  UTILISATION  ======#
 
-SFS_fixed_point_method(Nx=101, Ny=101, fig="vase",epsilon=1e-4,maxiter=4000)
+SFS_fixed_point_method(Nx=41, Ny=41, fig="vase",epsilon=1e-4,maxiter=4000)
