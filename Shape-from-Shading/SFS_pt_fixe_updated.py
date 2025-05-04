@@ -144,7 +144,7 @@ def SFS_fixed_point_method(Nx, Ny, fig="parabola",epsilon=1e-4,maxiter=2000):
         )
     elif fig == "pyramid":
         I = (
-            lambda x, y: np.ones_like(X) / np.sqrt(5)
+            lambda x, y: np.ones_like(x) / np.sqrt(5)
         )
     elif fig == "pwfe":
         I = (
@@ -224,7 +224,8 @@ def SFS_fixed_point_method(Nx, Ny, fig="parabola",epsilon=1e-4,maxiter=2000):
             + np.maximum(np.maximum(DDym @ fU, 0.0), np.maximum(-DDyp @ fU, 0.0)) ** 2
         ).reshape(Nx, Ny) - n(X, Y)
         return R
-   
+    
+    X1, Y1 = np.meshgrid(x[1:-1], y[1:-1], indexing='ij')
     # Methode du pt fixe
     for k in range(maxiter+1):
         if(erreur(Un,Nx,Ny,fig,x,y)<=epsilon):
@@ -232,11 +233,14 @@ def SFS_fixed_point_method(Nx, Ny, fig="parabola",epsilon=1e-4,maxiter=2000):
         Un = cond(
             Un, Nx, Ny, fig      # Applique les conditions pour les endroits sur la frontière
         ) 
-        Un[1:-1, 1:-1] = Un[1:-1, 1:-1] - Dt * G(Un)[1:-1, 1:-1]  
-        
+        #Un[1:-1, 1:-1] = Un[1:-1, 1:-1] - Dt * G(Un)[1:-1, 1:-1]  
+
+        #Un[1:-1, 1:-1] = n(X1, Y1) * Dx + np.minimum(np.minimum(Un[0:-2, 1:-1], Un[2:, 1:-1]),np.minimum(Un[1:-1, 0:-2], Un[1:-1, 2:]))
+        Un[1:-1, 1:-1] = np.maximum(n(X1, Y1) * Dx + np.maximum(Un[0:-2, 1:-1], Un[2:, 1:-1]), n(X1, Y1) * Dx+np.minimum(Un[1:-1, 0:-2], Un[1:-1, 2:]))
+
     # Corrige les imperfections de la solution pour l'affichage du vase
-    if fig=="vase":
-        Un = cond(Un,Nx,Ny,fig)
+    
+    Un = cond(Un,Nx,Ny,fig)
 
     erreur_globale = erreur(Un, Nx, Ny, fig, x, y)  # Calcul de l'erreur
 
@@ -272,7 +276,7 @@ def SFS_fixed_point_method(Nx, Ny, fig="parabola",epsilon=1e-4,maxiter=2000):
         ax.set_zlim(0, 0.7)
     ax.set_title("Shape reconstructed from the intensity")
 
-    #print(erreur_globale)
+    print(erreur_globale)
     ax.text2D(0., -0.1, f"Erreur: ${erreur_globale:.2e}$", transform=ax.transAxes)
     ax.text2D(0.6, -0.1, f"Nb_itération: ${k:.2f}$", transform=ax.transAxes)
 
@@ -291,5 +295,5 @@ dvase_dy = lambda x, y: np.where(g(x)**2 -y**2 > 0, -y / np.sqrt(g(x)**2 - y**2)
 
 #======  UTILISATION  ======#
 
-SFS_fixed_point_method(Nx=101, Ny=101, fig="parabola",epsilon=1e-4,maxiter=4000)
+SFS_fixed_point_method(Nx=101, Ny=101, fig="fig7",epsilon=1e-4,maxiter=4000)
 # vase = Nx=Ny=101 et maxiter=4000
