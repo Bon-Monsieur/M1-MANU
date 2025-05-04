@@ -65,7 +65,7 @@ def erreur(Un,nb_pt,fig,x,y):
             count +=1
             res += np.abs(Un[i,j]-sol_exacte([x[i],y[i]]))
            
-    res = res/(count)**2
+    res = res/(count)
     
     return res
 
@@ -125,18 +125,15 @@ def SFS_fixed_point_method(nb_pt=21,fig="parabola"):
     # Boucle itérative à modifier en while pour forcer la convergence en fonction d'un epsilon donné
     # Ici on fait 200 itérations, mais on peut demander plus (attention à la lenteur du code)
     
-    for k in range(200):
+    for k in range(20):
         Un = Up1.copy()
         Un = cond(Un,nb_pt,fig)     #Applique les conditions pour les endroits où I(x)=1
 
         for i in range(1, nb_pt - 1):  
             for j in range(1, nb_pt - 1):  
-                if i == 0 or i == nb_pt - 1 or j == 0 or j == nb_pt - 1:
-                    # Si on est sur un bord, on ne met pas à jour
-                    continue
-                Up1[i, j] =   n((x[i],y[j])) + max(Un[i-1,j],Un[i+1,j],Un[i,j-1],Un[i,j+1])         # methode du pt fixe
+                Up1[i, j] = n((x[i],y[j]))*Dx + max(Un[i-1,j],Un[i+1,j],Un[i,j-1],Un[i,j+1])         # methode du pt fixe
 
-    #Up1 = cond(Up1,nb_pt,fig)
+    Up1 = cond(Up1,nb_pt,fig)
     
     
     erreur_globale = erreur(Up1,nb_pt,fig,x,y)      # Calcul de l'erreur
@@ -199,4 +196,4 @@ Exemple d'appel:    SFS_fixed_point_method(nb_pt=21,fig="parabola")
 ''' 
 
 
-SFS_fixed_point_method(nb_pt=51,fig="pyramid") 
+SFS_fixed_point_method(nb_pt=51,fig="fig7") 

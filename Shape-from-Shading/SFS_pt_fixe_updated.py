@@ -250,7 +250,7 @@ def SFS_fixed_point_method(Nx, Ny, fig="parabola",epsilon=1e-4,maxiter=2000):
     
     # Premier graphique
     contour1 = ax.contourf(
-        X, Y, Z, levels=np.linspace(0, 1, 51), cmap="viridis", vmin=0, vmax=1
+        X, Y, Z, levels=np.linspace(0, 1, 71), cmap="viridis", vmin=0, vmax=1
     )
     cbar = figure.colorbar(contour1, ax=ax, label="I(v)")
     cbar.set_ticks(np.linspace(0, 1, 6))
@@ -291,5 +291,5 @@ dvase_dy = lambda x, y: np.where(g(x)**2 -y**2 > 0, -y / np.sqrt(g(x)**2 - y**2)
 
 #======  UTILISATION  ======#
 
-SFS_fixed_point_method(Nx=101, Ny=101, fig="vase",epsilon=1e-4,maxiter=4000)
+SFS_fixed_point_method(Nx=101, Ny=101, fig="parabola",epsilon=1e-4,maxiter=4000)
 # vase = Nx=Ny=101 et maxiter=4000
