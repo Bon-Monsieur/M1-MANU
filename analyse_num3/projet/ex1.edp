@@ -1,0 +1,71 @@
+real eps = 0.1;
+real lambda = 1.0;
+
+func g = -(x*(-exp(lambda/eps)) + exp(x*lambda/eps) + x - 1)/ (lambda * (exp(lambda/eps) - 1));
+func dg = - ( -exp(lambda/eps) + (lambda/eps)*exp(x*lambda/eps) + 1 )/ ( lambda * (exp(lambda/eps) - 1) );
+
+func f=1.;
+
+real[int] H1error(10); 
+
+// P1
+for (int nn=10;nn<=100;nn+=10){
+    mesh Th = square(nn,1,[x,y/50]);
+    fespace Vh(Th,P1); 
+    Vh uh,vh;
+    problem FV(uh,vh,solver=LU)=int2d(Th)(eps*dx(uh)*dx(vh)) + int2d(Th)(lambda*dx(uh)*vh) -int2d(Th)(f*vh)+on(2,4,uh=0); 
+    FV;
+    H1error[(nn-10)/10] = sqrt(int2d(Th)((dg-dx(uh))^2) + int2d(Th)(g-uh)^2);
+
+}
+
+cout << "erreur P1" << endl;
+for (int nn=10;nn<=100;nn+=10){
+    cout << "n = " << nn << " : " << H1error[(nn-10)/10] << endl;
+}
+/* H1error en P1
+n = 10 : 0.0773731
+n = 20 : 0.0394923
+n = 30 : 0.0264316
+n = 40 : 0.0198511
+n = 50 : 0.015891
+n = 60 : 0.0132471
+n = 70 : 0.0113571
+n = 80 : 0.0099388
+n = 90 : 0.00883532
+n = 100 : 0.00795232
+*/
+
+// Taux de convergence en P1
+cout << "convergence rate en P1= "<< abs(log(H1error[9]/H1error[0])/log(10.)) << endl;
+
+
+// P2 
+for (int nn=10;nn<=100;nn+=10){
+    mesh Th = square(nn,1,[x,y/50]);
+    fespace Vh(Th,P2); 
+    Vh uh,vh;
+    problem FV(uh,vh,solver=LU)=int2d(Th)(eps*dx(uh)*dx(vh)) + int2d(Th)(lambda*dx(uh)*vh) -int2d(Th)(f*vh)+on(2,4,uh=0); 
+    FV;
+    H1error[(nn-10)/10] = sqrt(int2d(Th)((dg-dx(uh))^2) + int2d(Th)(g-uh)^2);
+
+}
+
+cout << "erreur P2" << endl;
+for (int nn=10;nn<=100;nn+=10){
+    cout << "n = " << nn << " : " << H1error[(nn-10)/10] << endl;
+}
+/* H1error en P2
+n = 10 : 0.00886314
+n = 20 : 0.00230685
+n = 30 : 0.00103321
+n = 40 : 0.000582767
+n = 50 : 0.000373443
+n = 60 : 0.000259513
+n = 70 : 0.000190742
+n = 80 : 0.000146076
+n = 90 : 0.00011544
+n = 100 : 9.35185e-05
+*/
+// taux de convergence en P2
+cout << "convergence rate en P2= "<< abs(log(H1error[9]/H1error[0])/log(10.)) << endl;

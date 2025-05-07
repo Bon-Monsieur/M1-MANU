@@ -1,0 +1,66 @@
+
+
+real k = 50; // fréquence
+real nmur = 2.4;
+real nair = 1.0;
+
+real eps = 0.1;
+real xs = 3.5;
+real ys = 2.5;
+
+real Lx = 7.0;      // Longueur totale
+real Ly = 5.0;      //Largeur totale
+real murep = 0.2;  //Epaisseur du mur
+real portew = 0.8; // Largeur de la porte
+real xgauche = 4.7; // Coordonnee x du mur gauche
+real xdroite = xgauche+0.2; // Coordonnee x du mur droit
+real yportebas = 2.1; // coordonnée bas de la porte
+real yportehaut = yportebas + portew; // Coordonnée y du haut de la porte
+
+// Marquage du mur : on suppose que le mur est entre xgauche et xdroite
+func n = (x >= xgauche && x <= xdroite && !(y>=yportebas && y<=yportehaut) ) ? nmur : nair;
+
+// Source WiFi (disque centré en xs,ys)
+func f = ( ( (x - xs)^2 + (y - ys)^2 ) < eps^2 ) 
+         ? (3 / (pi * eps^2)) * (1 - sqrt((x - xs)^2 + (y - ys)^2)/eps)
+         : 0;
+
+
+
+
+border basgauche(t=0,xgauche){ x=t; y=0; label=1; };  
+border murbasgauche(t=0,yportebas){ x=xgauche; y=t; label=2; };  
+border murbas(t=xgauche,xdroite){ x=t; y=yportebas; label=3; };  
+border murbasdroite(t=0,yportebas){ x=xdroite; y=yportebas-t; label=4; };  
+border basdroite(t=xdroite,Lx){ x=t; y=0; label=5; };  
+border murdroit(t=0,Ly){ x=Lx; y=t; label=6; };  
+
+border hautdroit(t=Lx,xdroite){ x=t; y=Ly; label=7; }; 
+border murhautdroit(t=Ly,yportehaut){ x=xdroite; y=t; label=8; }; 
+border murhaut(t=0,murep){ x=xdroite-t; y=yportehaut; label=9; };  
+border murhautgauche(t=yportehaut,Ly){ x=xgauche; y=t; label=10; };  
+border hautgauche(t=0,xgauche){ x=xgauche-t; y=Ly; label=11; };  
+border murgauche(t=0,Ly){ x=0; y=Ly-t; label=12; };  
+
+
+
+mesh Th = buildmesh(basgauche(20) + murbasgauche(20) + murbas(10) + murbasdroite(20) + basdroite(20) + murdroit(20) + murgauche(20) + hautgauche(20) + hautdroit(20) + murhautgauche(20) + murhautdroit(20) + murhaut(10)); 
+
+// Espace fonctionnel
+fespace Vh(Th, P2);
+Vh<complex> E, v;
+
+// Problème variationnel : équation de Helmholtz avec impédance
+problem wifi(E, v)
+    = int2d(Th)(
+        -dx(E)*dx(v) -dy(E)*dy(v) + k^2*n^2*E*v
+      )
+    + int1d(Th, 1,2,3,4,5,6,7,8,9,10,11,12)(
+        1i * k * n * E * v // condition absorbante
+      )
+    - int2d(Th)( f * v );
+
+wifi;
+
+Vh vm = log(real(E)^2 + imag(E)^2);
+plot(vm, fill=true, nbiso=60,cmm="Propagation des ondes wifi dans l'appartement",dim=3);
