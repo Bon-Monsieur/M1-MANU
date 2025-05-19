@@ -9,13 +9,8 @@ y = np.linspace(-0.5, 0.5, Ny)
 X, Y = np.meshgrid(x, y)
 
 # Fonction g(x)
-g = lambda x: 0.15 - 0.025 * (6*x - 1) * (2*x - 1)**2 * (3*x + 2)**2 * (2*x + 1)
-G = g(X)
-
-# Calcul de f(x, y), avec masque pour éviter racine de négatif
-Z = np.full_like(X,0)  # NaN pour ne pas afficher les zones non définies
-mask = G**2 - Y**2 >= 0
-Z[mask] = np.sqrt(G**2 - Y**2)[mask]
+g = lambda x, y: (-np.cos(2 * np.pi * x) * np.cos(2 * np.pi * y) + np.sin(2 * np.pi * x) * np.sin(2 * np.pi * y))
+Z = g(X,Y)
 
 # Tracé 3D
 fig = plt.figure(figsize=(8, 6))

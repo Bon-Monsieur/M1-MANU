@@ -129,7 +129,7 @@ def SFS_fixed_point_method(Nx, Ny, fig="parabola",epsilon=1e-4,maxiter=2000):
 
     # Initialisation 
     Un = np.full((Nx, Ny), 0.0)  # U0 == 0
-
+    Un[1:-1, 1:-1] = 1 # Valeur initiale pour le maillage intérieur
     # Fonction de l'intensité lumineuse en fonction de la figure demandée et définition des bonnes bornes du maillage pour un bel affichage
     if fig == "parabola":
         I = (
@@ -138,8 +138,8 @@ def SFS_fixed_point_method(Nx, Ny, fig="parabola",epsilon=1e-4,maxiter=2000):
         )
     elif fig == "reverse_parabola":
         I = (
-            lambda x, y: 1/np.sqrt(1+(16*y*(1-y)*(1-2*x))**2
-            + (16*x*(1-x)*(1-2*y))**2)
+            lambda x, y: 1/np.sqrt(1+(16 * y * (1 - y) * (1 - 2 * x))**2
+            + (16 * x * (1 - x) * (1 - 2 * y))**2)
         )
     elif fig == "pyramid":
         I = (
@@ -178,6 +178,7 @@ def SFS_fixed_point_method(Nx, Ny, fig="parabola",epsilon=1e-4,maxiter=2000):
         # Conditions aux bords
         Un[:,0] = Un[:,-1] = 1
         Un[0,:] = Un[-1,:] = x**2
+        Un[1:-1,1:-1] = 1.0
     elif fig == "vase":
         x = np.linspace(-0.5, 0.5, Nx)
         y = np.linspace(-0.5, 0.5, Ny)
@@ -188,6 +189,7 @@ def SFS_fixed_point_method(Nx, Ny, fig="parabola",epsilon=1e-4,maxiter=2000):
         # Condition aux bords
         Un[:,0]  = np.sqrt(np.maximum(g(-0.5)**2 - y**2, 0))
         Un[:,-1] = np.sqrt(np.maximum(g(0.5)**2 - y**2, 0))
+        Un[1:-1,1:-1] = 1.0
         
         
 
@@ -255,11 +257,15 @@ def SFS_fixed_point_method(Nx, Ny, fig="parabola",epsilon=1e-4,maxiter=2000):
         X, Y, Z, levels=np.linspace(0, 1, 71), cmap="viridis", vmin=0, vmax=1
     )
     cbar = figure.colorbar(contour1, ax=ax, label="I(v)")
-    cbar.set_ticks(np.linspace(0, 1, 6))
+    cbar.set_ticks(np.linspace(0, 1, 5))
     ax.set_aspect("equal")
     ax.set_xlabel("x")
     ax.set_ylabel("y")
-    ax.set_title("Intensité lumineuse")
+    ax.set_xticks(np.linspace(x[0], x[-1], 5)) 
+    ax.xaxis.set_major_formatter('{x:.1f}')
+    ax.set_yticks(np.linspace(y[0], y[-1], 5))
+    ax.yaxis.set_major_formatter('{x:.1f}')
+    #ax.set_title("Intensité lumineuse")
 
     # Deuxième figure
     ax = figure.add_subplot(1, 2, 2, projection="3d")
@@ -270,13 +276,19 @@ def SFS_fixed_point_method(Nx, Ny, fig="parabola",epsilon=1e-4,maxiter=2000):
     ax.set_xlabel("x")
     ax.set_ylabel("y")
     ax.set_zlabel("z")
+    ax.set_xticks(np.linspace(x[0], x[-1], 3)) 
+    ax.set_yticks(np.linspace(y[0], y[-1], 3))
+    if fig!="vase":
+        ax.set_zticks(np.linspace(np.min(Un), np.max(Un), 3))
+    ax.zaxis.set_major_formatter('{x:.1f}')
     if fig=="vase":
         ax.set_zlim(0, 0.7)
-    ax.set_title("Shape reconstructed from the intensity")
+        
+    #ax.set_title("Shape reconstructed from the intensity")
 
     print(erreur_globale)
-    ax.text2D(0., -0.1, f"Erreur: ${erreur_globale:.2e}$", transform=ax.transAxes)
-    ax.text2D(0.6, -0.1, f"Nb_itération: ${k:.2f}$", transform=ax.transAxes)
+    ax.text2D(0.2, -0.1, fr"$\epsilon=$ ${erreur_globale:.2e}$", transform=ax.transAxes)
+    ax.text2D(0.6, -0.1, fr"$n=$ ${k}$", transform=ax.transAxes)
 
     plt.show()
 
@@ -292,6 +304,6 @@ dvase_dy = lambda x, y: np.where(g(x)**2 -y**2 > 0, -y / np.sqrt(g(x)**2 - y**2)
 
 
 #======  UTILISATION  ======#
-
-SFS_fixed_point_method(Nx=101, Ny=101, fig="fig7",epsilon=1e-4,maxiter=4000)
-# vase = Nx=Ny=101 et maxiter=4000
+SFS_fixed_point_method(Nx=101, Ny=101, fig="fig8",epsilon=1e-4,maxiter=350)
+# fig7: e = 2.59e-2 ; n =110
+# fig8: e = ? ; n =350
