@@ -117,8 +117,7 @@ def erreur(Un, Nx, Ny, fig, x, y):
     
     X, Y = np.meshgrid(x, y)
 
-    return np.mean(np.abs(Un - sol_exacte(X, Y)))
-
+    return np.sum(np.abs(Un-sol_exacte(X,Y))) / (Nx * Ny)
 
 
 # Methode du point fixe pour le probleme de SFS
@@ -224,9 +223,9 @@ def SFS_fixed_point_method(Nx, Ny, fig="parabola",epsilon=1e-4,maxiter=2000):
             + np.maximum(np.maximum(DDym @ fU, 0.0), np.maximum(-DDyp @ fU, 0.0)) ** 2
         ).reshape(Nx, Ny) - n(X, Y)
         return R
-    
+
+
     X1, Y1 = np.meshgrid(x[1:-1], y[1:-1], indexing='ij')
-    # Methode du pt fixe
     for k in range(maxiter+1):
         if(erreur(Un,Nx,Ny,fig,x,y)<=epsilon):
             break
@@ -234,9 +233,8 @@ def SFS_fixed_point_method(Nx, Ny, fig="parabola",epsilon=1e-4,maxiter=2000):
             Un, Nx, Ny, fig      # Applique les conditions pour les endroits sur la frontière
         ) 
         #Un[1:-1, 1:-1] = Un[1:-1, 1:-1] - Dt * G(Un)[1:-1, 1:-1]  
+        Un[1:-1, 1:-1] = n(X[1:-1,1:-1], Y[1:-1,1:-1]) * Dx + np.minimum(np.minimum(Un[0:-2, 1:-1], Un[2:, 1:-1]),np.minimum(Un[1:-1, 0:-2], Un[1:-1, 2:]))
 
-        #Un[1:-1, 1:-1] = n(X1, Y1) * Dx + np.minimum(np.minimum(Un[0:-2, 1:-1], Un[2:, 1:-1]),np.minimum(Un[1:-1, 0:-2], Un[1:-1, 2:]))
-        Un[1:-1, 1:-1] = np.maximum(n(X1, Y1) * Dx + np.maximum(Un[0:-2, 1:-1], Un[2:, 1:-1]), n(X1, Y1) * Dx+np.minimum(Un[1:-1, 0:-2], Un[1:-1, 2:]))
 
     # Corrige les imperfections de la solution pour l'affichage du vase
     
