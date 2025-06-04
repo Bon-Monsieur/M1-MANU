@@ -32,11 +32,6 @@ double gauss_pulse(double xx){
     return exp(-pow((xx-5.) ,2));
 }
 
-double test(double xx){
-    return std::sin(2*M_PI*xx);
-}
-
-
 // =========== DEFINITION ============ //
 
 template<typename T>
@@ -50,11 +45,6 @@ field<T>::field(int test_label, mesh_1d<T> const& msh, T (*flux)(T const&),T (*f
         case 0: 
             for (size_t ii = 0; ii < n_cells_; ii++){
                 this->values_[ii] = gauss_pulse(msh.xc(ii));
-            }
-            break;
-        case 1: 
-            for (size_t ii = 0; ii < n_cells_; ii++){
-                this->values_[ii] = test(msh.xc(ii));
             }
             break;
     }

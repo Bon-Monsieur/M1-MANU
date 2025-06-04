@@ -28,7 +28,7 @@ void output_writer<T>::write_solution( field<T> solution,std::string etat) {
     std::ofstream fichier(nom_fichier);
 
     if (!fichier) {
-        std::cerr << " Problème d'bouerture du fichier " << nom_fichier << std::endl; 
+        std::cerr << " Problème d'ouverture du fichier " << nom_fichier << std::endl; 
     }
 
     const std::vector<T>& x = mesh_.cells_centers();

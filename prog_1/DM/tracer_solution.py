@@ -5,29 +5,12 @@ def lire_fichier(fichier):
     abscisses = []
     valeurs = []
 
-<<<<<<< HEAD
-    with open(fichier) as f:
+    with open(fichier,'r') as f:
         for ligne in f:
             if ligne.strip():  # Ignore les lignes vides
                 x, u = map(float, ligne.split())
                 abscisses.append(x)
                 valeurs.append(u)
-=======
-    print("Chemin courant :", os.getcwd())
-    print("Tentative d'ouverture de :", fichier)
->>>>>>> 9c2840731e867c3d24497a75da669a07941a4ece
-
-    try:
-        with open(fichier, 'r') as f:
-            for ligne in f:
-                if ligne.strip():
-                    x, u = map(float, ligne.split())
-                    abscisses.append(x)
-                    valeurs.append(u)
-    except FileNotFoundError:
-        print(f"Fichier non trouvé : {fichier}")
-    except Exception as e:
-        print(f"Erreur lors de la lecture : {e}")
 
     return abscisses, valeurs
 
