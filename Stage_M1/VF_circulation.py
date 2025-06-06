@@ -4,10 +4,8 @@ import matplotlib.animation as animation
 
 
 def schema_VF(nb_maille,u0,a,b,f,fp,cfl=0.5,T=1,convexe=1,Nt_print_max=10):
-    def F(it):
-        return 0 if 500<it<1200 or 3000<it<4000 else 0.55
-
-        
+    def F(t):
+        return 0 if 30<t<50 or 100<t<120 or 160<t<200 else 0.55
 
         
     m = nb_maille
@@ -47,7 +45,7 @@ def schema_VF(nb_maille,u0,a,b,f,fp,cfl=0.5,T=1,convexe=1,Nt_print_max=10):
         Utemp = Uh.copy()
         
         Uh[0] = Utemp[0] - dt/dx *(flux(Utemp[0],Utemp[1]) - flux(0.55,Utemp[0]))  # Entrée de la route
-        Uh[-1] = 0  # Sortie de la route
+        Uh[-1] = 0
         
         
         Uh[1:-1] = (
@@ -55,10 +53,10 @@ def schema_VF(nb_maille,u0,a,b,f,fp,cfl=0.5,T=1,convexe=1,Nt_print_max=10):
             - dt/dx*(vectorized_flux(Uh[1:-1],Uh[2:])-vectorized_flux(Uh[:-2],Uh[1:-1]))
         )
         Uh[i_centre] = Utemp[i_centre] - dt / dx * (
-                    flux(Utemp[i_centre], Utemp[i_centre+1]) - min(flux(Utemp[i_centre-1], Utemp[i_centre]),F(it))  # flux sortant = 0
+                    flux(Utemp[i_centre], Utemp[i_centre+1]) - min(flux(Utemp[i_centre-1], Utemp[i_centre]),F(t))  # flux sortant = 0
                 )
         Uh[i_centre-1] = Utemp[i_centre-1] - dt / dx * (
-                    min(F(it),flux(Utemp[i_centre-1], Utemp[i_centre])) -  flux(Utemp[i_centre-2], Utemp[i_centre-1]) # flux entrant = 0
+                    min(F(t),flux(Utemp[i_centre-1], Utemp[i_centre])) -  flux(Utemp[i_centre-2], Utemp[i_centre-1]) # flux entrant = 0
                 )
 
         if it % ((T//dt)//Nt_print_max) == 0:
