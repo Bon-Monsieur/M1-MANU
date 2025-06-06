@@ -5,7 +5,7 @@ from matplotlib.widgets import Button
 import threading
 import time as pytime
 from plot_solution import plot_progression_with_controls
-'''
+
 # Constantes données dans l'énoncé
 Text = 5.0
 Trad = 40.0
@@ -129,10 +129,11 @@ X, Y = np.meshgrid(x, y)
 
 # Plot the progression of temperature distributions with interactive controls
 plot_progression_with_controls(Uh_history, X, Y, plot_type='3d')
-'''
+
 
 # %%
 # SCHEMA D'ORDRE 4 EN ESPACE ET 1 EN TEMPS 
+'''
 
 # Constantes données dans l'énoncé
 Text = 5.0
@@ -318,3 +319,4 @@ X, Y = np.meshgrid(x, y)
 # Plot the progression of temperature distributions with interactive controls
 plot_progression_with_controls(Uh_history, X, Y, plot_type='3d')
 # %%
+'''

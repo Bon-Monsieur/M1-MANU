@@ -37,7 +37,7 @@ class residual {
 
 
 template <typename T, typename Func>
-T flux_LF(T const ul , T const ur , T max_vel, Func flux )    // Fi+1/2
+T flux_numerique(T const ul , T const ur , T max_vel, Func flux )    // Fi+1/2
 {
     return 0.5*( flux (ul) + flux (ur) - max_vel*(ur-ul));
 }
@@ -46,19 +46,15 @@ T flux_LF(T const ul , T const ur , T max_vel, Func flux )    // Fi+1/2
 template<typename T>
 void residual<T>::assemble_from_field(field <T> const& uh){
     values_.resize(uh().size()); 
-    double maximum = 0.0;
-    for (size_t ii = 0; ii < uh().size(); ++ii) {
-        maximum = std::max(maximum, std::abs(uh.fp_()(uh(ii)))); // Selectionne le max des uh
-    }
+    double maximum = 1.0;
+    //for (size_t ii = 0; ii < uh().size(); ++ii) {
+    //    maximum = std::max(maximum, std::abs(uh.fp_()(uh(ii)))); // Selectionne le max des uh
+    //}
+    //std::cout << "Maximum de la derivee de flux : " << maximum << std::endl;
 
     T (*flux)(T const&) = uh.flux_(); // Pointeur vers la fonction F de field
 
-    for (size_t ii = 0; ii < uh().size(); ++ii) {   // Calcul du residual avec des calculs different aux bords
-        if (ii == 0) {
-            values_[ii] = -1.0/ mesh_.dx() * (flux_LF<T>(uh(ii), uh(ii+1), maximum, flux) - flux_LF<T>(uh(ii), uh(ii), maximum, flux));
-        } else if (ii == uh().size()-1) {
-            values_[ii] = -1.0/ mesh_.dx() * (flux_LF<T>(uh(ii), uh(ii), maximum, flux) - flux_LF<T>(uh(ii-1), uh(ii), maximum, flux));
-        } else
-        values_[ii] = -1.0/ mesh_.dx() * (flux_LF<T>(uh(ii), uh(ii+1), maximum, flux) - flux_LF<T>(uh(ii-1), uh(ii), maximum, flux));
+    for (size_t ii = 1; ii < uh().size()-1; ++ii) {   // Calcul du residual avec des calculs different aux bords
+        values_[ii] = -1.0/ mesh_.dx() * (std::min(0.5,flux_numerique<T>(uh(ii), uh(ii+1), maximum, flux)) - std::min(0.5,flux_numerique<T>(uh(ii-1), uh(ii), maximum, flux)));
     }
 }

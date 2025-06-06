@@ -16,8 +16,8 @@ def lire_fichier(fichier):
 
 
 # Lecture des deux fichiers
-x_init, u_init = lire_fichier("GAUSS_PULSE_initial.txt")
-x_final, u_final = lire_fichier("GAUSS_PULSE_final.txt")
+x_init, u_init = lire_fichier("stage_initial.txt")
+x_final, u_final = lire_fichier("stage_final.txt")
 
 # Tracé sur le même graphique
 plt.plot(x_init, u_init, label="Solution initiale", linestyle='--', color='blue')
