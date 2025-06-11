@@ -45,7 +45,7 @@ def schema_VF(nb_maille,u0,a,b,f,fp,cfl=0.5,T=1,convexe=1,Nt_print_max=10):
         Utemp = Uh.copy()
         
         Uh[0] = Utemp[0] - dt/dx *(flux(Utemp[0],Utemp[1]) - flux(0.55,Utemp[0]))  # Entrée de la route
-        Uh[-1] = 0
+        Uh[-1] = Utemp[-1] - dt/dx * (flux(Utemp[-1],0.0) - flux(Utemp[-2],Utemp[-1]))  # Sortie de la route
         
         
         Uh[1:-1] = (
@@ -73,10 +73,7 @@ def Hp(rho):
     return 1 - 2*rho
 
 def u0(x):
-    if (x >= -5 and x <= -3):
-        return 0.55
-    else:
-        return 0.55
+    return 0.55
 
 
 
@@ -84,7 +81,7 @@ def u0(x):
 # Def variables
 a = -5
 b = 5
-nb_maille = 300
+nb_maille = 100
 T = 250
 
 # Def maillage
@@ -94,7 +91,7 @@ x_milieu = np.linspace(a+dx/2,b-dx/2,nb_maille)
 
 Uh_final, Uh_history = schema_VF(
     nb_maille, u0, a, b, f=H, fp=Hp,
-    cfl=0.5, T=T, convexe=1, Nt_print_max=200
+    cfl=0.25, T=T, convexe=1, Nt_print_max=200
 )
 
 
