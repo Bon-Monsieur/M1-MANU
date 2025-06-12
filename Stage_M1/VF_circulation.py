@@ -17,7 +17,7 @@ densite_init = 0.4
 a = -10
 b = 10
 T=1e6
-nb_maille = 150
+nb_maille = 100
 
 # Def maillage
 x = np.linspace(a, b, nb_maille+1)
@@ -28,22 +28,22 @@ def schema_generator(nb_maille, u0, a, b, f, fp, cfl, T):
     m = nb_maille
     x = np.linspace(a, b, m + 1)
     dx = (b - a) / m
-    Uh = np.array([u0((x[i]+x[i+1])/2.0) for i in range(len(x)-1)])
-
     it = 0  # Compteur d'itérations pour les images de l'animation
     t = 0   # Variable de temps
 
-    # Indice des feux
-    i_feu_gauche = len(Uh) // 2 - len(Uh) // 4
-    i_feu_centre = len(Uh) // 2
-    i_feu_droite = len(Uh) // 2 + len(Uh) // 4
-    
-
-    # Definition du flux
+    Uh = np.array([u0((x[i]+x[i+1])/2.0) for i in range(len(x)-1)])
+    # Définition du flux
     def flux(um,up):
         return 0.5*(f(um)+f(up)) -0.5*(up - um)
     vectorized_flux = np.vectorize(flux)
 
+    
+    # Indice des feux
+    i_feu_gauche = len(Uh) // 2 - len(Uh) // 4
+    i_feu_centre = len(Uh) // 2
+    i_feu_droite = len(Uh) // 2 + len(Uh) // 4
+    feux = [ (i_feu_gauche, F_gauche), (i_feu_centre, F_centre), (i_feu_droite, F_droite) ]
+    
     
     while t < T:
         Utemp = Uh.copy()
@@ -54,35 +54,25 @@ def schema_generator(nb_maille, u0, a, b, f, fp, cfl, T):
         if T - t < dt:
             dt = T - t
         t += dt
-        
 
-        
-        Uh[0] = Utemp[0] - dt/dx *(flux(Utemp[0],Utemp[1]) - flux(densite_init,Utemp[0]))
-        Uh[-1] = Utemp[-1] - dt/dx * (flux(Utemp[-1],0.0) - flux(Utemp[-2],Utemp[-1]))
+        # Mise à jour des valeurs intérieures
         Uh[1:-1] = (
             Uh[1:-1] 
             - dt/dx*(vectorized_flux(Uh[1:-1],Uh[2:])-vectorized_flux(Uh[:-2],Uh[1:-1]))
         )
 
+        # Condition aux limites
+        Uh[0] = Utemp[0] - dt/dx *(flux(Utemp[0],Utemp[1]) - flux(densite_init,Utemp[0]))
+        Uh[-1] = Utemp[-1] - dt/dx * (flux(Utemp[-1],0.0) - flux(Utemp[-2],Utemp[-1]))
+
         # Calcul pour les feux rouges 
-        Uh[i_feu_gauche] = Utemp[i_feu_gauche] - dt / dx * (
-                    flux(Utemp[i_feu_gauche], Utemp[i_feu_gauche+1]) - min(flux(Utemp[i_feu_gauche-1], Utemp[i_feu_gauche]),F_gauche(t))
-                )
-        Uh[i_feu_gauche-1] = Utemp[i_feu_gauche-1] - dt / dx * (
-                    min(F_gauche(t),flux(Utemp[i_feu_gauche-1], Utemp[i_feu_gauche])) -  flux(Utemp[i_feu_gauche-2], Utemp[i_feu_gauche-1])
-                )
-        Uh[i_feu_centre] = Utemp[i_feu_centre] - dt / dx * (
-                    flux(Utemp[i_feu_centre], Utemp[i_feu_centre+1]) - min(flux(Utemp[i_feu_centre-1], Utemp[i_feu_centre]),F_centre(t))
-                )
-        Uh[i_feu_centre-1] = Utemp[i_feu_centre-1] - dt / dx * (
-                    min(F_centre(t),flux(Utemp[i_feu_centre-1], Utemp[i_feu_centre])) -  flux(Utemp[i_feu_centre-2], Utemp[i_feu_centre-1])
-                )
-        Uh[i_feu_droite] = Utemp[i_feu_droite] - dt / dx * (
-                    flux(Utemp[i_feu_droite], Utemp[i_feu_droite+1]) - min(flux(Utemp[i_feu_droite-1], Utemp[i_feu_droite]),F_droite(t))
-                )
-        Uh[i_feu_droite-1] = Utemp[i_feu_droite-1] - dt / dx * (
-                    min(F_droite(t),flux(Utemp[i_feu_droite-1], Utemp[i_feu_droite])) -  flux(Utemp[i_feu_droite-2], Utemp[i_feu_droite-1])
-                )
+        for i_feu, F in feux:
+            Uh[i_feu] = Utemp[i_feu] - dt / dx * (
+                flux(Utemp[i_feu], Utemp[i_feu + 1]) - min(flux(Utemp[i_feu - 1], Utemp[i_feu]), F(t))
+            )
+            Uh[i_feu - 1] = Utemp[i_feu - 1] - dt / dx * (
+                min(F(t), flux(Utemp[i_feu - 1], Utemp[i_feu])) - flux(Utemp[i_feu - 2], Utemp[i_feu - 1])
+            )
 
         # On ne stocke que tous les 3 itérations pour alléger l'animation
         if it%3==0 or t+dt >= T:
@@ -124,7 +114,7 @@ def F_droite(t):
 
 def interactive_animation():
     gen = schema_generator(
-        nb_maille, u0, a, b, H, Hp, cfl=0.25, T=T
+        nb_maille, u0, a, b, f=H, fp=Hp, cfl=0.25, T=T
     )
 
     fig, ax = plt.subplots()
@@ -137,9 +127,15 @@ def interactive_animation():
     x_milieu = np.linspace(a + dx / 2, b - dx / 2, nb_maille)
 
     # ➕ Ajout du carré (position approximative du feu)
-    x_feu = x_milieu[nb_maille // 2]
-    feu_rect = Rectangle((x_feu - dx/2, 0), dx, 0.1, color='green')
-    ax.add_patch(feu_rect)
+    x_feu_gauche = x_milieu[nb_maille // 2 - nb_maille // 4]
+    x_feu_centre = x_milieu[nb_maille // 2]
+    x_feu_droite = x_milieu[nb_maille // 2 + nb_maille // 4]
+    feu_rect_gauche = Rectangle((x_feu_gauche - dx, 0), dx, 0.1, color='green')
+    feu_rect_centre = Rectangle((x_feu_centre - dx, 0), dx, 0.1, color='green')
+    feu_rect_droite = Rectangle((x_feu_droite - dx, 0), dx, 0.1, color='green')
+    ax.add_patch(feu_rect_gauche)
+    ax.add_patch(feu_rect_centre)
+    ax.add_patch(feu_rect_droite)
 
     def update(frame):
         try:
@@ -147,10 +143,12 @@ def interactive_animation():
             line.set_data(x_milieu, Uh)
             ax.set_title(f"Densité à t = {t:.2f}")
             # 🔁 Mise à jour de la couleur du feu
-            feu_rect.set_color('red' if feu_centre["actif"] else 'green')
+            feu_rect_gauche.set_color('red' if feu_gauche["actif"] else 'green')
+            feu_rect_centre.set_color('red' if feu_centre["actif"] else 'green')
+            feu_rect_droite.set_color('red' if feu_droite["actif"] else 'green')
         except StopIteration:
             pass
-        return line, feu_rect
+        return line, feu_rect_centre, feu_rect_gauche, feu_rect_droite
 
     fig.canvas.mpl_connect('key_press_event', on_key_press)
     fig.canvas.mpl_connect('key_release_event', on_key_release)
