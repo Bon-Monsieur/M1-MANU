@@ -81,7 +81,7 @@ def schema_generator(nb_maille, u0, a, b, f, fp, cfl, T):
         it += 1
 
 
-# ====== Fonctions pour une simulation de feu rouge intéractif ====== #
+# ====== Fonctions pour une simulation de feux rouges intéractif ====== #
 feu_gauche = {"actif": False}
 feu_centre = {"actif": False}
 feu_droite = {"actif": False}
@@ -111,7 +111,7 @@ def F_droite(t):
 
 
 
-
+# Fonction pour l'animation interactive
 def interactive_animation():
     gen = schema_generator(
         nb_maille, u0, a, b, f=H, fp=Hp, cfl=0.25, T=T
@@ -126,7 +126,7 @@ def interactive_animation():
 
     x_milieu = np.linspace(a + dx / 2, b - dx / 2, nb_maille)
 
-    # ➕ Ajout du carré (position approximative du feu)
+    # Ajout de carrés vert pour les feux de circulation
     x_feu_gauche = x_milieu[nb_maille // 2 - nb_maille // 4]
     x_feu_centre = x_milieu[nb_maille // 2]
     x_feu_droite = x_milieu[nb_maille // 2 + nb_maille // 4]
@@ -142,7 +142,7 @@ def interactive_animation():
             t, Uh = next(gen)
             line.set_data(x_milieu, Uh)
             ax.set_title(f"Densité à t = {t:.2f}")
-            # 🔁 Mise à jour de la couleur du feu
+            # Mise à jour de la couleur du feu
             feu_rect_gauche.set_color('red' if feu_gauche["actif"] else 'green')
             feu_rect_centre.set_color('red' if feu_centre["actif"] else 'green')
             feu_rect_droite.set_color('red' if feu_droite["actif"] else 'green')
@@ -154,7 +154,7 @@ def interactive_animation():
     fig.canvas.mpl_connect('key_release_event', on_key_release)
 
     ani = animation.FuncAnimation(
-        fig, update, interval=2, blit=False
+        fig, update, interval=2, blit=False, frames=None, cache_frame_data=False
     )
     plt.show()
 
