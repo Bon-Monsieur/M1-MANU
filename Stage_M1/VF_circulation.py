@@ -10,13 +10,14 @@ def Hp(rho):
     return 1 - 2*rho
 
 def u0(x):
-    return densite_init if x < -8 else 0.0
+    return densite_init if x < -8 else densite_init
 
 # Def variables
 densite_init = 0.4
 a = -10
 b = 10
 T=1e6
+CFL=0.4
 nb_maille = 100
 
 # Def maillage
@@ -81,7 +82,7 @@ def schema_generator(nb_maille, u0, a, b, f, fp, cfl, T):
         it += 1
 
 
-# ====== Fonctions pour une simulation de feux rouges intéractif ====== #
+# ====== Fonctions pour une simulation de feux rouges intéractifs ====== #
 feu_gauche = {"actif": False}
 feu_centre = {"actif": False}
 feu_droite = {"actif": False}
@@ -114,7 +115,7 @@ def F_droite(t):
 # Fonction pour l'animation interactive
 def interactive_animation():
     gen = schema_generator(
-        nb_maille, u0, a, b, f=H, fp=Hp, cfl=0.25, T=T
+        nb_maille, u0, a, b, f=H, fp=Hp, cfl=CFL, T=T
     )
 
     fig, ax = plt.subplots()
@@ -141,7 +142,7 @@ def interactive_animation():
         try:
             t, Uh = next(gen)
             line.set_data(x_milieu, Uh)
-            ax.set_title(f"Densité à t = {t:.2f}")
+            ax.set_title(f"Densité de voiture à t = {t:.2f}")
             # Mise à jour de la couleur du feu
             feu_rect_gauche.set_color('red' if feu_gauche["actif"] else 'green')
             feu_rect_centre.set_color('red' if feu_centre["actif"] else 'green')
