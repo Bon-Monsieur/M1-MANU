@@ -3,11 +3,14 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from matplotlib.patches import Rectangle
 
-def H(rho):
+def f(rho):
     return rho*(1-rho)
 
-def Hp(rho):
+def fp(rho):
     return 1 - 2*rho
+
+def V(rho):
+    return 1 - rho
 
 def u0(x):
     return densite_init if x < -8 else densite_init
@@ -16,9 +19,9 @@ def u0(x):
 densite_init = 0.4
 a = -10
 b = 10
-T=1e6
-CFL=0.4
-nb_maille = 100
+T=1e3
+CFL=0.25
+nb_maille = 200
 
 # Def maillage
 x = np.linspace(a, b, nb_maille+1)
@@ -76,7 +79,7 @@ def schema_generator(nb_maille, u0, a, b, f, fp, cfl, T):
             )
 
         # On ne stocke que tous les 3 itérations pour alléger l'animation
-        if it%3==0 or t+dt >= T:
+        if it%10==0 or t+dt >= T:
             yield t, Uh.copy()
         
         it += 1
@@ -115,49 +118,64 @@ def F_droite(t):
 # Fonction pour l'animation interactive
 def interactive_animation():
     gen = schema_generator(
-        nb_maille, u0, a, b, f=H, fp=Hp, cfl=CFL, T=T
+        nb_maille, u0, a, b, f=f, fp=fp, cfl=CFL, T=T
     )
 
-    fig, ax = plt.subplots()
-    line, = ax.plot([], [], lw=2)
-    ax.set_xlim(a + 1, b - 1)
-    ax.set_ylim(0, 1.2)
-    ax.set_xlabel("x")
-    ax.set_ylabel(r"$\rho(x,t)$")
+    # Deux sous-graphes verticaux
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(6, 8), sharex=True)
+
+    # Courbe 1 : densité sur ax1
+    line1, = ax1.plot([], [], lw=2, label='Densité de voiture')
+    ax1.set_xlim(a + 1, b - 1)
+    ax1.set_ylim(0, 1.2)
+    ax1.set_ylabel(r"$\rho(x,t)$")
+    ax1.legend(loc='upper right')
+
+    # Courbes 2 & 3 : flux et vitesse sur ax2
+    line2, = ax2.plot([], [], lw=2, label=r'$f(\rho(t,x))$')
+    line3, = ax2.plot([], [], lw=2, label=r'$V(\rho(t,x))$')
+    ax2.set_xlim(a + 1, b - 1)
+    ax2.set_ylim(0, 1.2)
+    ax2.set_xlabel("x")
+    ax2.set_ylabel("Flux / Vitesse")
 
     x_milieu = np.linspace(a + dx / 2, b - dx / 2, nb_maille)
 
-    # Ajout de carrés vert pour les feux de circulation
+    # Feux rouges sur le subplot de la densité
     x_feu_gauche = x_milieu[nb_maille // 2 - nb_maille // 4]
     x_feu_centre = x_milieu[nb_maille // 2]
     x_feu_droite = x_milieu[nb_maille // 2 + nb_maille // 4]
     feu_rect_gauche = Rectangle((x_feu_gauche - dx, 0), dx, 0.1, color='green')
     feu_rect_centre = Rectangle((x_feu_centre - dx, 0), dx, 0.1, color='green')
     feu_rect_droite = Rectangle((x_feu_droite - dx, 0), dx, 0.1, color='green')
-    ax.add_patch(feu_rect_gauche)
-    ax.add_patch(feu_rect_centre)
-    ax.add_patch(feu_rect_droite)
+    ax1.add_patch(feu_rect_gauche)
+    ax1.add_patch(feu_rect_centre)
+    ax1.add_patch(feu_rect_droite)
 
     def update(frame):
         try:
             t, Uh = next(gen)
-            line.set_data(x_milieu, Uh)
-            ax.set_title(f"Densité de voiture à t = {t:.2f}")
-            # Mise à jour de la couleur du feu
+            line1.set_data(x_milieu, Uh)
+            line2.set_data(x_milieu, f(Uh))
+            line3.set_data(x_milieu, V(Uh))
+            ax1.set_title(f"Simulation de circulation (densité) — t = {t:.2f}")
+            ax2.set_title("Flux et vitesse en fonction de la densité")
             feu_rect_gauche.set_color('red' if feu_gauche["actif"] else 'green')
             feu_rect_centre.set_color('red' if feu_centre["actif"] else 'green')
             feu_rect_droite.set_color('red' if feu_droite["actif"] else 'green')
         except StopIteration:
             pass
-        return line, feu_rect_centre, feu_rect_gauche, feu_rect_droite
+        return line1, line2, line3, feu_rect_centre, feu_rect_gauche, feu_rect_droite
 
     fig.canvas.mpl_connect('key_press_event', on_key_press)
     fig.canvas.mpl_connect('key_release_event', on_key_release)
 
     ani = animation.FuncAnimation(
-        fig, update, interval=2, blit=False, frames=None, cache_frame_data=False
+        fig, update, interval=1, blit=False, frames=None, cache_frame_data=False
     )
+    plt.legend()
     plt.show()
+
 
 
 interactive_animation()
