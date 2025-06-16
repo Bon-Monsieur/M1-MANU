@@ -129,6 +129,7 @@ def interactive_animation():
     ax1.set_xlim(a + 1, b - 1)
     ax1.set_ylim(0, 1.2)
     ax1.set_ylabel(r"$\rho(x,t)$")
+    ax1.set_title(f"Simulation de circulation (densité)")
     ax1.legend(loc='upper right')
 
     # Courbes 2 & 3 : flux et vitesse sur ax2
@@ -138,6 +139,8 @@ def interactive_animation():
     ax2.set_ylim(0, 1.2)
     ax2.set_xlabel("x")
     ax2.set_ylabel("Flux / Vitesse")
+    ax2.set_title("Flux et vitesse en fonction de la densité")
+    ax2.legend(loc='upper right', ncol=2)
 
     x_milieu = np.linspace(a + dx / 2, b - dx / 2, nb_maille)
 
@@ -145,9 +148,23 @@ def interactive_animation():
     x_feu_gauche = x_milieu[nb_maille // 2 - nb_maille // 4]
     x_feu_centre = x_milieu[nb_maille // 2]
     x_feu_droite = x_milieu[nb_maille // 2 + nb_maille // 4]
-    feu_rect_gauche = Rectangle((x_feu_gauche - dx, 0), dx, 0.1, color='green')
-    feu_rect_centre = Rectangle((x_feu_centre - dx, 0), dx, 0.1, color='green')
-    feu_rect_droite = Rectangle((x_feu_droite - dx, 0), dx, 0.1, color='green')
+    rect_width = 0.5  # Largeur fixe en unités de données
+
+    feu_rect_gauche = Rectangle(
+        (x_feu_gauche - rect_width / 2, 0),  # centré en x
+        rect_width, 0.1,
+        color='green'
+    )
+    feu_rect_centre = Rectangle(
+        (x_feu_centre - rect_width / 2, 0),
+        rect_width, 0.1,
+        color='green'
+    )
+    feu_rect_droite = Rectangle(
+        (x_feu_droite - rect_width / 2, 0),
+        rect_width, 0.1,
+        color='green'
+    )
     ax1.add_patch(feu_rect_gauche)
     ax1.add_patch(feu_rect_centre)
     ax1.add_patch(feu_rect_droite)
@@ -157,9 +174,7 @@ def interactive_animation():
             t, Uh = next(gen)
             line1.set_data(x_milieu, Uh)
             line2.set_data(x_milieu, f(Uh))
-            line3.set_data(x_milieu, V(Uh))
-            ax1.set_title(f"Simulation de circulation (densité) — t = {t:.2f}")
-            ax2.set_title("Flux et vitesse en fonction de la densité")
+            line3.set_data(x_milieu, V(Uh))            
             feu_rect_gauche.set_color('red' if feu_gauche["actif"] else 'green')
             feu_rect_centre.set_color('red' if feu_centre["actif"] else 'green')
             feu_rect_droite.set_color('red' if feu_droite["actif"] else 'green')
@@ -171,9 +186,9 @@ def interactive_animation():
     fig.canvas.mpl_connect('key_release_event', on_key_release)
 
     ani = animation.FuncAnimation(
-        fig, update, interval=1, blit=False, frames=None, cache_frame_data=False
+        fig, update, interval=20, blit=True, frames=None, cache_frame_data=False
     )
-    plt.legend()
+    
     plt.show()
 
 
