@@ -9,8 +9,13 @@ def f(rho):
 def fp(rho):
     return 1 - 2*rho
 
-def V(rho):
-    return 1 - rho
+def Vtest(rho):
+    if np.isclose(rho, 0):
+        return 0
+    else:
+        return 1-rho
+    
+V = np.vectorize(Vtest)
 
 def u0(x):
     return densite_init if x < -8 else densite_init
