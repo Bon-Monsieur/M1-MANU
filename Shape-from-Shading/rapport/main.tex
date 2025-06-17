@@ -1,0 +1,33 @@
+\documentclass[a4paper,12pt]{article} % Utilisation de la classe article
+\input{./common.tex} % fichier contenant les packages et les commandes personnalisées
+\input{./math.tex} % Plein de macro pour les symboles, hésite pas à en rajouter/modifier si tu les aimes pas xD (c'est les miennes, je ne veux pas te les imposer)
+\input{./theorems.tex}
+
+
+\begin{document}
+\include{./Sections/0_frontpage}  % page de garde
+
+\tableofcontents  % Table des matières
+\newpage
+
+\include{./Sections/1_introduction}  % Présentation du sujet
+\newpage
+
+\include{./Sections/2_theorie}  % Etude de l'Hamiltonien
+\newpage
+
+\include{./Sections/3_approximation_numerique} % Approximation numérique de la solution
+\newpage
+
+\include{./Sections/4_resultats} % Les différents résultats numériques que l'on a obtenu et comparaison entre les algorithmes 
+\newpage
+
+\include{./Sections/5_conclusion}   % Conclusion et persperctives futures
+\newpage
+
+\include{./Sections/biblio} % la bibliographie
+\newpage 
+
+
+\end{document}
+

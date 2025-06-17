@@ -1,0 +1,13 @@
+\section{Conclusion}
+
+Dans ce rapport, nous avons étudié le problème du Shape-from-Shading à travers l’approche proposée par Rouy et Tourin dans \cite{Rouy_et_Turin}. En nous appuyant sur la théorie des solutions de viscosité pour les équations d’Hamilton-Jacobi, nous avons pu à la fois justifier l'existence et l'unicité d'une solution dans un cadre théorique bien défini et construire un schéma numérique convergent permettant une reconstruction efficace des surfaces.\\
+
+L’étude théorique menée sur l’Hamiltonien nous a permis de trouver une contrainte sur l’intensité lumineuse pour garantir l’unicité afin d'assurer une bonne formulation du problème. Nous avons ensuite étudié deux algorithmes numériques, dont un schéma du point fixe explicite, pour approcher la solution. 
+
+Les résultats numériques obtenus, aussi bien sur les exemples du papier que sur nos propres tests, confirment la robustesse de l’approche. En particulier, nous avons observé le problème d’unicité lorsque l’intensité lumineuse atteint sa valeur maximale. Nous avons aussi pu étudier les limites de nos algorithmes. En effet, l'algorithme du point fixe présentait une efficacité indéniable, mais sa convergence était plutôt lente. L'algorithme donné dans le papier est au contraire plus rapide, mais apporte des résultats moins esthétiques. \\
+
+Ce projet a donc été l’occasion d’explorer un problème à la croisée des mathématiques appliquées, de la vision par ordinateur et de l’analyse numérique. L’étude initiale de ce papier nous a permis de consolider nos compétences de travail en autonomie face à une problématique à la fois nouvelle et complexe. 
+
+Une progression naturelle de ce travail consisterait à étudier des variantes plus réalistes du problème initial, comme l’étude d'objets éclairés par plusieurs sources de lumière, de scènes plus complexes avec plusieurs objets à reconstruire, ou encore l'intégration de modèles non lambertiens.
+
+

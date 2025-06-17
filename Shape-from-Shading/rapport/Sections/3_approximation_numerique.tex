@@ -1,0 +1,352 @@
+\section{Approximation numérique}
+\subsection{Construction du schéma numérique}
+
+Dans cette section nous cherchons à approximer l'unique solution de notre problème
+\begin{align*}
+    \left\{\begin{array}{ll}
+         \mathopen{}\left|\nabla u(x)\right|\mathclose{}=n(x)& \ \text{dans } \Omega'\\  
+         u(x)=\varphi& \ \text{sur } \mathop{}\!{\partial}\Omega'
+    \end{array}
+    \right.
+\end{align*}
+On pose $\Omega' = \oo{X_1,X_2} \times \oo{Y_1,Y_2} \subset \R^2$ le domaine de reconstruction de la forme. En posant $\Dx$, $\Dy > 0$ les dimensions du maillage, nous écrivons $(x_i,y_j)=(i\Delta x,j\Delta y)$, $U_{ij}=U(x_i,y_j)$ et $N_{ij}=N(x_i,y_j)$. On définit maintenant trois ensembles d'indices du maillage. Ce sont respectivement les indices des points qui sont intérieurs au maillage, ceux sur la frontière du maillage et l'ensemble des indices des points dans l'adhérence
+\begin{align*}
+    Q' &= \{ (i,j)\in \N^2 \ |\ (x_i,y_j)\in \Omega' \},\\
+    \p Q &= \{ (i,j)\in \N^2 \ |\ (x_i,y_j)\in \p \Omega' \},\\
+    \overline{Q} &= \{(i, j) \in \N^2 \ | \ (x_i, y_j) \in \overline{\Omega} \}.
+\end{align*}
+
+Nous voulons donc discrétiser le problème $\eqref{probleme final}$.  Pour cela, le papier utilise un schéma différences finies. On définit alors $\forall (i,j)\in Q'$ les notations pour approcher les dérivées de toute approximation U
+\begin{equation*}
+    \begin{split}
+        D_x^-U_{ij} &= \frac{\Uij-U_{i-1j}}{\Dx},\\
+        D_x^+U_{ij} &= \frac{U_{i+1j}-\Uij}{\Dx},\\
+        D_y^-U_{ij} &= \frac{\Uij-U_{ij-1}}{\Dy},\\
+        D_y^+U_{ij} &= \frac{U_{ij+1}-\Uij}{\Dy}.    
+    \end{split}
+\end{equation*}
+Puisque $\n{\nabla u} = \sqrt{\left(\frac{\p u}{\p x}\right)^2+\left(\frac{\p u}{\p y}\right)^2}$, nous faisons le choix d'approximer les deux dérivées partielles de la manière suivante
+\begin{equation*}
+    \begin{split}
+        \ast \  \left(\frac{\p u}{\p x}\right)^2(x_i,y_j) \approx \max\left(\max\left(D_x^-\Uij,0\right),\max\left(-D_x^+\Uij,0\right)\right)^2 =\max\left(D_x^-\Uij,-D_x^+\Uij,0\right)^2\\
+        \ast \ \left(\frac{\p u}{\p y}\right)^2(x_i,y_j) \approx \max\left(\max\left(D_y^-\Uij,0\right),\max\left(-D_y^+\Uij,0\right)\right)^2 =\max\left(D_y^-\Uij,-D_y^+\Uij,0\right)^2
+    \end{split}
+\end{equation*}
+Cette façon de procéder nous permet de garantir la monotonie, la stabilité et la consistance de notre schéma numérique. On obtient alors
+\begin{equation*}
+    \hspace*{-1.7cm}\nabla u(x_i,y_j) \approx \sqrt{
+        \big(
+            \max\big(
+                \max\big(D_x^-\Uij,0\big),\max\big(-D_x^+\Uij,0\big)            
+            \big)
+        \big)^2
+        +
+        \big(
+            \max\big(
+                \max\big(D_y^-\Uij,0\big),\max\big(-D_y^+\Uij,0\big)            
+            \big)
+        \big)^2
+    }
+\end{equation*}
+
+Pour faciliter la compréhension, on introduit $g=(g_{ij})_{(i,j)\in Q'}$ de $\R^4$ dans $\R$ définie par 
+\begin{align*}
+    &\forall (i,j)\in Q', \ \forall (a,b,c,d)\in \R^4,\\
+    &g_{ij}(a,b,c,d) = \sqrt{\max\left(a^+,b^-\right)^2 + \max\left(c^+,d^-\right)^2} - N_{ij}\\[1em]
+    \text{avec} \ \  a^+&=\max(a,0),\ b^-=\max(-b,0),\ c^+=\max(c,0),\ b^-=\max(-d,0).
+\end{align*}
+
+On obtient alors le schéma numérique qui discrétise le problème initial 
+\begin{align}\label{schema numerique}
+    S(\rho,(x_i,y_j),U_{ij},U) = \left\{
+    \begin{array}{ll}
+         g_{ij}\left(D_x^-U_{ij},D_x^+U_{ij},D_y^-U_{ij},D_y^+U_{ij}\right) = 0 & \forall(i,j)\in Q'\\
+         U_{ij} - \varphi(x_i,y_j)= 0 & \forall(i,j)\in \p Q'
+    \end{array}
+    \right.
+\end{align}
+Où $\rho$ correspond à la paire $\left(\Dx,\Dy\right)$. Ainsi $\rho \rightarrow 0$ signifie que $\sqrt{{\Dx}^2+{\Dy}^2} \rightarrow 0.$
+\subsection{Convergence du schéma numérique}
+
+Nous souhaitons démontrer que le schéma $\eqref{schema numerique}$ converge vers l'unique solution de $\eqref{probleme final}$. Pour cela, nous allons montrer que le schéma numérique est monotone, stable et consistant au sens défini par G. Barles et P.E. Souganidis dans \cite{Barles_et_Souganidis}. Ils ont en effet montré dans ce papier qu'un schéma avec ces propriétés convergeait vers la solution de viscosité de $\eqref{probleme final}$ à condition que ce problème admette un principe de comparaison.
+
+On notera dans la suite $u^{\rho}$ pour décrire une solution du schéma numérique pour la discrétisation $\rho$.
+
+\begin{definition}
+    Un schéma numérique de la forme $S(\rho,x,u^{\rho}(x),u^{\rho})=0$ est dit $\textbf{monotone}$ si
+    $ \forall u,v \in B(\overline{\Omega})$ tel que $u\geq v,$ alors
+    $ \forall \rho \geq 0, \forall x\in \overline{\Omega}, \forall t \in \R$, on a 
+    \begin{equation*}
+        S(\rho,x,t,u)\leq S(\rho,x,t,v)
+    \end{equation*}
+    
+\end{definition}
+\begin{definition}
+     Un schéma numérique est dit $\textbf{stable}$ si $\forall \rho > 0$, il existe une solution $u^{\rho}\in B(\overline{\Omega})$ de \eqref{schema numerique} bornée indépendamment de $\rho$.
+\end{definition}
+
+\begin{definition}
+    Un schéma numérique de la forme $S(\rho,x,u^{\rho}(x),u^{\rho})=0$ est dit \textbf{consistant} si
+    $\forall \phi \in C^{\infty}_b(\omb)$,
+    \begin{equation*}
+        S\left(\rho,x,\phi(x),\phi\right) \underset{\rho \rightarrow \infty}{\longrightarrow} H\left(x,\nabla \phi(x)\right)
+    \end{equation*}
+\end{definition}
+
+\begin{definition}\label{unicite forte}
+    Un Hamiltonien vérifie la propriété $\textbf{d'unicité forte}$ si, pour $u,v$ des fonctions semi-continues bornées respectivement supérieurement et inférieurement qui sont solutions de l'Hamiltonien, on a $u\leq v$ sur $\overline{\Omega}$.
+\end{definition}
+
+\begin{proposition}
+    Le schéma numérique $\eqref{schema numerique}$ est monotone, stable et consistant.
+\end{proposition}
+\newpage
+
+\begin{proof}~
+
+    \begin{enumerate}    
+        \item Montrons la \underline{monotonie}.
+        Soit $U,V\in B(\overline{\Omega})$ tel que $U \geq V$. Soit $\rho\geq 0, x \in \omb, t\in \R$. On veut montrer que $S(\rho,x,t,U)\leq S(\rho,x,t,V)$.
+        
+        $\ast \quad$Si $x\in\p \Omega'$, alors $S(\rho,x,t,U)=U(x)-\varphi(x)=0=V(x)-\varphi(x)=S(\rho,x,t,V)$. Et on a bien le résultat attendu.
+        
+        $\ast \quad$Si $x\in \Omega'$, alors nous devons montrer :
+        \begin{equation*}
+            \hspace{-1.5cm}g_{ij}\left(\frac{t-U_{i-1j}}{\Dx},\frac{U_{i+1j}-t}{\Dx},\frac{t-U_{ij-1}}{\Dy},\frac{U_{ij+1}-t}{\Dy}\right) \leq g_{ij}\left(\frac{t-V_{i-1j}}{\Dx},\frac{V_{i+1j}-t}{\Dx},\frac{t-V_{ij-1}}{\Dy},\frac{V_{ij+1}-t}{\Dy}\right)
+        \end{equation*}
+        \(
+        \begin{array}{lccc}
+            \hspace{-5pt}\text{Par hypothèse,} &U_{i-1j} \geq V_{i-1j} &\Leftrightarrow& \dfrac{t - U_{i-1j}}{\Delta x} \leq \dfrac{t - V_{i-1j}}{\Delta x}, \\[2ex]
+            \hspace{-5pt}\text{De même, } &U_{i+1j} \geq V_{i+1j} &\Leftrightarrow& -\dfrac{U_{i+1j} - t}{\Delta x} \leq -\dfrac{V_{i+1j} - t}{\Delta x}.
+        \end{array}
+        \)
+        
+        Ainsi, 
+        
+        \begin{equation*}
+            \hspace{-2.2cm} \max\left(\max\left(\dfrac{t - U_{i-1j}}{\Dx},0\right),\max\left(-\dfrac{U_{i+1j} - t}{\Delta x},0\right)\right)^2 \leq \max\left(\max\left(\dfrac{t - V_{i-1j}}{\Dx},0\right),\max\left(-\dfrac{V_{i+1j} - t}{\Delta x},0\right)\right)^2
+        \end{equation*}
+        Par symétrie du raisonnement pour les dérivées en $y$, on obtient
+        \begin{equation*}
+                \hspace{-2.2cm}\max\left(
+                    \max\left(\dfrac{t - U_{ij-1}}{\Delta y}, 0\right),
+                    \max\left(-\dfrac{U_{ij+1} - t}{\Delta y}, 0\right)
+                \right)^2
+            \leq
+                \max\left(
+                    \max\left(\dfrac{t - V_{ij-1}}{\Delta y}, 0\right),
+                    \max\left(-\dfrac{V_{ij+1} - t}{\Delta y}, 0\right)
+                \right)^2
+        \end{equation*}
+        En sommant les deux inégalités, nous déduisons l'inégalité que nous devions avoir, et nous avons bien montré que le schéma numérique est monotone.
+
+        \item Montrons maintenant la \underline{stabilité} du schéma. 
+        Le papier ne donnait pas de démonstration formelle de l'existence, nous avons tout de même essayé de la démontrer. Nous donnons alors une idée de preuve que nous avons eue. Par définition de $g$, la valeur des $U_{ij}$ est définie à l'aide de ses voisins. Or ses voisins sont aussi définis par ses autres voisins etc. Ainsi, par récurrence cela revient à résoudre un système (non-linéaire) pour chaque $\Uij$. Nous n'avons pas réussi à montrer l'existence d'une solution pour ce système. 
+
+        Montrons maintenant que $u^{\rho}$ est bornée indépendamment de $\rho$.
+         
+         $\ast \quad$ On montre que $u^{\rho}$ est bornée inférieurement. Supposons par l'absurde que $u^{\rho}$ admet un minimum local en $(i,j)$ dans $\Omega'$. Alors puisque $\Uij$ est plus petit que ses voisins, tous les \og $\max$  \fg{}  dans $g_{ij}$ valent 0. Ainsi, 
+         \begin{equation*}
+             g_{ij}\left(D_x^-U_{ij},D_x^+U_{ij},D_y^-U_{ij},D_y^+U_{ij}\right) = -N_{ij} < 0.
+         \end{equation*}
+         Donc $u^{\rho}$ ne serait pas solution du schéma numérique. Ainsi, $u^{\rho}$ atteint son minimum sur $\p \Omega'$ et est bornée par une borne indépendante de $\rho$. Et puisque $u^{\rho}=\varphi$ sur le bord, son minimum sera le minimum de $\varphi$ sur $\p \Omega$.
+         
+         $\ast \quad$ Il nous reste à montrer que $u^{\rho}$ est bornée supérieurement. Par l'absurde on suppose que $u^{\rho}$ n'est pas bornée. Alors 
+         \begin{equation*}
+             \forall C \in \R, \exists \ijn Q', U_{ij} > C
+         \end{equation*}
+        On calcule,
+        \begin{equation*}
+            \begin{aligned}
+                &g_{ij}\left(D_x^-U_{ij},D_x^+U_{ij},D_y^-U_{ij},D_y^+U_{ij}\right) = 0 \\
+                &g_{ij}\left(D_x^-C,D_x^+C,D_y^-C,D_y^+C\right)  = -N_{ij} < 0
+            \end{aligned}   
+        \end{equation*}
+        car $u^{\rho}$ est solution de $\eqref{schema numerique}$. Ainsi, par monotonie de g nous avons
+        \begin{equation*}
+            g_{ij}(U_{ij}) \geq  g_{ij}(C) \Rightarrow U_{ij} \leq C.
+        \end{equation*}
+        Ce qui est absurde par hypothèse. Ainsi on déduit que $u^{\rho}$ est bornée supérieurement par une borne indépendante de $\rho$. Notre schéma est donc bien stable.
+        \item Il reste à montrer la \underline{consistance} du schéma numérique.
+        
+        Soit $\phi \in C^{\infty}_b(\omb)$, montrons que $\forall (i,j)\in Q',$ 
+        \begin{equation*}
+            g_{ij}\left(D_x^-\phi_{ij},D_x^+\phi_{ij},D_y^-\phi_{ij},D_y^+\phi_{ij}\right) \xrightarrow[\rho \rightarrow 0]{} \n{\nabla \phi\left(x_i,y_j\right)}-N_{ij}
+        \end{equation*}
+        On a 
+        \begin{equation*}
+            \begin{split}
+                D_x^-\phi_{ij} &= \frac{\phi_{ij}-\phi_{i-1j}}{\Dx} = \p_x \phi(x_i,y_j) + O(\Dx) \xrightarrow[\Dx \rightarrow 0] {}\p_x\phi(x_i,y_j)\\
+                -D_x^+\phi_{ij} &= -\frac{\phi_{i+1j}-\phi_{ij}}{\Dx} = -\p_x \phi(x_i,y_j) + O(\Dx) \xrightarrow[\Dx \rightarrow 0] {}-\p_x\phi(x_i,y_j)
+            \end{split}
+        \end{equation*}
+        Donc 
+        \begin{equation*}
+            \max\left(\max\left(\dfrac{\phi_{ij} - \phi_{i-1j}}{\Dx},0\right),\max\left(-\dfrac{\phi_{i+1j} - \phi_{ij}}{\Delta x},0\right)\right)^2 \xrightarrow[\Dx \rightarrow 0]{} \left[ \p_x \phi_{ij}\right]^2
+        \end{equation*}
+        Et par symétrie du raisonnement pour les dérivées partielles en $y$ on obtient 
+        \begin{equation*}
+            \max\left(\max\left(\dfrac{\phi_{ij} - \phi_{ij-1}}{\Dy},0\right),\max\left(-\dfrac{\phi_{ij+1} - \phi_{ij}}{\Delta y},0\right)\right)^2 \xrightarrow[\Dy \rightarrow 0]{} \left[ \p_y \phi_{ij}\right]^2
+        \end{equation*}
+        Ainsi, 
+        \begin{equation*}
+            g_{ij}\left(D_x^-\phi_{ij},D_x^+\phi_{ij},D_y^-\phi_{ij},D_y^+\phi_{ij}\right) \xrightarrow[\rho \rightarrow 0]{} \n{\nabla \phi(x_i,y_j)}-N_{ij}.
+        \end{equation*}
+        Le schéma numérique $\eqref{schema numerique}$ est donc bien consistant.
+    \end{enumerate}
+\end{proof}
+
+\begin{proposition}
+    L'Hamiltonien du problème vérifie la propriété d'unicité forte.
+\end{proposition}
+\begin{proof}
+    Nous avons déjà prouvé plus haut que l'équation $H(x,\nabla u(x))=0$ admettait une unique solution. Ainsi si on prend deux solutions $u$ et $v$, elles sont forcément égales. L'Hamiltonien vérifie alors la propriété d'unicité forte.
+\end{proof}
+
+\begin{theorem}
+    Le schéma numérique $\eqref{schema numerique}$ converge vers l'unique solution de $\eqref{probleme final}$ lorsque $\rho \rightarrow 0$.
+\end{theorem}
+\begin{proof}
+    Notre schéma est monotone, stable et consistant. De plus, l'Hamiltonien vérifie la propriété d'unicité forte. Le théorème $(2.1)$ de Barles et Souganidis dans \cite{Barles_et_Souganidis} assure qu'il converge vers l'unique solution de viscosité de $\eqref{probleme final}$.
+\end{proof}
+
+
+\subsection{Algorithmes numériques}
+
+Nous nous intéressons maintenant au calcul d'une approximation $U$ solution de $\eqref{schema numerique}$ pour un $\rho=(\Dx,\Dy)$ donné. Le papier aborde l'existence de deux algorithmes convergeant vers une approximation $U.$ Le premier est un algorithme proposé par Osher et Rudin dans \cite{Osher_et_Rudin}. Il est très efficace et converge avec peu d'itérations. Le second, bien plus lent, est un algorithme de point fixe. Nous avons décidé dans un premier temps d'implémenter l'algorithme de point fixe, car celui-ci était donné explicitement dans le papier. Nous avons ainsi obtenu nos premiers résultats de Shape-from-Shading qui seront détaillés dans la prochaine section de ce rapport. Nous avons ensuite essayé d'implémenter l'algorithme principal du papier.
+
+\begin{noremark}
+    Nous tenons à préciser que nous n'avons jamais eu accès à la référence de Osher et Rudin \cite{Osher_et_Rudin}. Ce papier n'a jamais été publié car il s'agit en réalité d'un brouillon que M. Osher aurait transmis à Mme Rouy. Ce brouillon a été cité de nombreuses fois dans le papier étudié, et nous avons donc été bloqués sur la compréhension totale de certains principes mis en avant de par ce manque d'informations.
+\end{noremark}
+
+Nous allons définir l'opérateur $G$ définit sur l'espace de toutes les approximations $U=(\Uij)_{(i,j)\in \overline{Q}}$ par
+\begin{equation*}
+    \forall (i,j)\in Q', \  G\left(U\right)_{ij}=g_{ij}\left(D_x^-U_{ij},D_x^+U_{ij},D_y^-U_{ij},D_y^+U_{ij}\right).
+\end{equation*}
+Ainsi, $U$ est solution de $\eqref{schema numerique}$ pour la discrétisation $\rho$ si $G(U)$ est la matrice nulle et $\Uij = \varphi(x_i,y_j), \forall(i,j)\in \p Q'$. 
+
+Le schéma de point fixe consiste à étudier le point fixe de la fonction suivante 
+\begin{equation*}
+    U \rightarrow U - \Delta tG(U)
+\end{equation*}
+en utilisant le schéma numérique explicite 
+\begin{equation}
+    \boxed{U^{n+1}_{ij} = \Uij^n - \Delta tG(U)_{ij}, \ \forall (i,j)\in Q', \ \forall n\in\N.} \label{pt_fixe}
+\end{equation}
+
+En initialisant ce schéma de sorte que $\Uij^0=\varphi(x_i,y_j)$ pour tout $(i,j)\in \p Q'$ et tel que $G(U^0)\leq 0$ (tous les coefficients de notre matrice sont négatifs), l'algorithme converge de façon monotone vers une approximation $U$ de $\eqref{schema numerique}$ pour un $\rho$ donné. 
+
+\begin{noremark}
+    Notre papier spécifiait que ce schéma numérique était monotone et consistant sans préciser le sens utilisé. Nous avons réussi à démontrer une forme classique de monotonie, mais celle-ci ne nous a pas paru pertinente à détailler. Aucune esquisse de preuve n'étant donnée dans le papier, nous avons essayé de vérifier les mêmes hypothèses de stabilité et de consistance sans succès.
+\end{noremark}
+\begin{noremark}
+    Le papier expliquait la possibilité de créer un algorithme du point fixe accéléré notamment grâce aux travaux de Capuzzo-Dolcetta et Falcone. Cependant, nous n'avons pas choisi de nous y intéresser. En effet, nous avons souhaité consacrer plus de temps à la compréhension de l'autre algorithme donné dans le papier qui était encore plus rapide que le point fixe accéléré.
+\end{noremark}
+
+Le second algorithme du papier s'énonce ainsi
+\begin{equation}
+\label{algo_papier_depart}
+\fbox{%
+  \begin{minipage}{0.9\linewidth}
+    \begin{enumerate}
+        \item[\textbf{(i)}] Étape \( n = 0 \) : choisir  \( U^0 = (U^0_{ij})_{(i,j)\in \overline{Q}} \) comme pour l'algorithme du point fixe.
+
+        \item[\textbf{(ii)}] Étape \( n+1 \) : choisir un point \( (i,j) \in Q' \), poser
+        \[
+        \bar{V} = \sup \left\{ V = (V_{kl})_{(k,l) \in \bar{Q}} \ \middle| \
+        \begin{array}{l}
+        (k,l) \ne (i,j),\ V_{kl} = U^n_{kl}, \\
+        \quad \quad \quad \text{et }  G(V)_{ij} = 0
+        \end{array}
+        \right\}
+        \]
+        puis définir \( U^{n+1}_{ij} = \bar{V}_{ij} \).
+    \end{enumerate}
+  \end{minipage}
+}
+\end{equation}
+\begin{noremark}
+    En fait l'algorithme dit qu'il faut assigner la plus grande valeur réelle à $\Uij^{n+1}$ de sorte que $U^n$ reste une approximation du schéma numérique $\eqref{schema numerique}$. On notera évidemment qu'il faut exécuter cet algorithme une infinité de fois en tous les points afin d'obtenir convergence vers la solution. 
+\end{noremark}
+
+Nous allons à présent énoncer une proposition dont on se servira pour démontrer la convergence de cet algorithme.
+\begin{proposition}
+    Soit $(i,j)\in Q'$,
+    \begin{enumerate}
+        \item La fonction $\Psi_{ij} :\Uij \rightarrow G(U)_{ij}$ est continue et croissante.
+        \item Si $\Uij \rightarrow +\infty$, alors $G(U)_{ij} \rightarrow +\infty$.
+        \item La suite $(U^n)_{n\in\N}$ est une suite croissante.
+    \end{enumerate}
+\end{proposition}
+\begin{proof}
+    Les deux premiers points de la proposition sont évidents en revenant à la définition de $G(U)_{ij}$ et donc de $g_{ij}$. La croissance de la suite se prouve en regardant la deuxième étape de l'algorithme. En effet, pour tout $(i,j) \in Q'$, $\Uij^{n+1}$ se voit attribuer une valeur supérieure ou égale à la précédente.
+\end{proof}
+\begin{theorem}
+    L'algorithme $\eqref{algo_papier_depart}$ converge vers la solution du schéma numérique $\eqref{schema numerique}$ pour la discrétisation $(\Dx,\Dy)$ lorsque $n \rightarrow +\infty$.
+\end{theorem}
+\begin{proof}
+    La proposition précédente assure que la suite $(U^n)_{n\in\N}$ est croissante. Soit $(i,j)\in Q'$, nous avons $G(U^n)_{ij} \leq 0 , \forall n\in\N$. La contraposée du deuxième point de la proposition précédente assure que 
+    \begin{equation*}
+        G(U^n)_{ij} \underset{n\rightarrow +\infty}{\cancel{\longrightarrow}} +\infty \quad \Rightarrow \quad\Uij^n \underset{n\rightarrow +\infty}{\cancel{\longrightarrow}} +\infty
+    \end{equation*}
+    Ainsi $\Uij^n$ est une suite croissante et majorée, donc elle converge. Puisque $(i,j)$ est arbitraire, on déduit que $(U^n) \underset{n \rightarrow \infty}{\longrightarrow} U$.
+
+    Il faut maintenant montrer que $U$ est la solution de $\eqref{schema numerique}$.
+    
+    $\ast \quad \forall \ijn \p Q', U(x_i,y_j)=\varphi(x_i,y_j) $ car l'algorithme n'agit pas sur la frontière de $Q'$. Donc $U$ vérifie les conditions aux bords.
+
+    $\ast \quad \forall \ijn Q'$, la fonction $\Psi_{ij}:V_{ij}\rightarrow G(V)_{ij}$ est continue d'après le premier point de la proposition. Or $(U^n)_{n\in \N}$ converge et donc 
+    \begin{equation*}
+        \begin{split}
+            \Psi_{ij}(U^n) &\underset{n \rightarrow \infty}{\longrightarrow} \ \Psi_{ij}(U)\\
+            &\Leftrightarrow \\
+            G(U^n)_{ij} &\underset{n \rightarrow \infty}{\longrightarrow} \ G(U)_{ij}
+        \end{split}
+    \end{equation*}
+    Or à chaque fois que la seconde étape de l'algorithme est complétée en $(i,j), \ G(U^n)_{ij}=0$. Et donc $G(U)_{ij}$ est limite de la suite nulle, et donc $G(U)_{ij}=0$. Cela étant vrai pour tout $\ijn Q'$, on en déduit que $G(U)=0$. 
+    
+    Ainsi, $U$ est bien solution de $\eqref{schema numerique}$ pour la discrétisation $(\Dx,\Dy)$ car $G(U)=0$ et $\left. U \right|_{\p \Omega'}=\varphi$. 
+\end{proof}
+
+Le papier expliquait sans rentrer dans les détails que la deuxième étape de l'algorithme pouvait, dans notre cas, être largement simplifiée en nous intéressant aux racines notées $(a^*,b^*,c^*,d^*)$ de l'équation 
+\begin{equation}\label{eq:algo}
+    \sqrt{\max\left(a^+,b^-\right)^2 + \max\left(c^+,d^-\right)^2} = C, 
+\end{equation}
+avec $(a,b,c,d)\in \R^4, C>0$.
+
+En effet, le papier affirmait qu'en posant 
+\[
+\begin{aligned}
+a^* &= \frac{V_{ij} - U^n_{i-1,j}}{\Delta x}, \\
+b^* &= \frac{U^n_{i+1,j} - V_{ij}}{\Delta x}, \\
+c^* &= \frac{V_{ij} - U^n_{i,j-1}}{\Delta y}, \\
+d^* &= \frac{U^n_{i,j+1} - V_{ij}}{\Delta y}.
+\end{aligned}
+\]
+il était facile de trouver le plus grand $V_{ij}$ vérifiant ces 4 équations pour toutes les racines possibles. Nous nous sommes donc lancés dans des calculs assez longs pour essayer de trouver l'expression explicite de $V_{ij}$. Après avoir mis l'équation au carré et en écrivant $C^2$ comme la somme $C_1^2 + C_2^2$, l’équation nous a amené à étudier 4 cas. Ces cas viennent du fait que nous utilisons plusieurs \og max \fg{}  dans $\eqref{eq:algo}$. Nous avons alors trouvé une expression de $V_{ij}$ en croisant les 4 possibilités 
+\begin{equation*}
+    V_{ij} = C\Dx + \max(U_{i-1j}^n,U_{i+1j}^n,U_{ij-1}^n,U_{ij+1}^n).
+\end{equation*}
+En faisant des essais d'implémentation de l'algorithme avec cette expression, nous nous sommes vite rendu compte qu'elle n'était pas juste. Nous avons décidé de remettre à plus tard l'étude de cet algorithme pour nous contenter d'étudier les notions théoriques du papier.
+
+Cependant, un jour en utilisant ChatGPT pour nous aider pour la stabilité du schéma numérique $\eqref{schema numerique}$, celui-ci nous a sorti l'expression suivante sans grand lien apparent avec la stabilité et sans aucune explication
+\begin{equation*}
+    V_{ij} = N_{ij}\Dx + \min(U_{i-1j}^n,U_{i+1j}^n,U_{ij-1}^n,U_{ij+1}^n).
+\end{equation*}
+En voyant le lien évident entre les deux équations, nous nous sommes empressés d'essayer cette formule pour la résolution de notre problème. Nous fumes alors surprit par le résultat. En effet, cette forme explicite de $V_{ij}$ nous a donnés, dans la plupart des cas étudiés, des résultats convaincants. C'est donc la formulation suivante que nous avons implémentés dans la prochaine section
+\begin{equation}\label{algo_papier}
+    \boxed{ U^{n+1}_{ij} = N_{ij}\Dx + \min(U_{i-1j}^n,U_{i+1j}^n,U_{ij-1}^n,U_{ij+1}^n).}
+\end{equation}
+
+\begin{noremark}
+    Cette expression ne dépend pas de $\Dy$ parce que nous n'avons traité au cours de notre projet que le cas où $\Dx=\Dy$. Cela nous a permis de faciliter l'implémentation du projet. Cette hypothèse ne change en rien tous les résultats théoriques précédents.
+\end{noremark}
+
+\begin{noremark}
+    Cette formule explicite reste à ce jour un vrai mystère pour nous. Nous avons demandé à ChatGPT de développer sur son \og invention\fg, mais celui-ci n'a pas été capable de nous fournir une réponse claire et convaincante.\\
+    Vers la fin du semestre nous nous sommes à nouveau penchés sur les quatre cas étudiés plus haut. Nous nous sommes rendu compte que nous choisissions la plus grande valeur de $V_{ij}$ donnée par l'une des équations à la place de choisir le plus grand $V_{ij}$ possible vérifiant ces quatre équations en même temps. \\
+    À la découverte de cette erreur, nous avons directement replongé dans les calculs et l'étude de ces 4 situations. Croiser les possibilités revenait à calculer le \textit{max} de racines de polynômes de degré 2. Malgré un bel acharnement, nous n'avons rien trouvé de concret.
+\end{noremark}
+
+Pour résoudre le problème numérique et approximer nos solutions, nous avons choisi d’utiliser le langage Python. Bien que l’utilisation de C++ aurait pu offrir de meilleures performances en termes de temps d’exécution, nous avons privilégié Python en raison de la nature principalement graphique de nos résultats. En effet, la richesse des bibliothèques disponible dans ce langage s'est révélée particulièrement adaptée à nos besoins de visualisation. Tous nos codes sont disponibles sur le \href{https://github.com/Bon-Monsieur/M1-MANU/tree/main/Shape-from-Shading}{dépôt GitHub du projet} \footnote{\href{https://github.com/Bon-Monsieur/M1-MANU/tree/main/Shape-from-Shading}{https://github.com/Bon-Monsieur/M1-MANU/tree/main/Shape-from-Shading}}.
+

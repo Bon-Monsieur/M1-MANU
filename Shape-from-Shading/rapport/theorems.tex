@@ -1,0 +1,102 @@
+
+\newtheoremstyle{default}{\topsep}{\topsep}%
+{}% Body font
+{}% Indent amount (empty = no indent, \parindent = para indent)
+{\sffamily\bfseries}% Thm head font
+{.}% Punctuation after thm head
+{ }% Space after thm head (\newline = linebreak)
+{\thmname{#1}\thmnumber{~#2}\thmnote{~#3}}% Thm head spec
+
+\newtheoremstyle{nonum}{\topsep}{\topsep}%
+{}%
+{}%
+{\sffamily\bfseries}%
+{.}%
+{ }%
+{\thmname{#1}}%
+
+\newcommand{\mytheorem}[5]{%
+	\ifstrequal{#5}{o}{%
+		\newmdtheoremenv[
+		hidealllines=true,
+		skipabove=0pt,
+		innertopmargin=-5pt,
+		innerbottommargin=2pt,
+		linewidth=1pt,
+        innerleftmargin=0pt,
+		]{#1}[#4]{#2}%
+	}{% Dependant counter
+		\newmdtheoremenv[
+		hidealllines=true,
+		skipabove=0pt,
+		innertopmargin=-5pt,
+		innerbottommargin=2pt,
+		linewidth=1pt,
+		linecolor=#3,
+        innerleftmargin=0pt,
+		]{#1}{#2}[#4]%
+	}%
+}
+
+% Custom Global Theorems --------------------------------------------------------
+\theoremstyle{default}
+\newtoggle{showsolutions}
+\newcounter{oc-counter}
+\mytheorem{oc-proposition}{Proposition}{divergent-denim}{oc-counter}{o}
+\mytheorem{oc-propdef}{Proposition - Définition}{divergent-denim}{oc-counter}{o}
+\mytheorem{oc-theorem}{Théorème}{divergent-denim}{oc-counter}{o}
+\mytheorem{oc-lemme}{Lemme}{quadratic-quartz}{oc-counter}{o}
+\mytheorem{oc-example}{Exemple}{quadratic-quartz}{oc-counter}{o}
+\mytheorem{oc-remark}{Remarque}{matrix-mist}{oc-counter}{o}
+\mytheorem{oc-exercise}{Exercice}{calculus-coral}{oc-counter}{o}
+\mytheorem{oc-definition}{Definition}{algebraic-amber}{oc-counter}{o}
+\mytheorem{oc-corollaire}{Corollaire}{violet}{oc-counter}{o}
+\counterwithin{oc-counter}{subsection}
+
+
+
+\makeatletter
+
+
+%--------------------------------------------------------------------------------
+\newcommand{\cv}{\longrightarrow}
+\newcommand{\cvn}{\underset{n\to\infty}{\cv}}
+\newcommand{\cvps}{{\overset{\text{p.s.}}{\longrightarrow}}}
+\newcommand{\cvpsn}{\underset{n\to\infty}{\cvps}}
+\newcommand{\cvp}{{\overset{\mathbb{P}}{\longrightarrow}}}
+\newcommand{\cvpn}{\underset{n\to\infty}{\cvp}}
+\newcommand{\cvlp}{{\overset{\mathcal{L}^{p}}{\longrightarrow}}}
+\newcommand{\cvlpn}{\underset{n\to\infty}{\cvlp}}
+\newcommand{\cvd}{{\overset{(\mathcal{D})}{\longrightarrow}}}
+\newcommand{\cvdn}{\underset{n\to\infty}{\cvd}}
+\newcommand{\cvlaw}{{\overset{(\mathscr{L})}{\longrightarrow}}}
+\newcommand{\cvlawn}{\underset{n\to\infty}{\cvlaw}}
+\newcommand{\iid}{\text{i.i.d.}}
+
+
+
+
+%--------------------------------------------------------------------------------
+% Custom Per Subject Theorems
+%--------------------------------------------------------------------------------
+
+% -- Numerotation classique des theoremes
+\theoremstyle{default}
+\mytheorem{definition}{Définition}{algebraic-amber}{}{o}
+\mytheorem{exs}{Exemples}{matrix-mist}{}{o}
+\mytheorem{corollaire}{Corollaire}{violet}{}{o}
+\mytheorem{lemme}{Lemme}{}{}{o}
+\mytheorem{proposition}{Proposition}{verdant}{}{o}
+\mytheorem{theorem}{Théorème}{astral}{}{o}
+
+% -- Theoremes sans numeros -- %
+\theoremstyle{nonum}
+\mytheorem{nodefinition}{Définition}{algebraic-amber}{}{o}
+\mytheorem{noproposition}{Proposition}{verdant}{}{o}
+\mytheorem{noexample}{Exemple}{matrix-mist}{}{o}
+\mytheorem{notheorem}{Théorème}{astral}{}{o}
+\mytheorem{norappel}{Rappel}{red}{}{o}
+\mytheorem{noremark}{Remarque}{}{}{o}
+\mytheorem{nopropriete}{Propriété}{}{}{o}
+\mytheorem{nonotation}{Notation}{}{}{o}
+\makeatother

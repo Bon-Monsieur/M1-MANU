@@ -1,0 +1,111 @@
+\makeatletter
+% Custom Commands for fast mathematical notation --------------------------------
+% General shortcuts
+\newcommand{\scr}[1]{\mathscr{#1}} % Script font shortcut
+\newcommand{\scrF}{\mathscr{F}} % Script font shortcut
+\newcommand{\bb}[1]{\mathbb{#1}} % Blackboard bold shortcut
+\newcommand{\ol}[1]{\overline{#1}} % Overline shortcut
+\newcommand{\ul}[1]{\underline{#1}} % Underline shortcut
+\newcommand{\act}{\circlearrowleft} % Action symbol
+\newcommand{\vphi}{\varphi} 
+\newcommand{\cxi}{\langle\xi\rangle} % <xi> poids pour les Sobolevs
+\newcommand{\Dx}{\Delta x}
+\newcommand{\Dy}{\Delta y}
+\newcommand{\Uij}{U_{ij}}
+\newcommand{\omb}{\overline{\Omega}} % Adhérence d'Omega
+\newcommand{\eqxi}{(1+\n{\xi}^2)} % écrit (1 + ∣ξ∣^2) pour les Sobolevs
+\newcommand{\RRd}{(\R \times \R^d)}
+\newcommand{\et}{e^{t\triangle}}
+\newcommand{\ijn}{(i,j)\in}
+
+% Interval notation
+\newcommand{\oo}[1]{\mathopen{}\left]#1\right[\mathclose{}} % Open interval % chktex 9
+\newcommand{\ooo}{\mathopen{}\left]0,T\right[\mathclose{}} % Open interval % chktex 9
+\newcommand{\of}[1]{\mathopen{}\left]#1\right]\mathclose{}} % Half-open interval (open first) % chktex 9 % chktex 10
+\newcommand{\fo}[1]{\mathopen{}\left[#1\right[\mathclose{}} % Half-open interval (open last)
+\newcommand{\ff}[1]{\mathopen{}\left[#1\right]\mathclose{}} % Closed interval % chktex 9
+\newcommand{\ffo}{\mathopen{}\left[0,T\right]\mathclose{}} % Closed interval % chktex 9
+
+% Set notation
+\newcommand{\R}{\mathbb{R}} % Real numbers
+\newcommand{\Z}{\mathbb{Z}} % Integers
+\newcommand{\N}{\mathbb{N}} % Natural numbers
+\newcommand{\C}{\mathscr{C}} % Fonctions continues
+\newcommand{\Q}{\mathbb{Q}} % Rational numbers
+\newcommand{\D}{\mathscr{D}} % Ensemble des fonctions tests
+\newcommand{\Dp}{\mathscr{D^{'}}} % Ensemble des distributions 
+\newcommand{\Sp}{\mathscr{S}^{'}} % Distributions tempérées
+\newcommand{\scrS}{\mathscr{S}} % Classe de Schwartz
+\newcommand{\Hs}{H^s(\R^d)}
+\newcommand{\bbR}{\mathbb{R}} % Real numbers
+\newcommand{\bbZ}{\mathbb{Z}} % Integers
+\newcommand{\bbN}{\mathbb{N}} % Natural numbers
+\newcommand{\bbC}{\mathbb{C}} % Complex numbers
+\newcommand{\bbQ}{\mathbb{Q}} % Complex numbers
+\newcommand{\scrP}{\mathscr{P}} % Set of subsets
+\newcommand{\barR}{\overline{\bb{R}}} % R with infinities
+\newcommand{\gln}{\text{GL}_n} % General linear group of degree n
+\newcommand{\glx}[1]{\text{GL}_{#1}} % General linear group
+%
+\newcommand{\sub}{\subset} % Subset
+\newcommand{\cequiv}[1]{\mathopen{}[#1\mathclose{}]} % Equivalence class
+\newcommand{\restr}[2]{#1\mathop{}\!|_{#2}} % Restriction
+\newcommand{\adh}[1]{\mathring{#1}} % Adherence
+\newcommand{\Adh}[1]{\mathring{\overbrace{#1}}} % Big adherence
+\newcommand{\comp}[1]{{#1}^C} % Complementary of a set
+
+% Differential notation
+\newcommand{\der}{\mathop{}\!{d}} % Differential operator
+\newcommand{\p}{\mathop{}\!{\partial}} % Partial derivative operator
+\providecommand{\dpar}[2]{\frac{\partial{#1}}{\partial{#2}}}
+
+% Topology notation
+\newcommand{\bolo}[1]{B\left({#1}\mathopen{}\right[\mathclose{}} % Open ball
+\newcommand{\bolf}[1]{B\left({#1}\mathopen{}\right]\mathclose{}} % Closed ball
+
+% Limits notation
+\newcommand{\limi}{\underline{\lim}}
+\newcommand{\lims}{\overline{\lim}}
+
+% Norm notation
+\newcommand{\norm}{\mathcal{N}} % Norm
+\newcommand{\nn}[1]{\mathopen{}\left\|#1\right\|\mathclose{}} % Double bar norm
+\newcommand{\nnn}[1]{\mathopen{}\left\||#1|\right\|\mathclose{}} % Double bar norm
+\newcommand{\n}[1]{\mathopen{}\left|#1\right|\mathclose{}} % Single bar norm
+
+
+% Other operators
+\providecommand{\1}{\mathds{1}} % Identity operator
+\DeclareMathOperator{\im}{\mathsf{Im}} % Imaginary part
+\DeclareRobustCommand{\re}{\mathsf{Re}} % Real part
+\DeclareMathOperator{\vect}{\mathsf{Vect}} % Vector space
+\DeclareMathOperator{\diam}{\mathsf{Diam}} % Diameter
+\DeclareMathOperator{\orb}{\mathsf{orb}} % Orbit
+\DeclareMathOperator{\st}{\mathsf{st}} % Standard part
+\DeclareMathOperator{\spr}{\mathsf{SP_{\bb{R}}}} % Real spectrum
+\DeclareMathOperator{\aut}{\mathsf{Aut}} % Automorphism group
+\DeclareMathOperator{\bij}{\mathsf{Bij}} % Bijection group
+\DeclareMathOperator{\rank}{\mathsf{rank}} % Rank
+\DeclareMathOperator{\tr}{\mathsf{tr}} % Trace
+\DeclareMathOperator{\id}{\mathsf{Id}} % Identity
+\DeclareMathOperator{\var}{\mathsf{Var}} % Variance
+\DeclareMathOperator{\cov}{\mathsf{Cov}} % Covariance
+\DeclareFontFamily{U}{mathx}{}
+\DeclareFontShape{U}{mathx}{m}{n}{<-> mathx10}{}
+\DeclareSymbolFont{mathx}{U}{mathx}{m}{n}
+\DeclareMathAccent{\widecheck}{0}{mathx}{"71}
+\providecommand{\B}{\mathsf{B}} % Bold symbol
+
+\usepackage{dsfont}
+\newcommand{\one}{\mathds{1}}
+
+\newcommand{\smol}[1]{\text{\scriptsize{#1}}}
+
+\newcommand{\bleu}[1]{{\color{blue} #1}}
+\newcommand{\ver}[1]{{\color{green} #1}}
+\newcommand{\rouge}[1]{{\color{red}#1}}
+\newcommand{\orange}[1]{{\color{orange}#1}}
+
+
+
+\makeatother

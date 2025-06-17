@@ -9,16 +9,11 @@ def f(rho):
 def fp(rho):
     return 1 - 2*rho
 
-def Vtest(rho):
-    if np.isclose(rho, 0):
-        return 0
-    else:
-        return 1-rho
-    
-V = np.vectorize(Vtest)
+def V(rho): # Vitesse instantannée
+    return 1 - rho
 
 def u0(x):
-    return densite_init if x < -8 else densite_init
+    return densite_init 
 
 # Def variables
 densite_init = 0.4
@@ -112,11 +107,11 @@ def on_key_release(event):
         feu_droite["actif"] = False
 
 def F_gauche(t):
-    return 0 if feu_gauche["actif"] else densite_init
+    return 0.2 if feu_gauche["actif"] else densite_init
 def F_centre(t):
-    return 0 if feu_centre["actif"] else densite_init
+    return 0.2 if feu_centre["actif"] else densite_init
 def F_droite(t):
-    return 0 if feu_droite["actif"] else densite_init
+    return 0.2 if feu_droite["actif"] else densite_init
 
 
 
@@ -127,14 +122,14 @@ def interactive_animation():
     )
 
     # Deux sous-graphes verticaux
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(6, 8), sharex=True)
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(6, 8))
+    fig.suptitle("Simulation de circulation avec feux rouges interactifs", fontsize=12)
 
     # Courbe 1 : densité sur ax1
-    line1, = ax1.plot([], [], lw=2, label='Densité de voiture')
+    line1, = ax1.plot([], [], lw=2, label=r'$\rho(t,x)$')
     ax1.set_xlim(a + 1, b - 1)
     ax1.set_ylim(0, 1.2)
-    ax1.set_ylabel(r"$\rho(x,t)$")
-    ax1.set_title(f"Simulation de circulation (densité)")
+    ax1.set_title(f"Densité de voiture")
     ax1.legend(loc='upper right')
 
     # Courbes 2 & 3 : flux et vitesse sur ax2
@@ -143,8 +138,7 @@ def interactive_animation():
     ax2.set_xlim(a + 1, b - 1)
     ax2.set_ylim(0, 1.2)
     ax2.set_xlabel("x")
-    ax2.set_ylabel("Flux / Vitesse")
-    ax2.set_title("Flux et vitesse en fonction de la densité")
+    ax2.set_title("Flux et vitesse potentielle en fonction de la densité")
     ax2.legend(loc='upper right', ncol=2)
 
     x_milieu = np.linspace(a + dx / 2, b - dx / 2, nb_maille)

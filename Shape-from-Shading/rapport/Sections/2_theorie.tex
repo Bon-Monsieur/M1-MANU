@@ -1,0 +1,457 @@
+\section{Étude théorique de l'Hamiltonien}
+\subsection{Quelques définitions}
+
+Comme mentionné précédemment, l’approche proposée par Rouy et Tourin consiste à résoudre directement l’équation $H(x,p)=0$ en utilisant la théorie des solutions de viscosité. Cette notion de solution de viscosité est une notion de solution faible pour les équations non linéaires d'ordre 1, qu'on appelle aussi équations d'Hamilton-Jacobi. \\
+
+Il est nécessaire de passer par le cadre des solutions de viscosité, plutôt que par le cadre des solutions faibles dites \og classiques\fg{} (espace de Sobolev) car ce dernier ne garantit pas aussi facilement l'unicité des solutions.\\
+
+Par exemple, pour le problème
+\begin{equation*}
+    \begin{cases}
+        |u'|=1, \qquad\qquad\text{sur } \left]0,1\right[\\
+        u(0)=u(1)=0
+    \end{cases}
+\end{equation*}
+il existe une infinité de solutions dans les espaces de Sobolev qui sont de la forme
+\begin{equation*}
+    u(x)=\begin{cases}
+        x, &\text{ sur } ]0,a_1[\\
+        a_1-x, &\text{ sur } ]a_1,a_2[\\
+        1-x, &\text{ sur } ]a_2,1[\\
+    \end{cases}
+\end{equation*}
+Cependant, dans le cadre des solutions de viscosité, il n'existe qu'une unique solution
+\begin{equation*}
+    u(x)=\begin{cases}
+        x, &\text{ sur } ]0,1/2[\\
+        1-x, &\text{ sur } ]1/2,1[
+    \end{cases}
+\end{equation*}
+
+\begin{definition}
+    Pour une équation d'Hamilton-Jacobi de la forme $H(x,u(x),\nabla u(x))=0$, on dit que $u$ est une \textbf{sous-solution de viscosité} de l'équation si $\forall \phi \in \mathscr{C}^1(\Omega), \forall m\in \argmax_{\text{loc}}(u-\phi),$
+    \begin{equation*}
+        H(m,u(m),\nabla \phi(m))\le 0
+    \end{equation*}  
+    De même, on dit que $u$ est une \textbf{sur-solution de viscosité} si $\forall \phi \in \mathscr{C}^1(\Omega), \ \forall m\in\argmin_{\text{loc}}(u-\phi),$
+    \begin{equation*}
+        H(m,u(m),\nabla \phi(m))\ge 0
+    \end{equation*}
+    Enfin, on dit que $u$ est une \textbf{solution de viscosité} si elle est à la fois sous-solution et sur-solution de viscosité.
+\end{definition}
+\newpage
+\begin{noremark}
+    Pour une fonction $f$ quelconque définit sur l'ensemble $X\sub\R^2$, nous noterons dans la suite 
+    \begin{align*}
+        \argmax(f) &= \{ x \in X \ | \ \forall x' \in X,\ f(x') \leq f(x)\} \\
+        \argmin(f) &= \{ x \in X \ | \ \forall x' \in X,\ f(x') \geq f(x)\}
+        \\
+        \argmax_{\text{loc}}(f) &= \{ x \in X \ |\exists R>0, \ \forall x' \in B(x,R),\ f(x') \leq f(x)\} \\
+        \argmin_{\text{loc}}(f) &= \{ x \in X \ |\exists R>0, \ \forall x' \in B(x,R),\ f(x') \geq f(x)\}
+    \end{align*}
+    Où B est la boule de norme 2 sur $\R^2$.
+\end{noremark}
+
+
+\subsection{Étude de l'unicité}
+
+Nous montrons dans cette partie que notre Hamiltonien admet au plus une solution de viscosité. Nous nous inspirons fortement des preuves décrites par Guy Barles dans \textit{Solution de viscosité des équations de Hamilton-Jacobi} \cite{Barles} dans les 2 parties qui suivent.
+
+Nous commençons par montrer que tout Hamiltonien ne dépendant pas directement de $u$ et vérifiant les 4 hypothèses suivantes admet au plus une solution de viscosité.
+\begin{align*}  
+    (Hyp)_0&: u,v \in BUC(\Omega), \text{ respectivement sous/sur solution,}\\
+    &\begin{cases}
+        \forall \phi \in \mathscr{C}(\Omega),x_0=\argmax_{\text{loc}}(u-\phi),H(x_0,D\phi(x_0))\le 0\\
+        \forall \phi \in \mathscr{C}(\Omega),y_0=\argmin_{\text{loc}}(v-\phi),H(x_0,D\phi(x_0))\ge 0
+    \end{cases}\\
+    (Hyp)_1&: H\in \mathscr{C}(\Omega \times \mathbb{R}^n), \text{ est convexe en sa seconde variable.}\\
+    (Hyp)_2&: \exists f\in \mathscr{C}^1(\Omega)\cap \mathscr{C}(\overline{\Omega}) \text{ sous-solution stricte de $H$, c'est-à-dire: }\forall x\in \Omega,H(x,\nabla f(x))\le \alpha <0.\\
+    (Hyp)_3&: \exists \ \omega \in \mathscr{C}(\mathbb{R})\text{ croissante telle que } \omega (0)=0\text{ et }|H(x,p)-H(y,p)|\le \omega (\text{ } |x-y|(1+|p|)\text{ } ).
+\end{align*}
+
+\begin{proof}
+
+Nous cherchons à établir un principe du maximum. Plus précisément, étant donné deux fonctions $u$ et $v$ vérifiant $ u\leq v$ sur $\partial\Omega$, nous voulons démontrer que l'inégalité reste vraie sur $\overline{\Omega}$. Nous allons utiliser une fonction auxiliaire $U$ et faire un raisonnement par l'absurde: s'il existe un point $m$ tel que $U(m) > v(m) +C$ alors nous obtiendrons une contradiction. Nous conclurons en se ramenant à $C=0$.
+
+Soit $u$ sous-solution de viscosité, $v$ sur-solution de viscosité issues de l'$(Hyp)_0$. On pose 
+\begin{equation*}
+    \phi=f-\max_{\partial\Omega}(f-v)
+\end{equation*}
+Ainsi $\phi$ peut remplacer f dans l'hypothèse $(Hyp)_2$, car égale à constante près et $H$ ne dépend que de $\nabla f=\nabla\phi$ avec $\phi\le v$ sur $\partial\Omega$.\\
+~\\
+
+Nous introduisons
+\begin{equation*}
+    u_\lambda= \lambda u+(1-\lambda) \phi, \quad\lambda \in ]0,1[.
+\end{equation*}
+Nous allons montrer que $u_{\lambda}$ est une sous-solution de viscosité de 
+\begin{equation}
+    H(x,Du_\lambda)=(1-\lambda)\alpha <0 \tag{a}\label{eqa}
+\end{equation}
+Les hypothèses $(Hyp)_1$ et $(Hyp)_2$ garantissent la convexité de $H$ en sa seconde variable. Ainsi, nous avons 
+\begin{equation*}
+    H(x,Du_\lambda)\le\lambda H(x,Du)+(1-\lambda)H(x,D\phi)
+\end{equation*}
+Puisque $u$ est sous-solution de $H(x,Du)\leq 0$ et que $\phi$ est une sous-solution de $H(x,D\phi)\leq \alpha$ on obtient
+\begin{equation*}
+    H(x,Du_\lambda)\le \lambda \cdot 0  + (1-\lambda)\alpha
+\end{equation*}
+ce qui montre que $u_\lambda$ est bien sous-solution de $(a)$.
+Enfin, par définition de $\phi$ et $u$ et puisque $u\le v \text{ et } \phi\le v$, on a
+\begin{equation*} 
+    u_\lambda\le \lambda v+(1-\lambda) v=v \quad\text{ sur } \partial\Omega.
+\end{equation*} 
+
+Pour simplifier les notations nous posons 
+\begin{equation*}
+        U=u_\lambda, \quad M=\max_{\overline{\Omega}}(U-v)
+\end{equation*}
+On introduit la fonction auxiliaire $\psi_\varepsilon$
+\begin{equation*}
+    \psi_\varepsilon(x,y)=U(x)-v(y)-\frac{|x-y|^2}{\varepsilon^2}
+\end{equation*}
+et nous notons
+\begin{equation*}
+    M_\varepsilon=\max(\psi_\varepsilon), \qquad (x_\varepsilon,y_\varepsilon)=\argmax(\psi_\varepsilon)
+\end{equation*}
+On a par construction
+\begin{equation*}
+    M_\varepsilon\underset{\varepsilon\longrightarrow 0}{\longrightarrow} M, \text{\quad et \quad} \frac{|x_\varepsilon-y_\varepsilon|^2}{\varepsilon^2}\underset{\varepsilon\longrightarrow 0}{\longrightarrow} 0
+\end{equation*}
+En effet, par définition on a
+\begin{equation*}
+    U(x)-v(x)\le \psi(x_\varepsilon,y_\varepsilon)=M_\varepsilon, \forall x\in\overline{\Omega}
+\end{equation*}
+Avec $m(t)=\underset{|x-y|\le t}{sup}|v(x)-v(y)|$. Or par uniforme continuité de $v$ sur $\overline{\Omega}$ on a $m(t)\underset{ t\longrightarrow 0}{\longrightarrow} 0$.\\
+Ainsi par positivité de $m$ et définition de $M$ 
+\begin{equation*}
+    M\le M_\varepsilon= U(x_\varepsilon)-v(y_\varepsilon)-\dfrac{|x_\varepsilon-y_\varepsilon|^2}{\varepsilon^2} \le U(x_\varepsilon)-v(y_\varepsilon)+ m(|x_\varepsilon -y_\varepsilon|)\le M+m(|x_\varepsilon -y_\varepsilon|)
+\end{equation*}
+D'où 
+\begin{equation*}
+    M\le M_\varepsilon\le M+ m(|x_\varepsilon -y_\varepsilon|)
+\end{equation*}
+Or comme $u,v$ sont bornées par $(Hyp)_0$ (on les borne par $R$)
+\begin{equation*}
+    M\le M_\varepsilon \le 2R - \dfrac{|x_\varepsilon-y_\varepsilon|^2}{\varepsilon^2}
+\end{equation*}
+Par la suite nous supposerons $M\ge 0$, donc $|x_\varepsilon-y_\varepsilon|\le \sqrt{2R}\varepsilon$ (pour rester positif)\\
+On a donc bien par théorème des gendarme \begin{equation*}
+    M_\varepsilon\underset{\varepsilon\longrightarrow 0}{\longrightarrow} M, \text{ ce qui implique } \frac{|x_\varepsilon-y_\varepsilon|^2}{\varepsilon^2}\underset{\varepsilon\longrightarrow 0}{\longrightarrow} 0
+\end{equation*}
+
+On définit maintenant deux fonctions 
+\begin{equation*}
+    \begin{cases}
+    \varphi_1(x)=&v(y_\varepsilon)\ +\dfrac{|x-y_\varepsilon|^2}{\varepsilon^2},\\
+    \varphi_2(y)=&U(x_\varepsilon)+\dfrac{|x_\varepsilon-y|^2}{\varepsilon^2}.
+    \end{cases}
+\end{equation*}
+Et par définition de $M_\varepsilon$ on a
+\begin{equation*}
+    (x_\varepsilon,y_\varepsilon)=(\argmax(U-\varphi_1),\argmin(v-\varphi_2))
+\end{equation*}
+On note $p_\varepsilon =D\varphi_1(x_\varepsilon)=D\varphi_2(y_\varepsilon)=\frac{2(x_\varepsilon-y_\varepsilon)}{\varepsilon^2}$.\\
+Ainsi comme $v$ est une sur-solution, on obtient 
+\begin{equation*}
+    H(y_\varepsilon,D\varphi_2(y_\varepsilon))=H(y_\varepsilon,p_\varepsilon)\ge 0
+\end{equation*}
+Et par l'équation \eqref{eqa} posée plus haut, on a
+\begin{equation*}
+    H(x_\varepsilon,p_\varepsilon)-H(y_\varepsilon,p_\varepsilon)\le (1-\lambda)\alpha<0
+\end{equation*}
+
+Supposons par l'absurde que 
+\begin{equation*}
+    M> (1-\lambda)|\alpha|
+\end{equation*}
+On pose la fonction auxiliaire suivante 
+\begin{equation*}
+    H_2(x,p)=\max(-M,\min(H(x,p),M))
+\end{equation*}
+qui vérifie les 2 propriétés
+\begin{itemize}
+    \item 
+    $H_2(y_\varepsilon,p_\varepsilon)=
+    \begin{cases}
+        \max(-M,H(y_\varepsilon,p_\varepsilon))=H(y_\varepsilon,p_\varepsilon)\ge 0, \quad&\text{ si $H(y_\varepsilon,p_\varepsilon)\le M$}\\
+        \max(-M,M)=M\ge 0, \quad &\text{ sinon}\\
+    \end{cases}$\\
+
+    \item $H_2(x_\varepsilon,p_\varepsilon)=\max(-M, H(x_\varepsilon,p_\varepsilon))\le (1-\lambda)\alpha$.
+\end{itemize}
+Et en utilisant l'$(Hyp)_3$, on obtient
+\begin{equation*}
+    |H_2(x,p)-H_2(y,p)|\le |H(x,p)-H(y,p)| \le \omega(|x-y|(1+|p|))
+\end{equation*}
+l'inégalité précédente est vraie car
+\begin{equation*}
+    \begin{split}
+        |\max(-M,\min(a,M))-\max(-M,\min(b,M))|=&
+        \begin{cases}
+            |a-b|, &\text{si } a,b\in [-M,M]\\
+            |M-b|, &\text{si } a>M\\
+            0, &\text{si }a,b>M
+        \end{cases}\\
+        &\leq |a-b|
+    \end{split}
+\end{equation*}
+
+Ainsi on a par $(Hyp)_3$: 
+\begin{equation*}
+    -\omega (|x_\varepsilon-y_\varepsilon|(1+|p_\varepsilon|))\le H_2(x_\varepsilon,p_\varepsilon)-H_2(y_\varepsilon,p_\varepsilon)\le H_2(x_\varepsilon,p_\varepsilon)\le (1-\lambda)\alpha
+\end{equation*}\\
+
+Donc en passant à la limite $\varepsilon\longrightarrow 0$ ($\omega(0)=0$), on a 
+\begin{equation*}
+    0\le (1-\lambda)\alpha
+\end{equation*} 
+ce qui est absurde car $\alpha<0$ par définition.
+Ainsi,
+\begin{equation*}
+    M=\max(u_\lambda-v)\le(1-\lambda)|\alpha|, \forall \lambda\in]0,1[
+\end{equation*}
+Enfin, en passant à la limite $\lambda=1$ on obtient que $u-v\le 0$, sur $\overline{\Omega}$. 
+
+Cela suffit pour l'unicité, car si $u_1$ et $u_2$ solutions alors elles sont mutuellement sous/sur solutions, on a $u_1-u_2\le 0$ et $u_2-u_1\le 0$ et donc $u_1-u_2=0$ sur $\overline{\Omega}$.\\
+\end{proof}
+Ainsi, tout Hamiltonien ne dépendant que de $\nabla u$ et vérifiant les 4 hypothèses admet au plus une solution de viscosité.
+
+Nous souhaitons appliquer ce résultat à notre Hamiltonien $\eqref{Hamiltonien}$. En effet, nous voulons retrouver une unique forme pour une intensité lumineuse donnée. On a alors besoin de la proposition suivante
+
+\begin{proposition}
+    En supposant que l'intensité $I$ est positive, lipschitzienne et continue, notre Hamiltonien est lipschitzien en sa première variable et convexe en sa seconde.
+\end{proposition}
+    
+\begin{proof}
+
+    \begin{enumerate}
+        \item Montrons que $H$ est lipschitzienne en sa première variable. \\
+        Soit $x,y\in\Omega, \ p\in \R^2$,
+        \begin{align*}
+            |H(x,p)-H(y,p)|&=|I(x)-I(y)|\sqrt{1+|p|^2}\\
+            &\le M\sqrt{1+\n{p}^2}|x-y|.
+        \end{align*}
+        Car $I$ est lipschitzienne de constante $M$.
+    
+        \item Montrons à présent la convexité de $H$ en sa seconde variable. 
+        
+        Soit $\lambda \in \ff{0,1}, \ p,q\in \R^2$, on veut montrer que 
+        \[
+            H(x,(1-\lambda) p+\lambda q ) \leq (1-\lambda) H(x,p)+\lambda H(x,q).
+        \]
+        On écrit séparément les deux termes,
+        \begin{align*}
+            H(x, (1-\lambda)p + \lambda q) &= I(x) \sqrt{1 + |(1-\lambda)p + \lambda q|^2}- (\alpha, \beta) \cdot ((1-\lambda)p + \lambda q) - \gamma
+        \end{align*}
+        
+        \hspace*{-1.5cm}%
+        $\displaystyle (1-\lambda)H(x,p) + \lambda H(x,q) = I(x)\big((1-\lambda)\sqrt{1 + |p|^2} + \lambda \sqrt{1 + |q|^2}\big) - (\alpha, \beta) \cdot ((1-\lambda)p + \lambda q) - \gamma$
+
+        \medskip
+
+        Puisque $I$ est positive, 
+        \begin{equation*}
+            H \text{ convexe} \Longleftrightarrow \sqrt{1+|(1-\lambda)p+\lambda q|^2}\le (1-\lambda)\sqrt{1+|p|^2}+\lambda \sqrt{1+|q|^2}
+        \end{equation*}
+        Or la norme est convexe, de même pour la fonction $f(x)=\sqrt{1+x^2}$ car 
+        \begin{equation*}
+             f''(x)=\dfrac{1}{{(1+x^2)}^{\frac{3}{2}}}>0.
+        \end{equation*}
+        Ainsi, l'inégalité précédente est vérifiée et $H$ est bien convexe en la deuxième variable.
+    \end{enumerate}\qedhere
+\end{proof}
+
+
+Nous supposons donc que l'intensité $I$ est positive et lipschitzienne. Nous allons aussi supposer que celle-ci est strictement plus petite que 1 pour tout $x\in\Omega$. Cette hypothèse va nous permettre de nous assurer de l'existence d'une sous-solution stricte de viscosité $C^2$ pour l'Hamiltonien. En effet, si $I=1$ en un point, alors il n'existe pas de $p\in\R^2$ vérifiant l'inégalité 
+\begin{equation*}
+    \sqrt{1+{|p|}^2} - \left( \alpha, \beta \right) \cdot p - \gamma < 0
+\end{equation*}
+Cela empêche alors l'existence de sous-solution stricte. En revanche, si $I < 1$ en tout point de $\Omega$, alors la fonction 
+\begin{equation*}
+    f\left(x,y\right)=\left(\dfrac{\alpha}{\gamma}\right)x+\left(\dfrac{\beta}{\gamma}\right)y
+\end{equation*}
+est une sous-solution de viscosité stricte $C^2$ de notre Hamiltonien.\\
+
+
+
+Ce principe est primordial dans notre cas. Désormais nous comprenons que s'il existe au moins un point d'intensité lumineuse égale à 1, alors la solution n'est plus unique. Cela est particulièrement évident dans le cas d'un éclairage parfaitement vertical (c'est-à-dire que $\alpha=\beta=0$). Précisément, si $u$ est solution avec un point interne d'intensité égale à 1, alors $-u$ est également solution.\\
+Ce résultat nous pousse donc à considérer le sous-ensemble $\Omega' \subset \Omega$ défini par 
+\begin{equation*}
+    \Omega' = \{ x\in \Omega \ | \ I(x) \neq 1\}.
+\end{equation*}
+Ainsi, notre problème de Shape-from-Shading
+\begin{align}
+    \left\{\begin{array}{ll}
+         H(x,\nabla u(x)) = 0& \ \text{dans } \Omega'\\  
+         u(x)=\varphi& \ \text{sur } \mathop{}\!{\partial}\Omega'
+    \end{array}
+    \right.
+\end{align}
+admet au plus une solution de viscosité. De plus, si nous connaissons $\varphi$ sur tout $\p \Omega'$, alors la forme à reconstruire est totalement déterminée.
+
+
+\subsection{Étude de l'existence}
+
+Durant le semestre, nous avons concentré notre travail sur le cas d'un éclairage vertical parfait. Cela signifie que la direction de la lumière coïncide avec l'axe $z$ dans $\R^3$ en tout point. 
+On pose alors $(\alpha,\beta,\gamma) = (0,0,1)$.
+Ainsi,
+\begin{equation*}
+    \begin{split}
+        H(x,\nabla u(x)) = 0 \Longleftrightarrow& I(x)\sqrt{1+{\n{\nabla u(x)}}^2} -1 =0\\
+        \Longleftrightarrow& I(x)^2(1+{\n{\nabla u(x)}}^2) = 1\\
+        \Longleftrightarrow& 1+\n{\nabla u(x)}^2 = \dfrac{1}{I(x)^2}\\
+        \Longleftrightarrow& \n{\nabla u(x)} = \sqrt{\dfrac{1}{I(x)^2} -1}
+    \end{split}
+\end{equation*}
+Donc, en posant 
+\begin{equation*}
+    n(x) = \sqrt{\dfrac{1}{I(x)^2} -1}
+\end{equation*}
+Le problème de Shape-from-Shading revient alors à résoudre 
+\begin{align}\label{probleme final}
+    \left\{\begin{array}{ll}
+         \mathopen{}\left|\nabla u(x)\right|\mathclose{}=n(x)& \ \text{dans } \Omega'\\  
+         u(x)=\varphi& \ \text{sur } \mathop{}\!{\partial}\Omega'
+    \end{array}
+    \right.
+\end{align}
+
+
+Lions a montré dans \cite{Lions} que dans certaines situations, la solution de viscosité d'une équation d'Hamilton-Jacobi peut être considérée comme la fonction valeur d'un problème d'optimisation. Notamment, la solution $u$ de notre problème peut être formulée grâce au principe de programmation dynamique de Bellman. Le papier que nous avons étudié décrit les étapes à suivre dans cette théorie afin d'obtenir une expression explicite de $u$. 
+
+\begin{noremark}
+    Nous nous sommes peu intéressés au principe de programmation dynamique et à la théorie du contrôle optimal. Par conséquent, nous ne maîtrisons pas pleinement les différentes étapes exposées dans notre article menant à ce résultat.  C'est pourquoi nous ne les détaillerons pas ici.
+\end{noremark}
+
+Nous souhaitons montrer qu'il existe une solution à notre problème de Shape-from-Shading. Nous allons alors montrer que l'expression obtenue par le principe de programmation dynamique de Bellman est bien solution de viscosité de $\eqref{probleme final}$. 
+
+\begin{proposition}
+    La fonction 
+\begin{equation*}
+    u(x)= \inf_{\varepsilon'\in \mathcal{A}}\biggl\{\int_{0}^{T\wedge \tau}n(\varepsilon(s))ds +
+    \begin{cases}
+        \varphi\left(\varepsilon\left(T\right)\right), &T\le \tau\\
+        u\left(\varepsilon\left(\tau\right)\right), &T> \tau\\ 
+    \end{cases}\biggl\}
+\end{equation*}
+est solution de viscosité de notre problème avec 
+\begin{equation*}
+    \begin{split}
+        T=\min\{t\ge0\ |\ \varepsilon(t)\in \partial \Omega\} \quad& \text{ et } \quad T\wedge \tau=\min(T,\tau)\\
+        \mathcal{A}= \{\varepsilon'\in\R^{\R_+}\text{ mesurable tel que }&\forall s\ge 0, |\varepsilon'(s)|\le 1, \ \varepsilon(0)=x\}
+    \end{split}
+\end{equation*}
+\end{proposition}
+
+\begin{proof}
+
+On veut montrer que $u$ est solution de viscosité de $\eqref{probleme final}$. Nous devons donc montrer que $u$ est à la fois sous-solution et sur-solution de viscosité.\\
+
+$\ast \quad$ Montrons que $u$ est sous-solution. Soit $ \phi \in \mathscr{C}(\Omega),\ x=\argmax_{\text{loc}}(u-\phi)$, on doit montrer que $|\nabla\phi (x)|\le n(x)$.
+
+On suppose que 
+\begin{equation*}
+    u(x)-\phi(x)=0\ge u(y)-\phi(y),\quad\forall y\in B(x,R)
+\end{equation*}
+Cela est toujours possible en posant $\phi_2(y)=\phi(y)+(u(x)-\phi(x))$ car $H$ dépend uniquement de $\nabla \phi_2=\nabla\phi$. Cette hypothèse revient à dire que l'on peut supposer que le maximum est atteint en $0$ quitte à faire une translation.\\
+
+On a par définition de $u$ 
+\begin{equation*}
+    u(x)\le \int^{T\wedge \tau}_0 n(\varepsilon(s))ds +
+    \begin{cases}
+        \varphi\left(\varepsilon\left(T\right)\right), &T\le \tau\\
+        u\left(\varepsilon\left(\tau\right)\right), &T> \tau\\ 
+    \end{cases}
+\end{equation*}\\
+Ainsi puisque par hypothèse $\phi(x)=u(x)$, on a
+\begin{equation*}
+    \phi(x)=u(x)\le \int^{T\wedge \tau}_0 n(\varepsilon(s))ds 
+    +\begin{cases}
+        \varphi(\varepsilon(T)), &T\le \tau\\
+        u(\varepsilon(\tau)), &T> \tau\\
+    \end{cases}
+\end{equation*}
+Par définition de $x$, on a 
+\begin{equation*}
+    0=\phi(x)-u(x) \leq \phi(\varepsilon(\tau))-u(\varepsilon(\tau))
+\end{equation*}
+On veut faire tendre $\tau$ vers $0$. Ainsi on peut supposer $\tau<T$. \\
+
+On obtient alors
+\begin{equation*}
+    \phi(x)\le \int^{\tau}_0 n(\varepsilon(s))ds +
+    \phi(\varepsilon(\tau))
+\end{equation*}
+En soustrayant des deux côtés par $\phi(\varepsilon(\tau))$ on obtient
+\begin{equation*}
+    \phi(x)-\phi(\varepsilon(\tau))\le \int^{\tau}_0 n(\varepsilon(s))ds
+\end{equation*}
+Ce qui implique que
+\begin{equation*}
+    \begin{split}
+        \underset{\tau\longrightarrow0}{\lim}\left(-\frac{\phi(\varepsilon(\tau))-\phi(x)}{\tau}\right) &= -\varepsilon'(0)\nabla\phi(x)\\
+        &\le n(\varepsilon(0))=n(x)
+    \end{split}
+\end{equation*}
+Or $|\varepsilon'(0)|\le 1$ donc on a bien $|\nabla \phi (x)|\le n(x)$. Ainsi $u$ est bien sous-solution de viscosité. \\
+
+$\ast \quad$ Montrons que $u$ est sur-solution. Soit $ \phi \in \mathscr{C}(\Omega),\ x=\argmin_{\text{loc}}(u-\phi)$, on doit montrer que $|\nabla\phi (x)|\ge n(x)$. Par le même raisonnement que pour le point précédent, on suppose que $u(x)=\phi(x)$ donc $\phi-u\le 0$ au voisinage de $x$.
+
+
+Par définition de $\phi$ et pour $\tau<T$ on a 
+\begin{equation*}
+    \begin{split}
+        \phi(x)\ge u(x)=&
+    \underset{\varepsilon'\in \mathcal{A}}{\inf}\left\{\int^{\tau}_0 n(\varepsilon(s))ds+u(\varepsilon(\tau))\right\}\\
+    \ge&
+    \underset{\varepsilon'\in \mathcal{A}}{\inf}\left\{\int^{\tau}_0 n(\varepsilon(s))ds+u(\varepsilon(\tau))+ (\phi(\varepsilon(\tau))-u(\varepsilon(\tau)))\right\}\\
+    \ge&
+    \underset{\varepsilon'\in \mathcal{A}}{\inf}\left\{\int^{\tau}_0 n(\varepsilon(s))ds+\phi(\varepsilon(\tau))\right\}
+    \end{split}
+\end{equation*}
+Or par le Théorème fondamental de l'analyse 
+\begin{equation*}
+    \phi(\varepsilon(\tau))=\phi(x)+\int^\tau_0 \varepsilon'(s)\cdot\nabla\phi(\varepsilon(s))ds
+\end{equation*}
+Donc
+\begin{equation*}
+    \phi(x)\ge\underset{\varepsilon'\in \mathcal{A}}{\inf}\left\{\int^{\tau}_0 n(\varepsilon(s))ds+\int^\tau_0 \varepsilon'(s)\cdot\nabla\phi(\varepsilon(s))ds +\phi(x)\right\}
+\end{equation*}
+Alors en soustrayant de chaque côté par $\phi(x)$ on obtient
+\begin{equation*}
+    0\ge\underset{\varepsilon'\in \mathcal{A}}{\inf}\left\{\int^{\tau}_0 n(\varepsilon(s))ds+ \varepsilon'(s)\cdot\nabla\phi(\varepsilon(s))ds\right\}
+\end{equation*}
+Ce qui implique
+\begin{equation*}
+    0\ge\underset{\varepsilon'\in \mathcal{A}}{\inf}\left\{\int^{\tau}_0 n(\varepsilon(s))ds+ \underset{\varepsilon'\in \mathcal{A}}{\inf}\left\{\varepsilon'(s)\cdot\nabla\phi(\varepsilon(s))\right\}ds\right\}
+\end{equation*}
+Or par définition de $\mathcal{A}$ et par Cauchy-Schwartz
+\begin{equation*}
+    \underset{\varepsilon'\in \mathcal{A}}{\inf}\{\varepsilon'(s)\cdot\nabla\phi(\varepsilon(s))\}=-|\nabla\phi(\varepsilon(s))|
+\end{equation*}
+On a donc
+\begin{equation*}
+    0\ge\underset{\varepsilon'\in \mathcal{A}}{\inf}\left\{\int^{\tau}_0 n(\varepsilon(s))ds -|\nabla\phi(\varepsilon(s)|ds\right\}
+\end{equation*}\\
+Donc 
+\begin{equation*}
+    0\ge \underset{\tau\longrightarrow 0}{\lim} \ \underset{\varepsilon'\in \mathcal{A}}{\inf}\left\{ \frac{1}{\tau}\int^{\tau}_0 n(\varepsilon(s))ds -|\nabla\phi(\varepsilon(s)|ds\right\} = n(x)-|\nabla\phi(x)|
+\end{equation*}
+Et on a bien $|\nabla \phi(x)|\ge n(x)$. Ainsi $u$ est bien sur-solution de viscosité. \\
+Donc $u$ est à la fois sous-solution de viscosité et sur-solution de viscosité.\\
+Donc $u$ est solution de viscosité du problème initial.
+\end{proof}
+~\\
+
+Nous avons montré dans la partie précédente qu'il existait au plus une solution de viscosité à notre Hamiltonien. Ainsi la solution $u$ définie par 
+\begin{equation*}
+    u(x)= \inf_{\varepsilon'\in \mathcal{A}}\biggl\{\int_{0}^{T\wedge \tau}n(\varepsilon(s))ds +
+    \begin{cases}
+        \varphi\left(\varepsilon\left(T\right)\right), &T\le \tau\\
+        u\left(\varepsilon\left(\tau\right)\right), &T> \tau\\ 
+    \end{cases}\biggl\}
+\end{equation*}
+est l'unique solution du problème de Shape-from-Shading $\eqref{probleme final}$.\\
+
+Nous avons donc, sous l'hypothèse d'avoir une intensité strictement inférieure à 1 sur notre domaine, prouvé l'existence et l'unicité d'une solution. Dans les parties qui suivent nous cherchons à approcher numériquement cette solution.
