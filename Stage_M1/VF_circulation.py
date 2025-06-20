@@ -21,7 +21,7 @@ densite_init = 0.4
 a = -10
 b = 10
 T=1e3
-CFL=0.1
+CFL=0.4
 nb_maille = 200
 
 # Def maillage
@@ -122,7 +122,8 @@ def interactive_animation():
     gen = schema_generator(nb_maille, Rho0, a, b, f=f, fp=fp, cfl=CFL, T=T)
 
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 8), gridspec_kw={'height_ratios': [2, 2]})
-    fig.subplots_adjust(bottom=0.25)
+    fig.subplots_adjust(bottom=0.25, hspace=0.4)
+
 
     fig.suptitle("Simulation de circulation avec feux rouges interactifs", fontsize=12)
 

@@ -11,7 +11,7 @@ def fp(u):
     return 1 - 2*u
 
 def u0(x):
-    return ((x  +10) / 20) ** 2
+    return 1/20*x+0.5
 
 def g_H(p_minus, p_plus):
     if p_minus <= p_plus:
