@@ -4,36 +4,39 @@ import matplotlib.animation as animation
 from matplotlib.patches import Rectangle
 from matplotlib.widgets import Button
 
-def f(rho):
+def H(rho):
     return rho*(1-rho)
 
-def fp(rho):
+def Hp(rho):
     return 1 - 2*rho
 
 def V(rho): # Vitesse instantannée
     return 1 - rho
 
 def Rho0(x):
-    return densite_init if x < 0 else 0.0
+    return 0.4 if x < 0.0 else 0.0
 
-def g_H(p_minus, p_plus):
+def vectorized_g_H(p_minus, p_plus):
     p_star = 0.5
-    if p_plus <= p_minus:
-        if p_plus <= p_star <= p_minus:
-            return f(p_star)
-        else:
-            return max(f(p_minus), f(p_plus))
-    else:
-        return min(f(p_minus), f(p_plus))
-    
-vectorized_g_H = np.vectorize(g_H)
+    f_p_minus = H(p_minus)
+    f_p_plus = H(p_plus)
+    f_p_star = H(p_star)
+
+    cond1 = p_plus <= p_minus
+    cond2 = (p_plus <= p_star) & (p_star <= p_minus)
+
+    g = np.where(
+        cond1,
+        np.where(cond2, f_p_star, np.maximum(f_p_minus, f_p_plus)),
+        np.minimum(f_p_minus, f_p_plus)
+    )
+    return g
 
 # Def variables
 densite_init = 0.4
-a = -10
-b = 10
+a = -5
+b = 5
 T=1e3
-CFL=0.4
 nb_maille = 200
 
 # Def maillage
@@ -41,7 +44,7 @@ x = np.linspace(a, b, nb_maille+1)
 dx = (b-a)/nb_maille
 x_milieu = np.linspace(a+dx/2,b-dx/2,nb_maille)
 
-def schema_generator(nb_maille, Rho0, a, b, f, fp, cfl, T):
+def schema_generator(nb_maille, Rho0, a, b, T):
     m = nb_maille
     x = np.linspace(a, b, m + 1)
     dx = (b - a) / m
@@ -49,11 +52,6 @@ def schema_generator(nb_maille, Rho0, a, b, f, fp, cfl, T):
     t = 0   # Variable de temps
 
     Rh = np.array([Rho0((x[i]+x[i+1])/2.0) for i in range(len(x)-1)])
-    # Définition du flux
-    def flux(um,up):
-        return 0.5*(f(um)+f(up)) -0.5*(up - um)
-    vectorized_flux = np.vectorize(flux)
-
     
     # Indice des feux
     i_feu_gauche = len(Rh) // 2 - len(Rh) // 4
@@ -65,7 +63,6 @@ def schema_generator(nb_maille, Rho0, a, b, f, fp, cfl, T):
     while t < T:
         Rtemp = Rh.copy()
 
-        Cn = np.max(np.abs(fp(Rh)))
         dt = dx / 42
 
         if T - t < dt:
@@ -85,14 +82,14 @@ def schema_generator(nb_maille, Rho0, a, b, f, fp, cfl, T):
         # Calcul pour les feux rouges 
         for i_feu, F in feux:
             Rh[i_feu] = Rtemp[i_feu] - dt / dx * (
-                flux(Rtemp[i_feu], Rtemp[i_feu + 1]) - min(flux(Rtemp[i_feu - 1], Rtemp[i_feu]), F(t))
+                vectorized_g_H(Rtemp[i_feu], Rtemp[i_feu + 1]) - min(vectorized_g_H(Rtemp[i_feu - 1], Rtemp[i_feu]), F(t))
             )
             Rh[i_feu - 1] = Rtemp[i_feu - 1] - dt / dx * (
-                min(F(t), flux(Rtemp[i_feu - 1], Rtemp[i_feu])) - flux(Rtemp[i_feu - 2], Rtemp[i_feu - 1])
+                min(F(t), vectorized_g_H(Rtemp[i_feu - 1], Rtemp[i_feu])) - vectorized_g_H(Rtemp[i_feu - 2], Rtemp[i_feu - 1])
             )
 
         # On ne stocke que tous les 3 itérations pour alléger l'animation
-        if it%10==0 or t+dt >= T:
+        if it%30==0 or t+dt >= T:
             yield t, Rh.copy()
         
         it += 1
@@ -131,7 +128,7 @@ def F_droite(t):
 from matplotlib.widgets import Button
 
 def interactive_animation():
-    gen = schema_generator(nb_maille, Rho0, a, b, f=f, fp=fp, cfl=CFL, T=T)
+    gen = schema_generator(nb_maille, Rho0, a, b, T=T)
 
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 8), gridspec_kw={'height_ratios': [2, 2]})
     fig.subplots_adjust(bottom=0.25, hspace=0.4)
@@ -148,7 +145,7 @@ def interactive_animation():
     ax1.set_title("Densité de voiture")
     ax1.legend(loc='upper right')
 
-    line2, = ax2.plot(x_milieu, f(Rh_init), lw=2, label=r'$f(\rho(t,x))$',color='green')
+    line2, = ax2.plot(x_milieu, H(Rh_init), lw=2, label=r'$f(\rho(t,x))$',color='green')
     line3, = ax2.plot(x_milieu, V(Rh_init), lw=2, label=r'$V(\rho(t,x))$',color='orange')
     ax2.set_xlim(a + 1, b - 1)
     ax2.set_ylim(0, 1.2)
@@ -176,7 +173,7 @@ def interactive_animation():
 
     def update_display(t, Rh):
         line1.set_data(x_milieu, Rh)
-        line2.set_data(x_milieu, f(Rh))
+        line2.set_data(x_milieu, H(Rh))
         line3.set_data(x_milieu, V(Rh))
         feu_rect_gauche.set_color('red' if feu_gauche["actif"] else 'green')
         feu_rect_centre.set_color('red' if feu_centre["actif"] else 'green')
@@ -187,6 +184,10 @@ def interactive_animation():
             try:
                 t, Rh = next(gen)
                 history.append((t, Rh))
+                history.append((t, Rh))
+                if len(history) > 10:
+                    history.pop(0)  # Supprime le plus ancien
+
                 frame_index["value"] += 1
                 update_display(t, Rh)
             except StopIteration:
@@ -202,36 +203,37 @@ def interactive_animation():
     fig.canvas.mpl_connect('key_release_event', on_key_release)
 
     ani = animation.FuncAnimation(
-        fig, update, interval=10, blit=True, frames=None, cache_frame_data=False
+        fig, update, interval=2, blit=True, frames=None, cache_frame_data=False
     )
 
     # Bouton Play/Pause
     ax_playpause = plt.axes([0.05, 0.05, 0.2, 0.075])
-    btn_playpause = Button(ax_playpause, '▶️ Démarrer')
+    btn_playpause = Button(ax_playpause, '▶ Démarrer')
 
     # Bouton Reset
     ax_reset = plt.axes([0.275, 0.05, 0.2, 0.075])
-    btn_reset = Button(ax_reset, '🔁 Réinitialiser')
+    btn_reset = Button(ax_reset, 'Réinitialiser')
 
     # Bouton Précédent
     ax_prev = plt.axes([0.5, 0.05, 0.2, 0.075])
-    btn_prev = Button(ax_prev, '⏮️ Précédent')
+    btn_prev = Button(ax_prev, 'Précédent')
 
     # Bouton Suivant
     ax_next = plt.axes([0.725, 0.05, 0.2, 0.075])
-    btn_next = Button(ax_next, '⏭️ Suivant')
+    btn_next = Button(ax_next, 'Suivant')
 
 
     def on_playpause(event):
         running["value"] = not running["value"]
-        btn_playpause.label.set_text("⏸️ Pause" if running["value"] else "▶️ Démarrer")
+        btn_playpause.label.set_text("Pause" if running["value"] else "▶ Démarrer")
 
     def on_reset(event):
         nonlocal gen
         running["value"] = False
-        btn_playpause.label.set_text("▶️ Démarrer")
-        gen = schema_generator(nb_maille, Rho0, a, b, f=f, fp=fp, cfl=CFL, T=T)
+        btn_playpause.label.set_text("▶ Démarrer")
+        gen = schema_generator(nb_maille, Rho0, a, b, T=T)
         history.clear()
+        history.append((0, Rh_init))
         Rh_init = np.array([Rho0(xi) for xi in x_milieu])
         history.append((0, Rh_init))
         frame_index["value"] = 0

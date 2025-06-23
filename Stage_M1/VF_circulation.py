@@ -14,7 +14,7 @@ def V(rho): # Vitesse instantannée
     return 1 - rho
 
 def Rho0(x):
-    return densite_init
+    return 0.4 if x < -7 else 0.0
 
 # Def variables
 densite_init = 0.4
