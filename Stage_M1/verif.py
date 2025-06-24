@@ -8,7 +8,7 @@ from matplotlib.widgets import Button
 # ----------- Paramètres globaux ----------- #
 a = -10
 b = 10
-nb_maille = 100
+nb_maille = 50
 dx = (b - a) / nb_maille
 T = 1e3
 CFL = 0.1
@@ -22,7 +22,7 @@ def u0(x):
     return 0.4*x if x < 0 else 0.0
 
 def rho0(x,dx):
-    return 0.4 if x < 0 else 0.0
+    return (u0(x+dx)-u0(x))/dx
 
 # ----------- Hamiltonien et flux de Godunov ----------- #
 def H(p):
@@ -46,6 +46,20 @@ def vectorized_g_H(p_minus, p_plus):
         np.minimum(f_p_minus, f_p_plus)
     )
     return g
+
+def g_H(a, b):
+    return max(H(min(a, b)), H(max(a, b))) if a <= b else max(H(a), H(b))
+
+# ----------- F_0 ----------- #
+def H_plus(p):
+    return 1/4 if p < 1/2 else H(p)
+
+def H_minus(p):
+    return 1/4 if p > 1/2 else H(p)
+
+def F_0(p_left,p_right,F): # Flux limité HJ
+    return min(H_plus(p_right), H_minus(p_left),F)
+
 
 # ----------- Schéma Hamilton-Jacobi ----------- #
 def schema_HJ(nb_maille, u0, a, b, f, fp, cfl, T):
@@ -81,11 +95,13 @@ def schema_HJ(nb_maille, u0, a, b, f, fp, cfl, T):
         Uh[0] = Utemp[0] - dt * vectorized_g_H((Utemp[0] - u_gauche) / dx, (Utemp[1] - Utemp[0]) / dx)
         Uh[-1] = Utemp[-1] - dt * vectorized_g_H((Utemp[-1] - Utemp[-2]) / dx, 0.0)
 
-        # Calcul pour les feux rouges 
         for i_feu, F in feux:
-            Uh[i_feu] = (
-                Uh[i_feu] - dt * min(F(t),vectorized_g_H((Utemp[i_feu] - Utemp[i_feu - 1]) / dx, (Utemp[i_feu+1] - Utemp[i_feu]) / dx))
-        )
+            Uh[i_feu] = Utemp[i_feu] - dt * F_0(
+                (Utemp[i_feu]-Utemp[i_feu-1])/dx,
+                (Utemp[i_feu+1]-Utemp[i_feu])/dx,
+                F(t)
+                )
+
 
         if it % 30 == 0 or t + dt >= T:
             yield t, Uh.copy()
@@ -131,10 +147,10 @@ def conservation_law_solver(nb_maille, Rho0, a, b,f,fp,cfl, T):
         # Calcul pour les feux rouges 
         for i_feu, F in feux:
             Rh[i_feu] = Rtemp[i_feu] - dt / dx * (
-                vectorized_g_H(Rtemp[i_feu], Rtemp[i_feu + 1]) - min(vectorized_g_H(Rtemp[i_feu - 1], Rtemp[i_feu]), F(t))
+                vectorized_g_H(Rtemp[i_feu], Rtemp[i_feu + 1]) - F_0(Rtemp[i_feu-1],Rtemp[i_feu],F(t))#- min(vectorized_g_H(Rtemp[i_feu - 1], Rtemp[i_feu]), F(t))
             )
             Rh[i_feu - 1] = Rtemp[i_feu - 1] - dt / dx * (
-                min(F(t), vectorized_g_H(Rtemp[i_feu - 1], Rtemp[i_feu])) - vectorized_g_H(Rtemp[i_feu - 2], Rtemp[i_feu - 1])
+                F_0(Rtemp[i_feu - 1],Rtemp[i_feu],F(t)) - vectorized_g_H(Rtemp[i_feu - 2], Rtemp[i_feu - 1]) #min(F(t), vectorized_g_H(Rtemp[i_feu - 1], Rtemp[i_feu]))
             )
 
         # On ne stocke que tous les 3 itérations pour alléger l'animation
@@ -169,7 +185,6 @@ def schema_generator(nb_maille, Rho0, a, b, f, fp, cfl, T):
     while t < T:
         Rtemp = Rh.copy()
 
-        Cn = np.max(np.abs(fp(Rh)))
         dt = dx / 42
 
         if T - t < dt:
@@ -248,7 +263,7 @@ def animate_comparison():
 
     line_hj, = ax.plot([], [], 'b-', label=r"$\partial_x u$ (HJ)")
     line_cons, = ax.plot([], [], 'r--', label=r"$\rho$ (conservation)")
-    line_u, = ax.plot([],[], 'g--', label=r"$u$")
+    #line_u, = ax.plot([],[], 'g--', label=r"$u$")
     line_sch, = ax.plot([], [],  color='orange', linestyle='-', label=r"$\rho$ volume fini")
     ax.set_xlim(a+1 , b-1 )
     ax.set_ylim(-0.1, 1.1)
@@ -273,7 +288,7 @@ def animate_comparison():
     def update(frame):
         try:
             t1, Uh = next(gen_hj)
-            line_u.set_data(x, Uh)
+            #line_u.set_data(x, Uh)
             t2, rho = next(gen_cons)
             line_cons.set_data(x_milieu, rho)
             rho_from_HJ = discrete_derivative(Uh, dx)
@@ -283,7 +298,7 @@ def animate_comparison():
             ax.set_title(f"Comparaison à t = {t1:.2f}")
         except StopIteration:
             pass
-        return line_hj, line_cons, line_u, line_sch
+        return line_hj, line_cons, line_sch #, line_u
 
     fig.canvas.mpl_connect('key_press_event', on_key_press)
     fig.canvas.mpl_connect('key_release_event', on_key_release)
