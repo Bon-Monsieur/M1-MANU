@@ -8,21 +8,26 @@ from matplotlib.widgets import Button
 # ----------- Paramètres globaux ----------- #
 a = -10
 b = 10
-nb_maille = 50
+nb_maille = 101
 dx = (b - a) / nb_maille
 T = 1e3
-CFL = 0.1
+C_CFL = 5
 densite_init = 0.4
 
 x = np.linspace(a, b, nb_maille + 1)
-x_milieu = np.linspace(a + dx/2, b - dx/2, nb_maille)
+x_milieu = (x[:-1] + x[1:]) / 2
 
 # ----------- Fonction u0(x) et rho0(x) ----------- #
 def u0(x):
-    return 0.4*x if x < 0 else 0.0
+    return densite_init*x if x < 0 else 0.0
 
 def rho0(x,dx):
-    return (u0(x+dx)-u0(x))/dx
+    return (u0(x+dx)-u0(x))/dx if x < 0 else 0.0
+
+U0 = np.array([u0(x[i]) for i in range(len(x))])
+
+rho_h = (U0[1:] - U0[:-1]) / dx
+
 
 # ----------- Hamiltonien et flux de Godunov ----------- #
 def H(p):
@@ -33,43 +38,35 @@ def H_prime(p):
 
 def vectorized_g_H(p_minus, p_plus):
     p_star = 0.5
-    f_p_minus = H(p_minus)
-    f_p_plus = H(p_plus)
-    f_p_star = H(p_star)
-
     cond1 = p_plus <= p_minus
     cond2 = (p_plus <= p_star) & (p_star <= p_minus)
 
     g = np.where(
         cond1,
-        np.where(cond2, f_p_star, np.maximum(f_p_minus, f_p_plus)),
-        np.minimum(f_p_minus, f_p_plus)
+        np.where(cond2, H(p_star), np.maximum(H(p_minus), H(p_plus))),
+        np.minimum(H(p_minus), H(p_plus))
     )
     return g
 
-def g_H(a, b):
-    return max(H(min(a, b)), H(max(a, b))) if a <= b else max(H(a), H(b))
-
 # ----------- F_0 ----------- #
 def H_plus(p):
-    return 1/4 if p < 1/2 else H(p)
+    return -1/4 if p < 1/2 else -H(p)
 
 def H_minus(p):
-    return 1/4 if p > 1/2 else H(p)
+    return -1/4 if p > 1/2 else -H(p)
 
 def F_0(p_left,p_right,F): # Flux limité HJ
-    return min(H_plus(p_right), H_minus(p_left),F)
-
+    return min(-H_plus(p_right), -H_minus(p_left),F)
 
 # ----------- Schéma Hamilton-Jacobi ----------- #
-def schema_HJ(nb_maille, u0, a, b, f, fp, cfl, T):
+def schema_HJ(nb_maille, u0, a, b, T):
     m = nb_maille
     x = np.linspace(a, b, m + 1)
-    dx = (b - a) / m
+    dx = x[1]-x[0]
     it = 0
     t = 0
 
-    Uh = np.array([u0(x[i]) for i in range(len(x))])
+    Uh = U0
 
     # Indice des feux
     i_feu_gauche = len(Uh) // 2 - len(Uh) // 4
@@ -80,7 +77,7 @@ def schema_HJ(nb_maille, u0, a, b, f, fp, cfl, T):
     while t < T:
         Utemp = Uh.copy()
 
-        dt = dx / 42
+        dt = dx / C_CFL
 
         if T - t < dt:
             dt = T - t
@@ -91,8 +88,7 @@ def schema_HJ(nb_maille, u0, a, b, f, fp, cfl, T):
         )
         
         # Condition aux limites
-        u_gauche = Utemp[0] - 0.4 * dx
-        Uh[0] = Utemp[0] - dt * vectorized_g_H((Utemp[0] - u_gauche) / dx, (Utemp[1] - Utemp[0]) / dx)
+        Uh[0] = Utemp[0] - dt * vectorized_g_H(densite_init, (Utemp[1] - Utemp[0]) / dx)
         Uh[-1] = Utemp[-1] - dt * vectorized_g_H((Utemp[-1] - Utemp[-2]) / dx, 0.0)
 
         for i_feu, F in feux:
@@ -109,26 +105,25 @@ def schema_HJ(nb_maille, u0, a, b, f, fp, cfl, T):
         it += 1
 
 # ----------- Schéma conservation scalaire ----------- #
-def conservation_law_solver(nb_maille, Rho0, a, b,f,fp,cfl, T):
+def conservation_law_solver(nb_maille, Rho0, a, b, T):
     m = nb_maille
-    x = np.linspace(a, b, m + 1)
     dx = (b - a) / m
     it = 0  # Compteur d'itérations pour les images de l'animation
     t = 0   # Variable de temps
 
-    Rh = np.array([Rho0((x[i]+x[i+1])/2.0,dx) for i in range(len(x)-1)])
+    Rh = rho_h
     
     # Indice des feux
-    i_feu_gauche = len(Rh) // 2 - len(Rh) // 4
-    i_feu_centre = len(Rh) // 2
-    i_feu_droite = len(Rh) // 2 + len(Rh) // 4
+    i_feu_gauche = len(U0) // 2 - len(U0) // 4
+    i_feu_centre = len(U0) // 2
+    i_feu_droite = len(U0) // 2 + len(U0) // 4
     feux = [ (i_feu_gauche, F_gauche), (i_feu_centre, F_centre), (i_feu_droite, F_droite) ]
     
     
     while t < T:
         Rtemp = Rh.copy()
 
-        dt = dx / 42
+        dt = dx / C_CFL
 
         if T - t < dt:
             dt = T - t
@@ -147,10 +142,10 @@ def conservation_law_solver(nb_maille, Rho0, a, b,f,fp,cfl, T):
         # Calcul pour les feux rouges 
         for i_feu, F in feux:
             Rh[i_feu] = Rtemp[i_feu] - dt / dx * (
-                vectorized_g_H(Rtemp[i_feu], Rtemp[i_feu + 1]) - F_0(Rtemp[i_feu-1],Rtemp[i_feu],F(t))#- min(vectorized_g_H(Rtemp[i_feu - 1], Rtemp[i_feu]), F(t))
+                vectorized_g_H(Rtemp[i_feu], Rtemp[i_feu + 1]) - F_0(Rtemp[i_feu-1],Rtemp[i_feu],F(t))
             )
             Rh[i_feu - 1] = Rtemp[i_feu - 1] - dt / dx * (
-                F_0(Rtemp[i_feu - 1],Rtemp[i_feu],F(t)) - vectorized_g_H(Rtemp[i_feu - 2], Rtemp[i_feu - 1]) #min(F(t), vectorized_g_H(Rtemp[i_feu - 1], Rtemp[i_feu]))
+                F_0(Rtemp[i_feu - 1],Rtemp[i_feu],F(t)) - vectorized_g_H(Rtemp[i_feu - 2], Rtemp[i_feu - 1])
             )
 
         # On ne stocke que tous les 3 itérations pour alléger l'animation
@@ -161,7 +156,7 @@ def conservation_law_solver(nb_maille, Rho0, a, b,f,fp,cfl, T):
 
 
 # ------- test ---------- #
-def schema_generator(nb_maille, Rho0, a, b, f, fp, cfl, T):
+def schema_generator(nb_maille, Rho0, a, b, f, T):
     m = nb_maille
     x = np.linspace(a, b, m + 1)
     dx = (b - a) / m
@@ -185,7 +180,7 @@ def schema_generator(nb_maille, Rho0, a, b, f, fp, cfl, T):
     while t < T:
         Rtemp = Rh.copy()
 
-        dt = dx / 42
+        dt = dx / C_CFL
 
         if T - t < dt:
             dt = T - t
@@ -248,24 +243,23 @@ def F_droite(t):
 
 # ----------- Dérivée discrète ----------- #
 def discrete_derivative(Uh, dx):
-    dUh = [(Uh[i+1] - Uh[i]) /  dx for i in range(0, len(Uh)-1)]
+    dUh = [(Uh[i+1] - Uh[i]) /  dx for i in range(len(x_milieu))]
     return dUh
 
 # ----------- Animation de la comparaison ----------- #
 def animate_comparison():
-    gen_hj = schema_HJ(nb_maille, u0, a, b, H, H_prime, cfl=CFL, T=T)
-    gen_cons = conservation_law_solver(nb_maille, rho0, a, b, H, H_prime, cfl=CFL, T=T)
-    sch_gen = schema_generator(nb_maille, rho0, a, b, H, H_prime, cfl=CFL, T=T)
+    gen_hj_papier = schema_HJ(nb_maille, u0, a, b, T=T)
+    gen_cons_papier = conservation_law_solver(nb_maille, rho0, a, b, T=T)
+    sch_gen = schema_generator(nb_maille, rho0, a, b, H, T=T)
 
     fig, ax = plt.subplots()
-    x_milieu = np.linspace(a + dx / 2, b - dx / 2, nb_maille)
-    Rh_init = np.array([rho0(xi,dx) for xi in x_milieu])
+    #Rh_init = np.array([rho0(xi,dx) for xi in x_milieu])
 
     line_hj, = ax.plot([], [], 'b-', label=r"$\partial_x u$ (HJ)")
-    line_cons, = ax.plot([], [], 'r--', label=r"$\rho$ (conservation)")
+    line_cons, = ax.plot([], [], 'r--', label=r"$\rho$ papier")
     #line_u, = ax.plot([],[], 'g--', label=r"$u$")
-    line_sch, = ax.plot([], [],  color='orange', linestyle='-', label=r"$\rho$ volume fini")
-    ax.set_xlim(a+1 , b-1 )
+    #line_sch, = ax.plot([], [],  color='orange', linestyle='-', label=r"$\rho$ volume fini classique")
+    ax.set_xlim(a , b ) 
     ax.set_ylim(-0.1, 1.1)
     ax.set_xlabel("x")
     ax.set_ylabel("Valeur")
@@ -287,18 +281,22 @@ def animate_comparison():
 
     def update(frame):
         try:
-            t1, Uh = next(gen_hj)
+            t1, Uh = next(gen_hj_papier)
             #line_u.set_data(x, Uh)
-            t2, rho = next(gen_cons)
+            t2, rho = next(gen_cons_papier)
             line_cons.set_data(x_milieu, rho)
             rho_from_HJ = discrete_derivative(Uh, dx)
             line_hj.set_data(x_milieu, rho_from_HJ)
             t3, rho_sch = next(sch_gen)
-            line_sch.set_data(x_milieu, rho_sch)
+            #line_sch.set_data(x_milieu, rho_sch)
+            #print(len(Uh),len(rho_from_HJ),len(rho))
             ax.set_title(f"Comparaison à t = {t1:.2f}")
+            feu_rect_gauche.set_color('red' if feu_gauche["actif"] else 'green')
+            feu_rect_centre.set_color('red' if feu_centre["actif"] else 'green')
+            feu_rect_droite.set_color('red' if feu_droite["actif"] else 'green')
         except StopIteration:
             pass
-        return line_hj, line_cons, line_sch #, line_u
+        return line_hj, line_cons, #line_sch #, line_u
 
     fig.canvas.mpl_connect('key_press_event', on_key_press)
     fig.canvas.mpl_connect('key_release_event', on_key_release)
