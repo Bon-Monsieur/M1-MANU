@@ -9,24 +9,21 @@ from matplotlib.widgets import Button
 a = -10
 b = 10
 nb_maille = 101
-dx = (b - a) / nb_maille
 T = 1e3
 C_CFL = 5
 densite_init = 0.4
 
 x = np.linspace(a, b, nb_maille + 1)
+dx = x[1] - x[0]
 x_milieu = (x[:-1] + x[1:]) / 2
 
 # ----------- Fonction u0(x) et rho0(x) ----------- #
 def u0(x):
     return densite_init*x if x < 0 else 0.0
 
-def rho0(x,dx):
-    return (u0(x+dx)-u0(x))/dx if x < 0 else 0.0
-
 U0 = np.array([u0(x[i]) for i in range(len(x))])
 
-rho_h = (U0[1:] - U0[:-1]) / dx
+rho_0 = (U0[1:] - U0[:-1]) / dx     # Initialisation discrète de rho_0 
 
 
 # ----------- Hamiltonien et flux de Godunov ----------- #
@@ -59,14 +56,12 @@ def F_0(p_left,p_right,F): # Flux limité HJ
     return min(-H_plus(p_right), -H_minus(p_left),F)
 
 # ----------- Schéma Hamilton-Jacobi ----------- #
-def schema_HJ(nb_maille, u0, a, b, T):
-    m = nb_maille
-    x = np.linspace(a, b, m + 1)
-    dx = x[1]-x[0]
-    it = 0
-    t = 0
+def schema_HJ(T):
 
-    Uh = U0
+    it = 0 # Compteur d'itérations pour les images de l'animation
+    t = 0   # Variable de temps
+
+    Uh = U0.copy()  # Initialisation discrète de Uh avec U0
 
     # Indice des feux
     i_feu_gauche = len(Uh) // 2 - len(Uh) // 4
@@ -92,26 +87,27 @@ def schema_HJ(nb_maille, u0, a, b, T):
         Uh[-1] = Utemp[-1] - dt * vectorized_g_H((Utemp[-1] - Utemp[-2]) / dx, 0.0)
 
         for i_feu, F in feux:
-            Uh[i_feu] = Utemp[i_feu] - dt * F_0(
-                (Utemp[i_feu]-Utemp[i_feu-1])/dx,
-                (Utemp[i_feu+1]-Utemp[i_feu])/dx,
-                F(t)
+            Uh[i_feu] = (
+                Utemp[i_feu] - dt * F_0(
+                    (Utemp[i_feu]-Utemp[i_feu-1])/dx,
+                    (Utemp[i_feu+1]-Utemp[i_feu])/dx,
+                    F(t)
                 )
+            )
 
-
+        # Stocke que tous les 30 itérations pour alléger l'animation
         if it % 30 == 0 or t + dt >= T:
             yield t, Uh.copy()
 
         it += 1
 
 # ----------- Schéma conservation scalaire ----------- #
-def conservation_law_solver(nb_maille, Rho0, a, b, T):
-    m = nb_maille
-    dx = (b - a) / m
+def conservation_law_solver(T):
+
     it = 0  # Compteur d'itérations pour les images de l'animation
     t = 0   # Variable de temps
 
-    Rh = rho_h
+    Rh = rho_0.copy()   # Initialisation discrète de Rh avec rho_0
     
     # Indice des feux
     i_feu_gauche = len(U0) // 2 - len(U0) // 4
@@ -148,7 +144,7 @@ def conservation_law_solver(nb_maille, Rho0, a, b, T):
                 F_0(Rtemp[i_feu - 1],Rtemp[i_feu],F(t)) - vectorized_g_H(Rtemp[i_feu - 2], Rtemp[i_feu - 1])
             )
 
-        # On ne stocke que tous les 3 itérations pour alléger l'animation
+        # On ne stocke que tous les 30 itérations pour alléger l'animation
         if it%30==0 or t+dt >= T:
             yield t, Rh.copy()
         
@@ -156,14 +152,13 @@ def conservation_law_solver(nb_maille, Rho0, a, b, T):
 
 
 # ------- test ---------- #
-def schema_generator(nb_maille, Rho0, a, b, f, T):
-    m = nb_maille
-    x = np.linspace(a, b, m + 1)
-    dx = (b - a) / m
+def schema_generator(f, T):
+
     it = 0  # Compteur d'itérations pour les images de l'animation
     t = 0   # Variable de temps
 
-    Rh = np.array([Rho0((x[i]+x[i+1])/2.0,dx) for i in range(len(x)-1)])
+    Rh = rho_0.copy()   # Initialisation discrète de Rh avec rho_0 
+    
     # Définition du flux
     def flux(um,up):
         return 0.5*(f(um)+f(up)) -0.5*(up - um)
@@ -205,7 +200,7 @@ def schema_generator(nb_maille, Rho0, a, b, f, T):
                 min(F(t), flux(Rtemp[i_feu - 1], Rtemp[i_feu])) - flux(Rtemp[i_feu - 2], Rtemp[i_feu - 1])
             )
 
-        # On ne stocke que tous les 3 itérations pour alléger l'animation
+        # On ne stocke que tous les 30 itérations pour alléger l'animation
         if it%30==0 or t+dt >= T:
             yield t, Rh.copy()
         
@@ -243,18 +238,16 @@ def F_droite(t):
 
 # ----------- Dérivée discrète ----------- #
 def discrete_derivative(Uh, dx):
-    dUh = [(Uh[i+1] - Uh[i]) /  dx for i in range(len(x_milieu))]
+    dUh = (Uh[1:]-Uh[:-1]) / dx
     return dUh
 
 # ----------- Animation de la comparaison ----------- #
 def animate_comparison():
-    gen_hj_papier = schema_HJ(nb_maille, u0, a, b, T=T)
-    gen_cons_papier = conservation_law_solver(nb_maille, rho0, a, b, T=T)
-    sch_gen = schema_generator(nb_maille, rho0, a, b, H, T=T)
+    gen_hj_papier = schema_HJ(T=T)
+    gen_cons_papier = conservation_law_solver(T=T)
+    #sch_gen = schema_generator(f=H, T=T)
 
     fig, ax = plt.subplots()
-    #Rh_init = np.array([rho0(xi,dx) for xi in x_milieu])
-
     line_hj, = ax.plot([], [], 'b-', label=r"$\partial_x u$ (HJ)")
     line_cons, = ax.plot([], [], 'r--', label=r"$\rho$ papier")
     #line_u, = ax.plot([],[], 'g--', label=r"$u$")
@@ -287,7 +280,7 @@ def animate_comparison():
             line_cons.set_data(x_milieu, rho)
             rho_from_HJ = discrete_derivative(Uh, dx)
             line_hj.set_data(x_milieu, rho_from_HJ)
-            t3, rho_sch = next(sch_gen)
+            #t3, rho_sch = next(sch_gen)
             #line_sch.set_data(x_milieu, rho_sch)
             #print(len(Uh),len(rho_from_HJ),len(rho))
             ax.set_title(f"Comparaison à t = {t1:.2f}")
@@ -298,6 +291,7 @@ def animate_comparison():
             pass
         return line_hj, line_cons, #line_sch #, line_u
 
+    # Detection de pression de touches pour les feux rouges
     fig.canvas.mpl_connect('key_press_event', on_key_press)
     fig.canvas.mpl_connect('key_release_event', on_key_release)
     
