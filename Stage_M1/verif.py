@@ -8,30 +8,27 @@ from matplotlib.widgets import Button
 # ----------- Paramètres globaux ----------- #
 a = -10
 b = 10
-nb_maille = 101
-T = 1e3
-C_CFL = 5
+nb_maille = 100
+T = 10
+C_CFL = 10
 densite_init = 0.4
 
+# ----------- Initialisation du maillage ----------- #
 x = np.linspace(a, b, nb_maille + 1)
 dx = x[1] - x[0]
 x_milieu = (x[:-1] + x[1:]) / 2
 
 # ----------- Fonction u0(x) et rho0(x) ----------- #
 def u0(x):
-    return densite_init*x if x < 0 else 0.0
+    return densite_init*x if x < 0 else densite_init*x
 
 U0 = np.array([u0(x[i]) for i in range(len(x))])
 
 rho_0 = (U0[1:] - U0[:-1]) / dx     # Initialisation discrète de rho_0 
 
-
 # ----------- Hamiltonien et flux de Godunov ----------- #
 def H(p):
     return p * (1 - p)
-
-def H_prime(p):
-    return 1 - 2 * p
 
 def vectorized_g_H(p_minus, p_plus):
     p_star = 0.5
@@ -46,14 +43,14 @@ def vectorized_g_H(p_minus, p_plus):
     return g
 
 # ----------- F_0 ----------- #
-def H_plus(p):
-    return -1/4 if p < 1/2 else -H(p)
+def G_plus(p):
+    return H(p) if p < 1/2 else 1/4
 
-def H_minus(p):
-    return -1/4 if p > 1/2 else -H(p)
+def G_minus(p):
+    return 1/4 if p < 1/2 else H(p)
 
 def F_0(p_left,p_right,F): # Flux limité HJ
-    return min(-H_plus(p_right), -H_minus(p_left),F)
+    return min(G_plus(p_left), G_minus(p_right),F)
 
 # ----------- Schéma Hamilton-Jacobi ----------- #
 def schema_HJ(T):
@@ -248,14 +245,14 @@ def animate_comparison():
     #sch_gen = schema_generator(f=H, T=T)
 
     fig, ax = plt.subplots()
-    line_hj, = ax.plot([], [], 'b-', label=r"$\partial_x u$ (HJ)")
+    #line_hj, = ax.plot([], [], 'b-', label=r"$\partial_x u$ (HJ)")
     line_cons, = ax.plot([], [], 'r--', label=r"$\rho$ papier")
     #line_u, = ax.plot([],[], 'g--', label=r"$u$")
     #line_sch, = ax.plot([], [],  color='orange', linestyle='-', label=r"$\rho$ volume fini classique")
     ax.set_xlim(a , b ) 
     ax.set_ylim(-0.1, 1.1)
     ax.set_xlabel("x")
-    ax.set_ylabel("Valeur")
+    ax.set_ylabel("Densité")
     ax.set_title(r"Comparaison : dérivée de $u$ vs $\rho$")
     ax.legend()
 
@@ -268,9 +265,9 @@ def animate_comparison():
     feu_rect_gauche = Rectangle((x_feu_gauche - rect_width/2, 0), rect_width, 0.1, color='green')
     feu_rect_centre = Rectangle((x_feu_centre - rect_width/2, 0), rect_width, 0.1, color='green')
     feu_rect_droite = Rectangle((x_feu_droite - rect_width/2, 0), rect_width, 0.1, color='green')
-    ax.add_patch(feu_rect_gauche)
+    #ax.add_patch(feu_rect_gauche)
     ax.add_patch(feu_rect_centre)
-    ax.add_patch(feu_rect_droite)
+    #ax.add_patch(feu_rect_droite)
 
     def update(frame):
         try:
@@ -279,24 +276,24 @@ def animate_comparison():
             t2, rho = next(gen_cons_papier)
             line_cons.set_data(x_milieu, rho)
             rho_from_HJ = discrete_derivative(Uh, dx)
-            line_hj.set_data(x_milieu, rho_from_HJ)
+            #line_hj.set_data(x_milieu, rho_from_HJ)
             #t3, rho_sch = next(sch_gen)
             #line_sch.set_data(x_milieu, rho_sch)
             #print(len(Uh),len(rho_from_HJ),len(rho))
-            ax.set_title(f"Comparaison à t = {t1:.2f}")
+            ax.set_title(f"Circulation routière à t = {t1:.2f}")
             feu_rect_gauche.set_color('red' if feu_gauche["actif"] else 'green')
             feu_rect_centre.set_color('red' if feu_centre["actif"] else 'green')
             feu_rect_droite.set_color('red' if feu_droite["actif"] else 'green')
         except StopIteration:
             pass
-        return line_hj, line_cons, #line_sch #, line_u
+        return line_cons #line_u, line_hj, , line_sch ,
 
     # Detection de pression de touches pour les feux rouges
     fig.canvas.mpl_connect('key_press_event', on_key_press)
     fig.canvas.mpl_connect('key_release_event', on_key_release)
     
     ani = animation.FuncAnimation(
-        fig, update, interval=2, blit=False, frames=None, cache_frame_data=False
+        fig, update, interval=30, blit=False, frames=None, cache_frame_data=False
     )
     plt.show()
 
