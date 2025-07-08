@@ -9,8 +9,8 @@ from matplotlib.widgets import Button
 a = -10
 b = 10
 nb_maille = 100
-T = 10
-C_CFL = 10
+#T = 20
+C_CFL = 30
 densite_init = 0.4
 
 # ----------- Initialisation du maillage ----------- #
@@ -216,6 +216,9 @@ def on_key_press(event):
         feu_centre["actif"] = True
     elif event.key == 'e':
         feu_droite["actif"] = True
+    global animation_active
+    if event.key == ' ':  # Touche espace
+        animation_active = True
 
 def on_key_release(event):
     if event.key == 'a':             
@@ -239,21 +242,27 @@ def discrete_derivative(Uh, dx):
     return dUh
 
 # ----------- Animation de la comparaison ----------- #
+animation_active = False  # Drapeau pour contrôler le démarrage
+
 def animate_comparison():
+    T = 50
     gen_hj_papier = schema_HJ(T=T)
+    t,Uh = next(gen_hj_papier)
+    dUh = discrete_derivative(Uh, dx)
     gen_cons_papier = conservation_law_solver(T=T)
+    t, rho = next(gen_cons_papier)
     #sch_gen = schema_generator(f=H, T=T)
 
-    fig, ax = plt.subplots()
-    #line_hj, = ax.plot([], [], 'b-', label=r"$\partial_x u$ (HJ)")
-    line_cons, = ax.plot([], [], 'r--', label=r"$\rho$ papier")
-    #line_u, = ax.plot([],[], 'g--', label=r"$u$")
+    fig, ax = plt.subplots(figsize=(9, 6))
+    line_hj, = ax.plot(x_milieu, dUh, 'b-', label=r"$(u_\Delta)_x$")
+    line_cons, = ax.plot(x_milieu, rho, '--', label=r"$\rho_\Delta$",color='orange')
+    #line_u, = ax.plot(x,Uh, 'g--', label=r"$u_\Delta$")
     #line_sch, = ax.plot([], [],  color='orange', linestyle='-', label=r"$\rho$ volume fini classique")
     ax.set_xlim(a , b ) 
     ax.set_ylim(-0.1, 1.1)
     ax.set_xlabel("x")
     ax.set_ylabel("Densité")
-    ax.set_title(r"Comparaison : dérivée de $u$ vs $\rho$")
+    ax.set_title(f"Circulation routière à t = 0.00")
     ax.legend()
 
     # Feux rouges
@@ -265,18 +274,21 @@ def animate_comparison():
     feu_rect_gauche = Rectangle((x_feu_gauche - rect_width/2, 0), rect_width, 0.1, color='green')
     feu_rect_centre = Rectangle((x_feu_centre - rect_width/2, 0), rect_width, 0.1, color='green')
     feu_rect_droite = Rectangle((x_feu_droite - rect_width/2, 0), rect_width, 0.1, color='green')
-    #ax.add_patch(feu_rect_gauche)
+    ax.add_patch(feu_rect_gauche)
     ax.add_patch(feu_rect_centre)
-    #ax.add_patch(feu_rect_droite)
+    ax.add_patch(feu_rect_droite)
 
     def update(frame):
+        global animation_active
+        if not animation_active:
+            return   line_cons,  line_hj , 
         try:
             t1, Uh = next(gen_hj_papier)
             #line_u.set_data(x, Uh)
             t2, rho = next(gen_cons_papier)
             line_cons.set_data(x_milieu, rho)
             rho_from_HJ = discrete_derivative(Uh, dx)
-            #line_hj.set_data(x_milieu, rho_from_HJ)
+            line_hj.set_data(x_milieu, rho_from_HJ)
             #t3, rho_sch = next(sch_gen)
             #line_sch.set_data(x_milieu, rho_sch)
             #print(len(Uh),len(rho_from_HJ),len(rho))
@@ -286,7 +298,7 @@ def animate_comparison():
             feu_rect_droite.set_color('red' if feu_droite["actif"] else 'green')
         except StopIteration:
             pass
-        return line_cons #line_u, line_hj, , line_sch ,
+        return  line_cons , line_hj,  #line_u
 
     # Detection de pression de touches pour les feux rouges
     fig.canvas.mpl_connect('key_press_event', on_key_press)
@@ -300,3 +312,4 @@ def animate_comparison():
 # ----------- Lancer l’animation ----------- #
 if __name__ == "__main__":
     animate_comparison()
+
