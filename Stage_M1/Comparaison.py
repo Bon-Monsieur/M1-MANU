@@ -9,7 +9,7 @@ from matplotlib.widgets import Button
 a = -10
 b = 10
 nb_maille = 100
-T = 10
+T = 1e3
 C_CFL = 10
 densite_init = 0.4
 
@@ -75,6 +75,8 @@ def schema_HJ(T):
             dt = T - t
         t += dt
 
+
+        # Mise à jour des valeurs intérieures avec schéma du papier
         Uh[1:-1] = (
             Uh[1:-1] - dt * vectorized_g_H((Utemp[1:-1] - Utemp[:-2]) / dx, (Utemp[2:] - Utemp[1:-1]) / dx)
         )
@@ -122,7 +124,7 @@ def conservation_law_solver(T):
             dt = T - t
         t += dt
 
-        # Mise à jour des valeurs intérieures
+        # Mise à jour des valeurs intérieures avec schéma du papier 
         Rh[1:-1] = (
             Rh[1:-1] 
             - dt/dx*(vectorized_g_H(Rh[1:-1],Rh[2:])-vectorized_g_H(Rh[:-2],Rh[1:-1]))
@@ -148,7 +150,7 @@ def conservation_law_solver(T):
         it += 1
 
 
-# ------- test ---------- #
+# ------- VF_circulation---------- #
 def schema_generator(f, T):
 
     it = 0  # Compteur d'itérations pour les images de l'animation
@@ -178,7 +180,7 @@ def schema_generator(f, T):
             dt = T - t
         t += dt
 
-        # Mise à jour des valeurs intérieures
+        # Mise à jour des valeurs intérieures méthode VF
         Rh[1:-1] = (
             Rh[1:-1] 
             - dt/dx*(vectorized_flux(Rh[1:-1],Rh[2:])-vectorized_flux(Rh[:-2],Rh[1:-1]))
@@ -242,13 +244,13 @@ def discrete_derivative(Uh, dx):
 def animate_comparison():
     gen_hj_papier = schema_HJ(T=T)
     gen_cons_papier = conservation_law_solver(T=T)
-    #sch_gen = schema_generator(f=H, T=T)
+    sch_gen = schema_generator(f=H, T=T)
 
     fig, ax = plt.subplots()
-    #line_hj, = ax.plot([], [], 'b-', label=r"$\partial_x u$ (HJ)")
+    line_hj, = ax.plot([], [], 'b-', label=r"$\partial_x u$ (HJ)")
     line_cons, = ax.plot([], [], 'r--', label=r"$\rho$ papier")
-    #line_u, = ax.plot([],[], 'g--', label=r"$u$")
-    #line_sch, = ax.plot([], [],  color='orange', linestyle='-', label=r"$\rho$ volume fini classique")
+    line_u, = ax.plot([],[], 'g--', label=r"$u$")
+    line_sch, = ax.plot([], [],  color='orange', linestyle='-', label=r"$\rho$ volume fini classique")
     ax.set_xlim(a , b ) 
     ax.set_ylim(-0.1, 1.1)
     ax.set_xlabel("x")
@@ -271,24 +273,26 @@ def animate_comparison():
 
     def update(frame):
         try:
+            # Calcul de la solution à chaque pas de temps
             t1, Uh = next(gen_hj_papier)
-            #line_u.set_data(x, Uh)
+            line_u.set_data(x, Uh)
             t2, rho = next(gen_cons_papier)
             line_cons.set_data(x_milieu, rho)
             rho_from_HJ = discrete_derivative(Uh, dx)
-            #line_hj.set_data(x_milieu, rho_from_HJ)
-            #t3, rho_sch = next(sch_gen)
-            #line_sch.set_data(x_milieu, rho_sch)
-            #print(len(Uh),len(rho_from_HJ),len(rho))
+            line_hj.set_data(x_milieu, rho_from_HJ)
+            t3, rho_sch = next(sch_gen)
+            line_sch.set_data(x_milieu, rho_sch)
+            
+            # Modifie l'affichage à chaque pas de temps
             ax.set_title(f"Circulation routière à t = {t1:.2f}")
             feu_rect_gauche.set_color('red' if feu_gauche["actif"] else 'green')
             feu_rect_centre.set_color('red' if feu_centre["actif"] else 'green')
             feu_rect_droite.set_color('red' if feu_droite["actif"] else 'green')
         except StopIteration:
             pass
-        return line_cons #line_u, line_hj, , line_sch ,
+        return line_cons, line_u, line_hj, line_sch ,
 
-    # Detection de pression de touches pour les feux rouges
+    # Détection des pressions de touches pour les feux rouges
     fig.canvas.mpl_connect('key_press_event', on_key_press)
     fig.canvas.mpl_connect('key_release_event', on_key_release)
     

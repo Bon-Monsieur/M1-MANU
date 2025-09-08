@@ -4,11 +4,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-matplotlib.use("TkAgg")  # or 'Qt5Agg' if you prefer Qt
-
-# Merci Ronan pour l'optimisation :D
-
-# Fonction qui permet de forcer la valeur de mon estimation aux points critiques de ma forme
+# Fonction qui traite les conditions aux bords de la figure
 def cond(Un, Nx, Ny, fig="parabola"):
     if fig == "parabola":        
         ax = int((Nx - 1) / 2)
@@ -80,7 +76,7 @@ def cond(Un, Nx, Ny, fig="parabola"):
         return Un
 
 
-
+# Fonction qui renvoie l'erreur moyenne entre l'approximation et la solution analytique
 def erreur(Un, Nx, Ny, fig, x, y):
     x = np.linspace(0, 1, Nx)
     y = np.linspace(0, 1, Ny)
@@ -120,9 +116,9 @@ def erreur(Un, Nx, Ny, fig, x, y):
     return np.sum(np.abs(Un-sol_exacte(X,Y))) / (Nx * Ny)
 
 
-# Methode du point fixe pour le probleme de SFS
-def SFS_fixed_point_method(Nx, Ny, fig="parabola",epsilon=1e-4,maxiter=2000):
-
+# Fonction principale pour le Shape-From-Shading
+def SFS_fixed_point_method(nb_point=101, fig="parabola",epsilon=1e-4,maxiter=2000,algo="fixed_point"):
+    Nx = Ny = nb_point
     # Maillage par défaut
     x = np.linspace(0, 1, Nx)
     y = np.linspace(0, 1, Ny)
@@ -130,7 +126,10 @@ def SFS_fixed_point_method(Nx, Ny, fig="parabola",epsilon=1e-4,maxiter=2000):
     # Initialisation 
     Un = np.full((Nx, Ny), 0.0)  # U0 == 0
     Un[1:-1, 1:-1] = 1 # Valeur initiale pour le maillage intérieur
-    # Fonction de l'intensité lumineuse en fonction de la figure demandée et définition des bonnes bornes du maillage pour un bel affichage
+
+
+    # Définition de la fonction de l'intensité lumineuse par rapport à la figure souhaitée 
+    # ainsi que la définition des bonnes bornes du maillage pour un bel affichage
     if fig == "parabola":
         I = (
             lambda x, y: 1/np.sqrt(1+(16 * y * (1 - y) * (1 - 2 * x))**2
@@ -200,7 +199,7 @@ def SFS_fixed_point_method(Nx, Ny, fig="parabola",epsilon=1e-4,maxiter=2000):
     Dt = Dx * Dy / np.sqrt(Dx**2 + Dy**2)
 
 
-    # Définition de la normale pour le SFS
+    # Définition de la fonction des normales en chaque point donnée dans le papier étudié
     n = lambda x, y: np.sqrt(1/I(x, y)**2-1)
 
     ## Building Finite Differences Operators
@@ -217,7 +216,7 @@ def SFS_fixed_point_method(Nx, Ny, fig="parabola",epsilon=1e-4,maxiter=2000):
     DDym = sp.kron(Dym, sp.eye_array(Nx))
     # We now have 2D FD operators
 
-    # Les deux fonctions g et G du papier
+    # L'opérateur G donné dans le papier étudié
     def G(U):
         fU = U.flatten()
         R = np.sqrt(
@@ -227,19 +226,20 @@ def SFS_fixed_point_method(Nx, Ny, fig="parabola",epsilon=1e-4,maxiter=2000):
         return R
 
 
-    X1, Y1 = np.meshgrid(x[1:-1], y[1:-1], indexing='ij')
+    
     for k in range(maxiter+1):
         if(erreur(Un,Nx,Ny,fig,x,y)<=epsilon):
             break
         Un = cond(
             Un, Nx, Ny, fig      # Applique les conditions pour les endroits sur la frontière
         ) 
-        Un[1:-1, 1:-1] = Un[1:-1, 1:-1] - Dt * G(Un)[1:-1, 1:-1]  # Methode du point fixe
-        #Un[1:-1, 1:-1] = n(X[1:-1,1:-1], Y[1:-1,1:-1]) * Dx + np.minimum(np.minimum(Un[0:-2, 1:-1], Un[2:, 1:-1]),np.minimum(Un[1:-1, 0:-2], Un[1:-1, 2:]))  # Methode du papier
+        if algo == "fixed_point":
+            Un[1:-1, 1:-1] = Un[1:-1, 1:-1] - Dt * G(Un)[1:-1, 1:-1]  # Methode du point fixe
+        if algo == "paper_algo":
+            Un[1:-1, 1:-1] = n(X[1:-1,1:-1], Y[1:-1,1:-1]) * Dx + np.minimum(np.minimum(Un[0:-2, 1:-1], Un[2:, 1:-1]),np.minimum(Un[1:-1, 0:-2], Un[1:-1, 2:]))  # Methode du papier
 
 
     # Corrige les imperfections de la solution pour l'affichage du vase
-    
     Un = cond(Un,Nx,Ny,fig)
 
     erreur_globale = erreur(Un, Nx, Ny, fig, x, y)  # Calcul de l'erreur
@@ -303,5 +303,39 @@ dvase_dx = lambda x, y: np.where(g(x)**2 - y**2 > 0, (g(x) * dg_dx(x)) / np.sqrt
 dvase_dy = lambda x, y: np.where(g(x)**2 -y**2 > 0, -y / np.sqrt(g(x)**2 - y**2), 0)
 
 
-#======  UTILISATION  ======#
-SFS_fixed_point_method(Nx=101, Ny=101, fig="fig7",epsilon=1e-6,maxiter=120)
+# ======  UTILISATION  ====== #
+
+'''
+Il est possible de consulter 5 résultats différents de Shape-From-Shading
+Pour utiliser le code il suffit d'appeler la fonction SFS_fixed_point_method avec les trois paramètres suivants :
+    - 'nb_point' Le nombre de point par côté du maillage carré
+    - 'fig' La forme que l'on souhaite reconstruire
+Il est aussi possible d'ajouter les paramètres suivants :
+    - 'epsilon' permet  de fixer une borne d'erreur qui arrête le programme lorsque cette erreur est atteinte
+    - 'maxiter' permet de fixer un nombre d'itérations maximum au programme
+    - 'algo' permet de sélectionner l'algorithme que l'on souhaite utiliser pour reconstruire la figure.
+
+
+Les valeurs acceptables pour 'fig' sont : 
+    - "parabola"
+    - "reverse_parabola"
+    - "pyramid"
+    - "parabola_with_forced_elevation"
+    - "fig7"
+    - "fig8"
+    - "x2_0bd"
+    - "x2_mixed_bd"
+    - "vase"
+
+Les deux algorithmes de reconstruction sont :
+    - "fixed_point"
+    - "paper_algo"
+
+Exemple d'appel de la fonction :  
+            
+        SFS_fixed_point_method(nb_point=101, fig="pyramid",epsilon=1e-6,maxiter=120,algo="paper_algo")
+'''
+
+
+# ======= Appel de la fonction ======= #
+SFS_fixed_point_method(nb_point=101, fig="parabola",epsilon=1e-6,maxiter=120,algo="paper_algo")
