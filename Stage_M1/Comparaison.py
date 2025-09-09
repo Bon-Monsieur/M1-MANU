@@ -9,13 +9,8 @@ from matplotlib.widgets import Button
 a = -10
 b = 10
 nb_maille = 100
-<<<<<<< HEAD:Stage_M1/Comparaison.py
-T = 1e3
-C_CFL = 10
-=======
 #T = 20
 C_CFL = 50
->>>>>>> 64916cbfcd3969aeefa32882e767c130f1c31676:Stage_M1/verif.py
 densite_init = 0.4
 
 # ----------- Initialisation du maillage ----------- #
@@ -249,19 +244,6 @@ def discrete_derivative(Uh, dx):
     return dUh
 
 # ----------- Animation de la comparaison ----------- #
-<<<<<<< HEAD:Stage_M1/Comparaison.py
-def animate_comparison():
-    gen_hj_papier = schema_HJ(T=T)
-    gen_cons_papier = conservation_law_solver(T=T)
-    sch_gen = schema_generator(f=H, T=T)
-
-    fig, ax = plt.subplots()
-    line_hj, = ax.plot([], [], 'b-', label=r"$\partial_x u$ (HJ)")
-    line_cons, = ax.plot([], [], 'r--', label=r"$\rho$ papier")
-    line_u, = ax.plot([],[], 'g--', label=r"$u$")
-    line_sch, = ax.plot([], [],  color='orange', linestyle='-', label=r"$\rho$ volume fini classique")
-    ax.set_xlim(a , b ) 
-=======
 animation_active = False  # Drapeau pour contrôler le démarrage
 
 def animate_comparison():
@@ -285,7 +267,6 @@ def animate_comparison():
     #line_u, = ax.plot(x,Uh, 'g--', label=r"$u_\Delta$")
     line_sch, = ax.plot(x_milieu, rho_sch,  color='blue', linestyle='-', label=r"$\rho$ VF")
     ax.set_xlim(a+1 , b-1 ) 
->>>>>>> 64916cbfcd3969aeefa32882e767c130f1c31676:Stage_M1/verif.py
     ax.set_ylim(-0.1, 1.1)
     ax.set_xlabel("x")
     ax.set_ylabel("Densité")
@@ -310,20 +291,6 @@ def animate_comparison():
         if not animation_active:
             return   line_cons, line_sch #line_hj , 
         try:
-<<<<<<< HEAD:Stage_M1/Comparaison.py
-            # Calcul de la solution à chaque pas de temps
-            t1, Uh = next(gen_hj_papier)
-            line_u.set_data(x, Uh)
-            t2, rho = next(gen_cons_papier)
-            line_cons.set_data(x_milieu, rho)
-            rho_from_HJ = discrete_derivative(Uh, dx)
-            line_hj.set_data(x_milieu, rho_from_HJ)
-            t3, rho_sch = next(sch_gen)
-            line_sch.set_data(x_milieu, rho_sch)
-            
-            # Modifie l'affichage à chaque pas de temps
-            ax.set_title(f"Circulation routière à t = {t1:.2f}")
-=======
             #t1, Uh = next(gen_hj_papier)
             #line_u.set_data(x, Uh)
             t2, rho = next(gen_cons_papier)
@@ -334,17 +301,12 @@ def animate_comparison():
             line_sch.set_data(x_milieu, rho_sch)
             #print(len(Uh),len(rho_from_HJ),len(rho))
             ax.set_title(f"Circulation routière à t = {t2:.2f}")
->>>>>>> 64916cbfcd3969aeefa32882e767c130f1c31676:Stage_M1/verif.py
             feu_rect_gauche.set_color('red' if feu_gauche["actif"] else 'green')
             feu_rect_centre.set_color('red' if feu_centre["actif"] else 'green')
             feu_rect_droite.set_color('red' if feu_droite["actif"] else 'green')
         except StopIteration:
             pass
-<<<<<<< HEAD:Stage_M1/Comparaison.py
-        return line_cons, line_u, line_hj, line_sch ,
-=======
         return  line_cons , line_sch #line_hj,  #line_u
->>>>>>> 64916cbfcd3969aeefa32882e767c130f1c31676:Stage_M1/verif.py
 
     # Détection des pressions de touches pour les feux rouges
     fig.canvas.mpl_connect('key_press_event', on_key_press)
