@@ -14,14 +14,14 @@ def V(rho): # Vitesse instantannée
     return 1 - rho
 
 def Rho0(x):
-    return 0.4 if x < -7 else 0.0
+    return 0.4 if -10 <x < -5 else 0.0
 
 # Def variables
-densite_init = 0.4
+densite_init = 0.
 a = -10
 b = 10
 T=1e3
-CFL=0.4
+CFL=0.1
 nb_maille = 200
 
 # Def maillage
@@ -71,13 +71,13 @@ def schema_generator(nb_maille, Rho0, a, b, f, fp, cfl, T):
         Rh[-1] = Rtemp[-1] - dt/dx * (flux(Rtemp[-1],0.0) - flux(Rtemp[-2],Rtemp[-1]))
 
         # Calcul pour les feux rouges 
-        for i_feu, F in feux:
+        '''for i_feu, F in feux:
             Rh[i_feu] = Rtemp[i_feu] - dt / dx * (
                 flux(Rtemp[i_feu], Rtemp[i_feu + 1]) - min(flux(Rtemp[i_feu - 1], Rtemp[i_feu]), F(t))
             )
             Rh[i_feu - 1] = Rtemp[i_feu - 1] - dt / dx * (
                 min(F(t), flux(Rtemp[i_feu - 1], Rtemp[i_feu])) - flux(Rtemp[i_feu - 2], Rtemp[i_feu - 1])
-            )
+            )'''
 
         # On ne stocke que tous les 3 itérations pour alléger l'animation
         if it%10==0 or t+dt >= T:

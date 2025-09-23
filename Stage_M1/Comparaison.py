@@ -10,7 +10,7 @@ a = -10
 b = 10
 nb_maille = 100
 #T = 20
-C_CFL = 50
+C_CFL = 20
 densite_init = 0.4
 
 # ----------- Initialisation du maillage ----------- #
@@ -254,7 +254,7 @@ def animate_comparison():
     #dUh = discrete_derivative(Uh, dx)
 
     gen_cons_papier = conservation_law_solver(T=T)
-    t, rho = next(gen_cons_papier)
+    #t, rho = next(gen_cons_papier)
 
 
     sch_gen = schema_generator(f=H, T=T)
@@ -263,7 +263,7 @@ def animate_comparison():
 
     fig, ax = plt.subplots(figsize=(9, 6))
     #line_hj, = ax.plot(x_milieu, dUh, 'b-', label=r"$(u_\Delta)_x$")
-    line_cons, = ax.plot(x_milieu, rho, '--', label=r"$\rho_\Delta$",color='orange')
+    #line_cons, = ax.plot(x_milieu, rho, '--', label=r"$\rho_\Delta$",color='orange')
     #line_u, = ax.plot(x,Uh, 'g--', label=r"$u_\Delta$")
     line_sch, = ax.plot(x_milieu, rho_sch,  color='blue', linestyle='-', label=r"$\rho$ VF")
     ax.set_xlim(a+1 , b-1 ) 
@@ -289,12 +289,12 @@ def animate_comparison():
     def update(frame):
         global animation_active
         if not animation_active:
-            return   line_cons, line_sch #line_hj , 
+            return    line_sch #line_hj , line_cons,
         try:
             #t1, Uh = next(gen_hj_papier)
             #line_u.set_data(x, Uh)
             t2, rho = next(gen_cons_papier)
-            line_cons.set_data(x_milieu, rho)
+            #line_cons.set_data(x_milieu, rho)
             #rho_from_HJ = discrete_derivative(Uh, dx)
             #line_hj.set_data(x_milieu, rho_from_HJ)
             t3, rho_sch = next(sch_gen)
@@ -306,7 +306,7 @@ def animate_comparison():
             feu_rect_droite.set_color('red' if feu_droite["actif"] else 'green')
         except StopIteration:
             pass
-        return  line_cons , line_sch #line_hj,  #line_u
+        return   line_sch #line_hj,  #line_uline_cons ,
 
     # Détection des pressions de touches pour les feux rouges
     fig.canvas.mpl_connect('key_press_event', on_key_press)
