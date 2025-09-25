@@ -21,7 +21,7 @@ densite_init = 0.4
 a = -10
 b = 10
 T=1e3
-CFL=0.4
+CFL=0.2
 nb_maille = 200
 
 # Def maillage
